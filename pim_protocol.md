@@ -8,8 +8,7 @@
   * 不依赖于特定的单播路由协议，它可以利用各种单播路由协议建立的单播路由表完成
   * 在Internet范围内支持SPT和共享树，并使两者之间灵活切换，因而集中了他们的优点
   * PIM-DM(Dense-Mode): PIM密集模式，RFC3973
-  * PIM-SM(Sparse-Mode): PIM稀疏模式，RFC2362
-  
+  * PIM-SM(Sparse-Mode): PIM稀疏模式，RFC2362  
 ## PIM-SM(RFC2362) 
   * A protocol for efficiently routing multicast groups that may span wide-area (and inter-domain) internets
   * Not depend on any particular unicast routing prrotocols
@@ -35,4 +34,25 @@
   * The RPT-bit indicates that this join is being sent up the shared, RP-tree.
   * The Prune list is left empty
   
-  when the RPT-bit is set to 1, it indicates that the join is associate with the shared RP-tree and therefore the Join/Prune message is propagated along the RP-tree. When 
+  when the RPT-bit is set to 1, it indicates that the join is associate with the shared RP-tree and therefore the Join/Prune message is propagated along the RP-tree. The term RPT-bit is used to refer to both the RPT-bit flags associate with route entries, and the RPT-bit included in each encoded address in a Join/Prune message.
+  When the WC-bit is set to 1, it indicates that the address is an RP and the downstream receiver expect to receive packet from all sources via this (shared tree) path.
+
+  Each upstream router creates or updates its multicast route entry for (\*, G) when it receives a Join/Prune with the RPT-bit and WC-bit set.
+  
+#### Hosts sending to a group
+  When a host starts sending multicast data packets to a group, initially its DR must deliver each packet to the RP for distribution down the RP-tree.  
+  The Sender's DR initially encapsulates each data packet in a Register message and unicast it to the RP for that group.
+  The RP decapsulates each Register message and forwards the enclosed data packet natively to downstream members on the shared RP-tree.
+  
+  If the data rate of the source warrants the use of a source-specific shortest path tree (SPT), the RP may construct a new multicast route entry that specific to the source.
+  
+  The RP triggers Register-Stop messages in response to Registers, if the RP has no downstream receivers for the group (or for that particular source), or if the RP has already joined the (S, G) tree and is receiving the data packets natively.
+  
+  Each source's DR maintains, per (S, G), a Register-Suppression -timer. The Register-Suppression-timer is started by the Register-Stop message, upon expiration, the source's DR resumes sending data packets to the RP, encapsulated in the Register message.
+  
+#### Switching from shared tree (RP-tree) to shortest path tree (SP-tree)
+  The recommended policy is to initiate the switch to the SP-tree after receiving a significant number of data packets during a specified time interval from a particular source. 
+  
+  To realize this policy the route can monitor data packet from sources for which it has no source-specific multicast route entry and initiate such an entry when data rate exceeds the configured threhold.
+  
+  When the (S, G) entry is activated (and periodically so long as the state exists), a Join/Prune message is sent upstream towards the source, S, with S in the join list.
