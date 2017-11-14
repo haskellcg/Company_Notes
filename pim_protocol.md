@@ -56,3 +56,6 @@
   To realize this policy the route can monitor data packet from sources for which it has no source-specific multicast route entry and initiate such an entry when data rate exceeds the configured threhold.
   
   When the (S, G) entry is activated (and periodically so long as the state exists), a Join/Prune message is sent upstream towards the source, S, with S in the join list.
+
+
+[PIM协议的图示](http://download.csdn.net/download/boostc/10118800)
