@@ -1,2 +1,2 @@
-# Compony_Notes
-some notes about compony study
+# Company_Notes
+some notes about company study
