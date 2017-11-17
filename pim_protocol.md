@@ -9,7 +9,7 @@
   * 在Internet范围内支持SPT和共享树，并使两者之间灵活切换，因而集中了他们的优点
   * PIM-DM(Dense-Mode): PIM密集模式，RFC3973
   * PIM-SM(Sparse-Mode): PIM稀疏模式，RFC2362  
-## PIM-SM(RFC2362) 
+## PIM-SM (RFC2362) 
   * A protocol for efficiently routing multicast groups that may span wide-area (and inter-domain) internets
   * Not depend on any particular unicast routing prrotocols
   * Designed to support sparse groups
@@ -59,3 +59,46 @@
 
 
 [PIM协议的图示](http://download.csdn.net/download/boostc/10118800)
+
+## PIM-SM (中文文档)
+  协议无关组播，就是在做RPF检查以及发送特定的协议单播报文的时候利用单播路由表，而和具体采用何种单播路由协议并没有关系，该协议也不保持自己的路由表，为IP组播提供路由的单播路由协议可以是静态路由、RIP、OSPF、IS-IS、BGP等。
+
+#### 概述
+  * PIM-SM是稀疏模式的组播路由协议，主要用于成员分布相对分散、范围较广、大规模的网络
+  * 协议假设：当组播源开始发送组播数据时，域内的所有节点都不需要接收数据
+  * 该模型转发的核心任务就是构造并维护一颗单向共享树，共享树选择PIM中某一路由器作为公用根节点，成为汇聚点RP(Rendezvous Point)。组播数据通过RP沿共享树向接受者转发
+  * 接受者发现DR(Designated Router)，由DR创建(\*, G)项并以Join消息发送到RP
+  * 组播源同样发现DR(第一跳路由器)，并通过DR在RP上注册源信息
+  * 同时包含两种树:共享树、原路径树
+  * RPF检查根据树的类型进行:
+    * 使用共享树进行数据接收转发时，使用RP地址作为检测地址
+    * 使用原路径树进行数据接收转发时，使用组播源地址作为检测地址
+
+#### 关键点:
+  * PIM-SM的基本原理
+  * 共享树的加入和源的注册过程
+  * RPT和SPT的切换
+
+#### 字段解释
+  版本|类型|保留|检验和
+  ----|---|---|-----
+  3|7|15|31
+  
+  **_版本_** 字段: 当前为2
+  
+  **_类型_** 字段：
+  * 0: hello
+  * 1: 注册 (only SM)
+  * 2: 停止注册 (only SM)
+  * 3: 加入/剪枝
+  * 4: Bootstrap (only SM)
+  * 5: Assert
+  * 6: 嫁接 (only DM)  
+  * 7: 嫁接回应 (only DM)
+  * 8: 候选RP公告 (only SM)
+  
+  **_保留_** 字段
+  
+  **_检验和_** 字段
+  
+#### 协议机制
