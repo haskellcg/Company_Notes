@@ -9,6 +9,7 @@
   * 在Internet范围内支持SPT和共享树，并使两者之间灵活切换，因而集中了他们的优点
   * PIM-DM(Dense-Mode): PIM密集模式，RFC3973
   * PIM-SM(Sparse-Mode): PIM稀疏模式，RFC2362  
+  
 ## PIM-SM (RFC2362) 
   * A protocol for efficiently routing multicast groups that may span wide-area (and inter-domain) internets
   * Not depend on any particular unicast routing prrotocols
@@ -57,7 +58,6 @@
   
   When the (S, G) entry is activated (and periodically so long as the state exists), a Join/Prune message is sent upstream towards the source, S, with S in the join list.
 
-
 [PIM协议的图示](http://download.csdn.net/download/boostc/10118800)
 
 ## PIM-SM (中文文档)
@@ -73,6 +73,7 @@
   * RPF检查根据树的类型进行:
     * 使用共享树进行数据接收转发时，使用RP地址作为检测地址
     * 使用原路径树进行数据接收转发时，使用组播源地址作为检测地址
+  * BSR (BootStrap Router)在PIM-SM网络启动后，负责收集网络内的RP信息，为每个组播组选举RP，然后将RP集(即组-RP的映射数据库)发布到整个网络，PIM-SM域内只有一台BSR，可同时存在多台候选BSR
 
 #### 关键点:
   * PIM-SM的基本原理
@@ -84,21 +85,40 @@
   ----|---|---|-----
   3|7|15|31
   
-  **_版本_** 字段: 当前为2
+  * **_版本_**: 当前为2
   
-  **_类型_** 字段：
-  * 0: hello
-  * 1: 注册 (only SM)
-  * 2: 停止注册 (only SM)
-  * 3: 加入/剪枝
-  * 4: Bootstrap (only SM)
-  * 5: Assert
-  * 6: 嫁接 (only DM)  
-  * 7: 嫁接回应 (only DM)
-  * 8: 候选RP公告 (only SM)
+  * **_类型_**：
+    * 0: hello
+    * 1: 注册 (only SM)
+    * 2: 停止注册 (only SM)
+    * 3: 加入/剪枝
+    * 4: Bootstrap (only SM)
+    * 5: Assert
+    * 6: 嫁接 (only DM)  
+    * 7: 嫁接回应 (only DM)
+    * 8: 候选RP公告 (only SM)
   
-  **_保留_** 字段
+  * **_保留_**
   
-  **_检验和_** 字段
+  * **_检验和_**
   
 #### 协议机制
+  * **邻居发现**: 组播路由需要使用Hello消息来发现邻居，并维护邻居关系
+  * **DR选举**: 借助Hello消息可以为共享网络(如Ethernet)选举DR，DR将作为本网段中组播消息的唯一转发者，无论是和组播源连接的网络，还是和接收者连接的网络，只要网络为共享媒介都需要选举DR，接收者侧的DR向RP发送Join加入消息，组播源侧DR向RP发送Register注册消息
+  * **BSR的选举**:
+    * 如果域内只有一台C-BSR，该台路由器就是该域内的BSR
+    * 如果域内存在多台C-BSR，则拥有最高优先级的路由器为BSR
+    * 如果域内存在多台拥有相同优先级的C-BSR，则拥有最高IP地址的路由器为BSR
+  * **RP发现**: 组播网络中，担当共享树根节点的节点就是RP，共享树里所有组播流都通过RP转发到接收者，RP可以负责几个或者所有组播组的转发，所以网络中可以有一个到多个RP负责不同的组播组:
+    * 在DR和叶子路由器以及组播数据流将要经过的所有路由器上手工指定RP
+    * 启动Bootstrap协议，利用自举机制动态选举RP
+  * **利用BootStrap协议选举RP**:
+    * 如果PIM-SM域内只有一个C-RP(Candidat-RP)，那么这个节点就是域内的RP
+    * 如果域内存在多个C-RP并拥有不同的优先级，那么优先级最高额将会被选举为RP
+    * 如果域内存在多个C-RP并都拥有相同的优先级时，则依靠Hash算法算出的树枝决定RP，数值最大的成为RP，Hash算法参数：组地址、掩码长度、C-RP地址
+    * 如果域内存在多个C-RP并且拥有相同的优先级和Hash数值，则拥有最高IP地址的C-RP为该域的RP
+  * **RP与BSR的关系**:
+    * C-RP将声明发送给BSR，C-RP通过单播周期发送通告，BSR在RP集存储所有的C-RP通告
+    * BSR周期性地向所有PIM路由器发送BSR消息，BSR消息包含整个RP-set和BSR地址，消息一跳一跳地自BSR向整个网络泛滥
+    * 所有路由器使用收到的RP-set来确定RP，所有路由器使用相同的RP选择算法，选择的RP也是一样的
+         
