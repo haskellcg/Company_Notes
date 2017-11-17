@@ -56,9 +56,9 @@
   
   To realize this policy the route can monitor data packet from sources for which it has no source-specific multicast route entry and initiate such an entry when data rate exceeds the configured threhold.
   
+  [PIM协议的图示](http://download.csdn.net/download/boostc/10118800)
+  
   When the (S, G) entry is activated (and periodically so long as the state exists), a Join/Prune message is sent upstream towards the source, S, with S in the join list.
-
-[PIM协议的图示](http://download.csdn.net/download/boostc/10118800)
 
 ## PIM-SM (中文文档)
   协议无关组播，就是在做RPF检查以及发送特定的协议单播报文的时候利用单播路由表，而和具体采用何种单播路由协议并没有关系，该协议也不保持自己的路由表，为IP组播提供路由的单播路由协议可以是静态路由、RIP、OSPF、IS-IS、BGP等。
@@ -133,3 +133,12 @@
   * 可以根据流量条件等动态的切换到源树
   * 和具体的单播路由协议无关
   * 是域内组播路由的基础，和MGBP、MSDP共同结合使用可以完成跨域的组播
+
+## PIM-SM (RFC4601)
+
+#### Introduction
+  PIM-SM v2  
+  RFC 2117 -> RFC 2362 -> IETF Standards Track
+  
+#### Terminology
+  * Rendezvous Point (RP): An RP is a router that has been configured to be used as root of the non-source-specific distribution tree for a multicast group. Join messages from receivers for a group are sent towards the RP, and data from senders is sent to the RP so that receivers can discover who the senders are and start to receive traffic destined for the group.
