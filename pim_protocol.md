@@ -181,3 +181,37 @@
     * To do this, it **issues an (S, G) Join towards S**. This instantiates state in the routers along the path to S. Eventually, this join either reach **S's subnet or reaches a router that already has (S, G) state**. When this happens, data packets from S start to flow following the (S, G) state until they reach the receiver.
     * At this point, the receiver (or a router upstream of the receiver will be receiving two copies of the data: **one from the SPT and one from the RPT**. When the first traffic starts to arrive from the SPT, the DR or upstream router starts to drop the packets for G from S that arrive via the RP tree. In addition, it sends an **(S, G) Prune** message towards the RP. This is known as (S, G, rpt) Prune. The towards the RP indicating that traffic from S for G should NOT be forwarded in this direction. The Prune is **propagated** until it reaches the RP or a router that still needs the traffic from S for other receivers.
     * In addition, the RP is receiving the traffic from S, but this traffic is no longer reaching the receiver along the RP tree. **As far as the receiver is concerned, this is the final distribution tree**.
+
+#### Source-Specific Joins
+  IGMPv3 permits a receiver to join a group and specify that it only wants to receive traffic for a group if that traffic comes from a particular source. If a receiver does this, and **no other receiver on the LAN requires all the traffic for tha group**, then DR may omit performing a (\*, G) join to set up the shared tree, and instead issue a source-specific (S, G) join only.
+  
+  The range of multicast addresses **from 232.0.0.0 to 232.255.255.255** is currently set aside for source-specific multicast in IPv4. For groups in this range, receivers should only issue source-specific IGMPv3 joins. If a PIM router receivers a non-source-specific join for a group in this range, it should ignore it.
+  
+#### Source-Specific Prune  
+  IGMPv3 also permits a receiver to join a group and specify that it only wants to receive traffic for a group is that traffic does not come from a specific source or sources. In this case, **the DR will perform a (\*, G) join as normal, but may combine this with an (S, G, rpt) prune** for each of the sources that receiver does not wish to receive.
+  
+#### Multi-Access Transmit LANs 
+  * The overview so far has concerned itself with point-to-point transit links. However, using multi-access LANs such as Ethernet for transit is not uncommon.
+  * All of these problems are caused by there being more than one upstream router with join state for the group or source-group pair. PIM does not prevent such duplicate joins from occurning, instead, **when duplicate data packets appear on the LAN from different routers, these routers notice this and then elect a single forwarder**. This election is performed using PIM Assert message, which resolve the problem in favor of the upstream router has (S, G) state, or, if nethier or bother router has (S, G) state.
+  
+#### RP Discovery
+  * PIM-SM routers need to know the address of the RP for each group for which they have (\*, G) state. This address is obtained automatically
+  * Bootstrap mechanism, or through static configurtion
+  * All the routers in the domain that are configured to be candidats to be RPs periodically unicast their candidacy to the **BSR**
+  * From the candidates, the BSR picks an RP-set, and periodically announces this set in a **BootStrap message**
+  * to **map a group to an RP**, a router hashes the group address into RP-set using an **order-preserving hash function** (one that minimizes changes if the RP-Set Changes). The resulting RP is the one that it uses as the Rp for that group.
+  
+#### Protocol Specification
+
+###### PIM Protocol State
+  * The **protocol state** that a PIM implementation should maintain in order to function correctly. We term this state the Tree Information Base (TIB), as it holds the state of all the multicast distribution trees at this router. Most implementation will use this state to build a **multicast forwarding table**, which would then be updated when the relevant state in TIB changes.
+  * We divide TIB state into four sections:
+    * (\*, \*, RP) state: state that maintains per-RP trees, for all groups served by a given RP
+    * (\*, G) state: state that maintains the RP tree for G
+    * (S, G) state: state that maintains a source-specific tree for source S and group G
+    * (S, G, rpt) state: state that maintains source-specific information about source S on the RP tree for G.
+  * general purpose states:
+    * Non-group-specific state
+    * Neighbor state
+    * Designate Router state
+######    
