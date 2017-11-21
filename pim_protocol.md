@@ -233,4 +233,24 @@
   joins(\*, \*, RP)
   
 #### Data Packet Forwarding Rules
-  The 
+  The PIM-SM packet forwarding rules are defined below in pseudocode:
+  1. iif is the incoming interface of the packet
+  1. S is the source address of the packet
+  1. G is the destination address of the packet
+  1. RP is the address of the Rendezvous Point for this group
+  1. RPF_interface(S) is the interface the MRIB indicates would be used to route packets to S
+  1. RPF_interface(RP) is the interface the MRIB indicates would be used to route packets to RP, expect at the RP when it is the decapsulation interface
+    
+###### Last-Hop Switchover to the SPT    
+  In the sparse-mode PIM, last-hop routers join the shared tree towards the RP. One traffic from sources to joined groups arrives at a last-hop router, it has the option of switching to receive the traffic on a shortest path tree (SPT).
+  
+###### Setting and Clearing the (S, G) SPTbit
+  The (S, G) SPTbit is used to distinguish whether to forward on (\*, \*, RP)/(\*, G) or on (S, G) state. When switching from the RP tree to the source tree, there is a transition period when data is arriving due to upstream (\*, \*, RP)/(\*. G). 
+  
+#### Designated Router (DR) and Hello Messages
+  Because the distinction between LANs and point-to-point interfaces can sometimes be blurred, and because routers may also have multicast host functionality, the PIM-SM specification makes no distincton between two. Thus, DR election will happen on all interfaces, LAN or otherwise.
+  
+  DR election is performed using Hello messages. Hello messages are also the way that option negotiation take place in PIM, so that additional functionality can be enabled, or parameters tuned.
+  
+###### Sending Hello Messages
+  PIM hello messages are sent periodically on each PIM-enabled interface. They allow a router to learn about the neighboring PIM routers on each interface. Hello message are also the mechanism used to elect a Designate Router (DR), and to negotiate additional capabilities.
