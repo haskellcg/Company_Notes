@@ -214,4 +214,23 @@
     * Non-group-specific state
     * Neighbor state
     * Designate Router state
-######    
+    
+###### State Summarization Macros
+  Using this state, we define the following "macro" definitions, which we will use in the description of the state machines and  pseudocode in the following sections.
+  
+  The most important macros are those that define the outgoing interface list (or "olist") for the relevant state. An olist can be "immediate" or "inherited"
+  
+  immediate_olist(\*, \*, RP) = joins(\*, \*, RP)  
+  immediate_olist(\*, G) = joins(\*, G) (+) pim_include(\*, G) (-) lost_assert(\*, G)  
+  immediate_olist(S, G) = joins(S, G) (+) pim_include(S, G) (-) lost_assert(S, G)  
+  
+  inherited_olist(S, G, rpt) = (joins(\*, \*, RP(G)) (+) joins(\*, G) (-) prunes(S, G, rpt)) (+) (pim_include(\*, G) (-) pim_exclude(S, G)) (-) (lost_assert(\*, G) (+) + lost_assert(S, G, rpt))  
+  inherited_olist(S, G) = inherited_olist(S, G, rpt) (+) joins(S, G) (+) pim_include(S, G) (-) lost_assert(S, G)
+
+  pim_include(\*, G)  
+  pim_include(S, G)  
+  pim_exclude(S, G)  
+  joins(\*, \*, RP)
+  
+#### Data Packet Forwarding Rules
+  The 
