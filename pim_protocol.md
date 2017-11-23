@@ -205,15 +205,53 @@
 
 ###### PIM Protocol State
   * The **protocol state** that a PIM implementation should maintain in order to function correctly. We term this state the Tree Information Base (TIB), as it holds the state of all the multicast distribution trees at this router. Most implementation will use this state to build a **multicast forwarding table**, which would then be updated when the relevant state in TIB changes.
+  
   * We divide TIB state into four sections:
     * (\*, \*, RP) state: state that maintains per-RP trees, for all groups served by a given RP
     * (\*, G) state: state that maintains the RP tree for G
     * (S, G) state: state that maintains a source-specific tree for source S and group G
     * (S, G, rpt) state: state that maintains source-specific information about source S on the RP tree for G.
+    
   * general purpose states:
     * Non-group-specific state
+      * Effective Override Interval
+      * Effective Propagation Delay
+      * Suppression state: one of {"Enable", "Disable"}
     * Neighbor state
+      * Information from neighbor's Hello
+      * Neighbor's GenID
+      * Neighbor Liveness Time (NLT)
     * Designate Router state
+      * DR's IP address
+      * DR's DR Priority
+      
+  * (\*, \*, RP) state:
+    * PIM (\*, \*, RP) Join/Prune State
+      * State: One of {"NoInfo" (NI), "Join" (J), "Prune Pending" (PP)}
+      * Prune-Pending Timer (PPT)
+      * Join/Prune Expiry Timer (ET)
+    * Not interface specific
+      * Upstream (\*, \*, RP) Join/Prune state: one of {"NotJoined(*, *, RP)", "Joined(*, *, RP)"}
+      * Upstream Join/Prune Timer (JT)
+      * Last RPF Neighbor towards RP that was used
+      
+  * (\*, G) state:
+    * Local Membership
+      * State: one of {"NoInfo", "Include"}
+    * PIM (\*, G) Join/Prune State
+      * State: one of {"NoInfo" (NI), "Join" (J), "Prune-Pending" (PP)}
+      * Prune-Pending Timer (PPT)
+      * Join/Prune Expiry Timer (ET)
+    * (\*, G) Assert Winner State
+      * State: one of {"NoInfo" (NI), "I lost Assert" (L), "I won Assert" (W)}
+      * Assert Timer (AT)
+      * Assert winner's IP Address (AssertWinner)
+      * Assert winner's Assert Metric (AssertWinnerMetric)
+    * Not interface specific
+      * Upstream (\*, G) Join/Prune state: one of {"NotJoined(\*, G)", "Joined(\*, G)"}
+      * Upstream Join/Prune Timer (JT)
+      * Last RP Used
+      * Last RPF Neighbor towards RP that was used
     
 ###### State Summarization Macros
   Using this state, we define the following "macro" definitions, which we will use in the description of the state machines and  pseudocode in the following sections.
@@ -254,3 +292,4 @@
   
 ###### Sending Hello Messages
   PIM hello messages are sent periodically on each PIM-enabled interface. They allow a router to learn about the neighboring PIM routers on each interface. Hello message are also the mechanism used to elect a Designate Router (DR), and to negotiate additional capabilities.
+  
