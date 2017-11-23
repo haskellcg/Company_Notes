@@ -252,7 +252,42 @@
       * Upstream Join/Prune Timer (JT)
       * Last RP Used
       * Last RPF Neighbor towards RP that was used
-    
+      
+  * (S, G) state:
+    * Local Membership
+      * State: one of {"NoInfo", "Include"}
+    * PIM (S, G) Join/Prune State
+      * State: one of {"NoInfo" (NI), "Join" (J), "Prune-Pending" (PP)}
+      * Prune-Pending Timer (PPT)
+      * Join/Prune Expiry Timer (ET)
+    * (S, G) Assert Winner State
+      * State: one of {"NoInfo" (NI), "I lost Assert" (L), "I won Assert" (W)}
+      * Assert Timer (AT)
+      * Assert winner's IP Address (AssertWinner)
+      * Assert winner's Assert Metric (AssertWinnerMetric)
+    * Not interface specific
+      * Upstream (S, G) Join/Prune State: one of {"NotJoined(S, G)", "Joined(S, G)"}
+      * Upstream (S, G) Join/Prune Timer (JT)
+      * Last RPF Neighbor towards S that was used
+      * SPTbit (indicates (S, G) state is active)
+      * (S, G) Keepalive Timer (KAT)
+    * Additional (S, G) state at the DR
+      * Register state: one of {"Join" (J), "Prune" (P), "Join-Pending" (JP), "NoInfo" (NI)}
+      * Register-Stop timer
+    * Additional (S, G) state at the RP
+      * PMBR: the first PMBR to send a Register for this source with the Border bit set
+
+  * (S, G, rpt) State
+    * Local Membership
+      * State: one of {"NoInfo", "Exclude"}
+    * PIM (S, G, rpt) Join/Prune State
+      * State: one of {"NoInfo", "Pruned", "Prune-Pending"}
+      * Prune-Pending Timer (PPT)
+      * Join/Prune Expiry Timer (ET)
+    * Upstream (S, G, rpt) Join/Prune State
+      * State: one of {"RPTnotJoined(G)", "NotPruned(S, G, rpt)", "Pruned(S, G, rpt)"}
+      * Override Timer (OT)
+      
 ###### State Summarization Macros
   Using this state, we define the following "macro" definitions, which we will use in the description of the state machines and  pseudocode in the following sections.
   
