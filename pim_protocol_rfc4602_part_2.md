@@ -115,7 +115,64 @@
   Transitions from Join State:  
   Transitions from Prune-Pending State:  
   
-  **A PruneEcho(\*, \*, RP)** is simply a **Prune(\*, \*, RP) message** sent by the upstream router on a LAN with its own address in the Upstream Neighbor Address field.
+  **A PruneEcho(\*, \*, RP)** is simply a **Prune(\*, \*, RP) message** sent by the upstream router on a LAN with its own address in the Upstream Neighbor Address field. Its purpose is to add **additional reliability** so that if a Prune taht should have been overridden by another router is lost locally on the LAN, then the PruneEcho may be received and cause the override to happen. 
+  
+###### Receiving (\*, G) Join/Prune
+  When a router receives a Join(\*, G), it must first check to see whether the RP in the message matches RP(G) (the router's idea of who the RP is).
+  
+  If a router has no RP information (e.g., has not recently received a BSR message), then it may choose to **accept Join(\*, G)** and treat the **RP in the messages as RP(G)**. Received Prune(\*, G) messages are processed even if the RP in the message does not match RP(G)
+  
+  There are three states:
+  * NoInfo (NI): The interface has no (\*, G) Join state and no timers running
+  * Join (J): The router has (\*, G) Join state, which will cause the router to forward packets destined for G from this interface except if there is also (S, G, rpt) prune information or the router lost an assert on this interface.
+  * Prune-Pending(PP): The router has received a Prune(\*, G) on this interface from a downstream and is **waiting to whether the prune will be overrideen by another downstream router**. For forwarding purpose, the Prune-Pending state functions exactly like **the Join state**.
+  
+  In addition, the state machine uses two timers:
+  * Expiry Timer (ET): This timer is **restarted when a valid Join(\*, G) is received**. Expiry of the ExpiryTimer causes the interface state to **revert to NoInfo** for this group
+  * Prune-Pending Timer (PPT): This timer is set when a valid Prune(\*, G) is received. Expiry of the Prune-Pending Timer causes the interface state to revert to NoInfo for this group
+  
+  Prev State|Receive Join(\*, G)|Receive Prune(\*, G)|Prune-Pending Timer Expires|Expiry Timer Expires
+  ----------|-------------------|--------------------|---------------------------|--------------------
+  NoInfo (NI)|->J state(start Expiry Timer)|->NI state|-|-
+  Join (J)|->J state(restart Expiry Timer)|->PP state(start Prune-Pending Timer)|-|->ni state
+  Prune-Pending(PP)|->J state(restart Expiry Timer)|->PP state|->NI state(send Prune-Echo(\*, G))|->NI state
+  
+  Transitions from NoInfo state:  
+  Transitions from Join state:  
+  Transitions form Prune-Pending state:  
+  
+###### Receiving (S, G) Join/Prune Message
+  The per-interface state machine:
+  * NoInfo (NI)
+  * Join (J)
+  * Prune-Pending (PP)
+  
+  In Addition, there are two timers:
+  * Expiry Timer (ET)
+  * Prune-Pending Timer (PPT)
+  
+  Prev State|Receive Join(S, G)|Receive Prune(S, G)|Prune-Pending Timer Expires|Expiry Timer Expires
+  ----------|------------------|-------------------|---------------------------|--------------------
+  NoInfo (NI)|->J state(start Expiry Timer)|->NI state|-|-
+  Join (J)|->J state(restart Expiry Timer)|->PP state(start Prune-Pending Timer)|-|->NI state
+  Prune-Pending (PP)|J state(restart Expiry Timer)|->PP state|->NI state(Send Prune-Echo(S, G))|->NI state
+  
+###### Receiving (S, G, rpt) Join/Prune Messages
+  The per-interface state machine:
+  * NoInfo (NI): The interface has no (S, G, rpt) Prune state and no (S, G, rpt) timer running
+  * Prune (P): The interface has (S, G, rpt) Prune state, which will cause the router not to forward packets from S destined for G from this interface even though the interface has active (\*, G) Join state.
+  * Prune-Pending (PP): The router has received a Prune(S, G, rpt) on this interface from a downstream neighbor and is waiting to see whether the prune will be overridden by another downstream router. For forwarding purposes, the Prune-Pending state **functions exactly like the NoInfo state**.
+  * PruneTmp (P'): This state is a **transient state** that for forwarding purposes behave exactly **liek the Prune state**. A (\*, G) Join has been received (which may cancel the (S, G, rpt) prune).
+  * Prune-Pending-Tmp (PP')
+  
+  In addition, there are two timers:
+  * Expiry Timer (ET)
+  * Prune-Pending Timer (PPT)
+  
+  **_Page 57_**
+  
+  
+  
   
   
   
