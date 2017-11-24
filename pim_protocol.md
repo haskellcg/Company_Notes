@@ -148,7 +148,7 @@
   * **TIB**: Tree Information Base. This is the collection of state at PIM router that has been created by receiving PIM Join/Prune messages, PIM Assert messages, and Internet Group Management Protocol (IGMP) or **Multicast Listener Discovery (MLD)** information from local hosts. It essentially stores the state of all multicast distribution trees at that router.
   * **MFIB**: Multicast Forwarding Information Base. The TIB holds all the state that is necessary to forward multicast packets at the router. However, although this specification defines forwarding in terms of TIB, to actually forward packets using TIB is very inefficient. Instead, a real router implementation will normally build an efficient MFIB from TIB state to perform forwarding. How this is done is implementation-specific and is not discussed in this document.
   * **Upstream**: Towards the root of the tree. The Root of tree may be either the source or the RP, depending on the context.
-  * **Downstream**:  Away from the root og the tree.
+  * **Downstream**:  Away from the root of the tree.
   * **GenID**: Generation Identifier, used to detect reboots.
   * **PMBR**: PIM Multicast Border Router, joinin a PIM domain with another multicast domain.
   
@@ -198,7 +198,7 @@
   * PIM-SM routers need to know the address of the RP for each group for which they have (\*, G) state. This address is obtained automatically
   * Bootstrap mechanism, or through static configurtion
   * All the routers in the domain that are configured to be candidats to be RPs periodically unicast their candidacy to the **BSR**
-  * From the candidates, the BSR picks an RP-set, and periodically announces this set in a **BootStrap message**
+  * From the candidates, the BSR picks an RP-set, and periodically announces this set in a **Bootstrap message**
   * to **map a group to an RP**, a router hashes the group address into RP-set using an **order-preserving hash function** (one that minimizes changes if the RP-Set Changes). The resulting RP is the one that it uses as the Rp for that group.
   
 #### Protocol Specification
@@ -303,7 +303,13 @@
   pim_include(\*, G)  
   pim_include(S, G)  
   pim_exclude(S, G)  
-  joins(\*, \*, RP)
+  joins(\*, \*, RP)  
+  joins(\*, G)  
+  joins(S, G)  
+  prune(S, G, rpt)  
+  lost_assert(\*, G)  
+  lost_assert(S, G, rpt)  
+  lost_assert(S, G)
   
 #### Data Packet Forwarding Rules
   The PIM-SM packet forwarding rules are defined below in pseudocode:
@@ -313,12 +319,74 @@
   1. RP is the address of the Rendezvous Point for this group
   1. RPF_interface(S) is the interface the MRIB indicates would be used to route packets to S
   1. RPF_interface(RP) is the interface the MRIB indicates would be used to route packets to RP, expect at the RP when it is the decapsulation interface
-    
+  
+  ```c++
+  if (DirectlyConnected(S) == TRUE AND iif == RPF_interace(S)){
+      set KeepaliveTimer(S, G) to Keepalive_Period
+      \\ Note: a register state transition or UpstreamJPState(S, G)
+      \\ tramsition may happen as a result of restarting
+      \\ KeepaliveTimer, and must be dealt with here
+  }
+  
+  if (iif == RPF_interface(S) AND UpstreamJPState(S, G) == Joined AND inherited_olist(S, G) != NULL){
+     set KeepaliveTimer(S, G) to Keepalive_Period
+  }
+  
+  Update_SPTbit(S, G, iif)
+  oiflist = NULL
+  
+  if (iif == RPF_interface(S) AND SPTbit(S, G) == TRUE){
+      oiflist = inherited_olist(S, G)      
+  } else if (iif == RPF_interface(RP(G)) AND SPTbit(S, G) == TRUE){
+      oiflist = inherited_olist(S, G, rpt)
+      CheckSwitchToSpt(S, G)
+  } else {
+      // Note: RPF check failed
+      // A transition in an assert FSM may cause an Assert(S, G)
+      // or Assert(*, G) message to be sent out interface iif
+      if (SPTbit(S, G) == TRUE AND iif is in inherited_olist(S, G)){
+          send Assert(S, G) on iif
+      } else if (SPTbit(S, G) == FALSE AND iif is in inherited_olist(S, G, rpt)){
+          send Assert(*, G) on iif
+      }
+  }
+  
+  oiflist = oiflist (-) iif
+  forward packet on all interfaces in oiflist
+  ```
+  
 ###### Last-Hop Switchover to the SPT    
   In the sparse-mode PIM, last-hop routers join the shared tree towards the RP. One traffic from sources to joined groups arrives at a last-hop router, it has the option of switching to receive the traffic on a shortest path tree (SPT).
   
+  ```c++
+  void CheckSwitchToSpt(S, G)
+  {
+      if ((pim_include(*, G) (-) pim_exclude(S, G) (+) pim_include(S, G) != NULL)
+          AND SwitchYoSptDesired(S, G)){
+          // Note: Restarting the KAT will result in the SPT switch 
+          set KeepaliveTimer(S, G) to Keepalive_Period
+      }
+  }
+  ```
+  
 ###### Setting and Clearing the (S, G) SPTbit
   The (S, G) SPTbit is used to distinguish whether to forward on (\*, \*, RP)/(\*, G) or on (S, G) state. When switching from the RP tree to the source tree, there is a transition period when data is arriving due to upstream (\*, \*, RP)/(\*. G). 
+  
+  ```c++
+  void Update_SPTbit(S, G, iif)
+  {
+      if (iif == RPF_interface(S)
+          AND JoinDesired(S, G) == TRUE
+          AND (DirectlyConnected(S) == TRUE
+               OR RPF_interface(S) != RPF_interface(RP(G))
+               OR inherited_olist(S, G, rpt) == NULL
+               OR RPF'(S, G) == RPF'(*, G)
+               AND RPF'(S, G) != NULL)
+          OR (I_Am_Assert_Loser(S, G, iif))){
+          Set SPTbit(S, G) to TRUE
+      }
+  }
+  ```
   
 #### Designated Router (DR) and Hello Messages
   Because the distinction between LANs and point-to-point interfaces can sometimes be blurred, and because routers may also have multicast host functionality, the PIM-SM specification makes no distincton between two. Thus, DR election will happen on all interfaces, LAN or otherwise.
@@ -326,5 +394,107 @@
   DR election is performed using Hello messages. Hello messages are also the way that option negotiation take place in PIM, so that additional functionality can be enabled, or parameters tuned.
   
 ###### Sending Hello Messages
-  PIM hello messages are sent periodically on each PIM-enabled interface. They allow a router to learn about the neighboring PIM routers on each interface. Hello message are also the mechanism used to elect a Designate Router (DR), and to negotiate additional capabilities.
+  PIM hello messages are sent periodically on each PIM-enabled interface. They allow a router to learn about the neighboring PIM routers on each interface. Hello message are also the mechanism used to elect a Designate Router (DR), and to negotiate additional capabilities. A router must record the Hello information received from each PIM neighbor.
   
+  Hello message MUST be sent on all active interfaces, including physical point-to-point links, and are multicast to the "ALL-PIM-ROUTERS" group address.
+  
+  A **per-interface Hello Timer (HT(I))** is used to trigger sending Hello messages on each active interface. The Hello message of that interface is set to a random value between 0 and Triggered_Hello_Delay. This prevents synchronization of Hello messages if multiple routers are powered on simultaneously.
+  
+  Note that neighbor will not accept Join/Prune or Assert messages from a router unless they have first heard a Hello messages from that router. Thus, if a router needs to send a Join/Prune or Assert message with the currently on an interface on which it has not yet sent a Hello message with the currently configured IP address.
+  
+  **Dr_priority** option allows a network administrtor to give preference to a particular router in the DR election process.
+  
+  **Generation_Identifire (GenID)** option should be included in all Hello messages. The GenID option contains a randomly generated 32-bit value that is regenerated each time PIM forwarding is started or restarted on the interface, including when the router itself restarts. When a **Hello message with a new GenID** is received from a neighbor, and old Hello information about that neighbor should be discarded and supreseded by the information from a new Hello message. This may cause a new DR to be chosen on that interface.
+  
+  **The LAN Prune Delay** option should be include in all Hello messages sent on multi-access LANS. This option advertises a router's capability to use values other than the defaults for the **Propagation_Delay** and **Override_Interval**, which affect the setting of the Prune-Pending, Upstream Join, and Override Timers.
+  
+  **The Address List Option** advertises all the secondary addresses associated with the source interface of the router originating the message. The option must be included in all Hello messages if there are secondary addresses associated with the source interface and may omitted if no secondary addresses exist.
+  
+  When a Hello message is receiving from a new neighbor, or a Hello message with a new GenID is received from an existing neighbor, a new Hello messagee should be send on this interface after a randomized delay between 0 and **Triggered_Hello_Delay**. This triggered message need not change the timing of the scheduled periodic message.
+  
+  Before an interface **goes down or changes primary IP address**, a Hello message with **zero HoldTime** should be sent immediately (with the old IP address if the IP address changed). This will cause PIM neighbors to remove this neighbor (or its old IP address).
+  
+###### DR Election  
+  When a PIM hello message is received on interface I, the following information about the sending neighbor is recorded:
+  * neighbor.interface
+  * neighbor.primary_ip_address
+  * neighbor.genid
+  * neighbor.dr_priority
+  * neighbor.dr_priority_present
+  * neighbor.timout: Neighbor Libeness Timer, is reset to **Hello_Holdtime** whenever a Hello message is received containing a Holdtime option, or to **Default_Hello_Holdtime** if the Hello message does not contain the Holdtime option. _Neighbor state is deleted when the neighbor timeout expires._
+  
+  ```c++
+  host DR(I)
+  {
+      dr = me
+      for each neighbor on interface I {
+          if (dr_is_better(neighbor, dr, I) == TRUE){
+              dr = neighbor
+          }
+      }
+      
+      return dr
+  }
+  
+  bool dr_is_better(a, b, I)
+  {
+      if (there is a neighbor n on I for which n.dr_priority_present is false){
+          return a.primary_ip_address > b.primary_ip_address
+      } else {
+          return ((a.dr_priority > b.dr_priority) OR (a.dr_priority == b.dr_priority AND a.primary_ip_address > b.primary_ip_address))
+      }
+  }   
+  
+  bool I_am_DR(I)
+  {
+      return DR(I) == me
+  }
+  ```
+  
+  A router's **idea of the current DR on an interface** can change when a PIM Hello message is received, when a neighbor times out, or when a router's own DR priority changes.
+  
+  If the router **becomes the DR or ceases to be the DR**, this will normally cause the DR Register state machine to change state.
+  
+###### Reducing Prune Propagation Delay on LANs
+  In addition to the information recorded for the DR Election, the following per neighbor information is **obtained from the LAN Prune Delay Hello Option**:
+  * neighbor.lan_prune_delay_present
+  * neighbor.tracking_support
+  * neighbor.propagation_delay
+  * neighbor.override_interval
+  
+  The information provided in the LAN Prune Delay option is not used unless all neighbors on a link advertise the option.
+  
+  ```c++
+  bool lan_delay_enabled(I)
+  {
+      for each neighbor on interface I{
+          if (neighbor.lan_prune_delay_present == false){
+              return false
+          }
+      }
+      
+      return true
+  }
+  ```
+  
+  Propagation Delay expresses the expected message propagation delay on the link and should be configurable by the system administrator. It is used by **upstream routers** to figure out how long they should wait for a Join override message before pruning an interface.
+  
+  When all routers on a link are in a position to negotiate a Propagation Delay different from the default, the **largest** value from those advertised by each neighbor is chosen.
+  
+  ```c++
+  time_interval Effective_Propagation_Delay(I)
+  {
+      if (lan_delay_enabled(I) == false){
+          return Propagation_delay_default
+      }
+      
+      delay = Propagation_Delay(I)
+      for each neighbor on interface I {
+          if (neighbor.propagation_delay > delay){
+              delay = neighbor.propagation_delay
+          }
+      }
+      
+      return delay
+  }
+  ```
