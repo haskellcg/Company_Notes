@@ -171,7 +171,44 @@
   
   Prev State|Receive Join(\*, G)|Receive Join(S, G, rpt)|Receive Prune(S, G, rpt)|End of Message|Prune-Pending Timer Expires|Expiry Timer Expires
   ----------|-------------------|-----------------------|------------------------|--------------|---------------------------|------------
-  NoInfo|-|-|->PP state(start Prune-Pending Timer; start Expiry Timer)|-|-|-
+  NoInfo (NI)|-|-|->PP state(start Prune-Pending Timer; start Expiry Timer)|-|-|-
+  Prune (P)|->P' state|->NI state|->P state(restart Expiry Timer)|-|-|->NI state
+  Prune-Pending (P)|->PP' state|->NI state|-|-|->P state|-
+  PruneTmp (P')|-|-|->P state(restart Expiry Timer)|->NI state|-|-
+  Prune-Pending-Tmp (PP')|-|-|->PP state(restart Expiry Timer)|->NI state|-|-
+  
+  Transitions from NoInfo State  
+  Transitions from Prune-Pending State  
+  Transitions from Prune State  
+  Transitions from Prune-Pending-Tmp State  
+  Transitions from PruneTmp State
+  
+###### Sending (\*, \*, RP) Join/Prune Message
+  This per-interface state maichine for (\*, \*, RP) hold join state from **downstream PIM routers**. This state then determines whether a router needs to propagate a Join(\*, \*, RP) upstream towards the RP.
+  
+  If a router wishes to propagete a Join(\*, \*, RP) upstream, it must also **watch for message on its upstream interface from other routers on that subnet**, then these may modify its behavior.
+  
+  In addition, if **the MRIB changes** to indicate that the next hop towards the RP has changed, the router should prune off from the old next hop and join towards the new next hop.
+  
+  The upstream(\*, \*, RP) state machine contains only two states:
+  * Not Joined
+  * Joined
+  
+  In addition, one **timer JT(\*, \*, RP)** is kept that is used to trigger the sending of a Join(\*, \*, RP) to the upstream next hop towards the RP.
+  
+  **_Page 63_**
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
