@@ -193,10 +193,143 @@
   The upstream(\*, \*, RP) state machine contains only two states:
   * Not Joined
   * Joined
+  * **JoinDesired(\*, \*, RP)**
   
   In addition, one **timer JT(\*, \*, RP)** is kept that is used to trigger the sending of a Join(\*, \*, RP) to the upstream next hop towards the RP.
   
-  **_Page 63_**
+  In Joined (J) state:  
+  
+  Timer Expires|See Join(\*, \*, RP) to MRIB. next hop(RP)|See Prune(\*, \*, RP) to MRIB. next hop(RP)|NBR(RPF_interface(RP), MRIB.next_hop(RP)) changes|MRIB.next_hop(RP) GenID changes
+  -------------|------------------------------------------|-------------------------------------------|------|--------
+  Send Join(\*, \*, RP), Send Join Timer to t_periodic|Increase Join Timer to t_joinsupress|Decrease Join Timer to t_override|send Join(\*, \*, RP) to new next hop; send Prune(\*, \*, RP) to old next hop;set Join Timer to t_periodic|Decrease Join Timer to t_override
+  
+  ```c++
+  bool JoinDesired(*, *, RP)
+  {
+      if immediate_olist(*, *, RP) != NULL
+          return TRUE
+      else
+          return FALSE
+  }
+  ```
+  
+  Transitions from NotJoined State:
+  * JoinedDesired(\*, \*, RP) become true: The downstream state for (\*, \*, RP) has changed so that at least one interface is in immediate_olist(\*, \*, RP), making JoinDesired(\*, \*, RP) become True. The upstream (\*, \*, RP) state machine transitions to Joined state. Send Join(\*, \*, RP) to the **appropriate upstream neighbor**, which is NBR(RPF_interface(RP), MRIB.next_hop(RP)). Set **the Join Timer (JT)** to expire after t_periodic seconds
+  
+  Transitions from Joined State:
+  * JoinedDesire(\*, \*, RP) become false
+  * Join Timer Expires
+  * See Join(\*, \*, RP) to MRIB.next_hop(RP)
+  * See Prune(\*, \*, RP) to MRIB.next_hop(RP)
+  * NBR(RPF_interface(RP), MRIB.next_hop(RP)) changes
+  * MRIB.next_hop(RP) GenID changes
+  
+###### Sending (\*, G) Join/Prune Message
+  The per-interface state machines for (\*, G) hold join state from downstream PIM routers. This state then determines whether a router needs to propagate a Join(\*, G) upstream towards the RP.
+  
+  If **a (\*, G) Assert** occurs on the upstreams interface, and this **changes this router's idea of the upstream neighbor**, it should be prepare to ensure that the Assert winner is aware of downstream routers by sending a Join(\*, G) almost immediately.
+  
+  If addition, if the MRIB changes to indicate that next hop towards the RP has changed, and either the upstream interface changes or there is no Assert winner on the upstream interface, the router should prune off from the old next_hop and join towards the new next hop.
+  
+  The upstream (\*, G) state machine only contains two state:
+  * Not Joined  
+  * Joined
+  * **one Timer JT(\*, G)**
+  
+  In Joined state:
+  
+  Timer Expires|See Join(\*, G) to RPF'(\*, G)|See Prune(\*, G) to RPF'(\*, G)|RPF'(\*, G) changes due to an Assert|RPF'(\*, G) changes not due to an Assert|RPF'(\*, G) GenID changes
+  -------------|------------------------------|-------------------------------|------------------------------------|----|----
+  Send Join(\*, G); set Join Timer to t_periodic|Increase Join Timer to t_joinsupress|Descrease Join Timer to t_override|Decrease Join Timer to t_overide|Send Join(\*, G) to new next hop; send Prune(\*, G) to old next hop; set Join Timer to t_periodic|Decrease Join Timer to t_override
+  
+  ```c++
+  bool JoinDesired(*, G)
+  {
+      if (immediate_olist(*, G) != NULL OR
+          (JoinDesired(*, *, RP(G)) AND
+           AssertWinner(*, G, RPF_interface(RP(G))) != NULL))
+          return TRUE
+      else
+          return FALSE
+  }
+  ```
+  
+  Transitions from NotJoined State:
+  * JoinDesired(\*, G) become true
+  
+  Transitions from Joined State:
+  * JoinDesired(\*, G) become False
+  * Join Timer Expires
+  * See Join(\*, G) to RPF'(\*, G)
+  * See Prune(\*, G) to RPF'(\*, G)
+  * RPF'(\*, G) changes due to an Assert
+  * RPF'(\*, G) changes not due to an Assert
+  * RPF'(\*, G) GenID changes
+  
+###### Sending (S, G) Join/Prune Message
+  The per_interface state machines for (S, G) hold join state from downstream PIM routers. This state then determines whether a router needs to propagate a Join(S, G) upstream towards the source.
+  
+  If a router wishes to propagate a Join(S, G) upstream, it must also watch for message on its upstream interface from other routers on that subnet, and these may modify its behavior.
+  
+  If a (S, G) Assert occurs on the upstream interface, and this changes the this router's idea of the upstream neighbor, it should be prepared to ensure that the Assert winner is aware of downstream routers by scheduling a Join(S, G) to be sent almost immediately.
+  
+  The upstream (S, G) state machine only contains two states:
+  * Not Joined
+  * Joined
+  * **one timer JT(S, G)**
+  
+  In Joined State:
+  
+  Timer Expires|See Join(S, G) to RPF'(S, G)|See Prune(S, G) to RPF'(S, G)|See Prune(S, G, rpt) to RPF'(S, G)|See Prune(\*, G) to RPF'(S, G)|RPF'(S, G) changes not due to an Assert|RPF'(S, G) GenID changes|RPF'(S, G) changes due to an Assert
+  -------------|----------------------------|-----------------------------|----------------------------------|----|----|----|----
+  Send Join(S, G);set Join Timer to t_periodic|Increase Join Timer to t_joinsuppress|Decrease Join Timer to t_override|Decrease Join Timer to t_override|Decrease Join Timer to t_override|Send Join(S, G) to new next hop;send Prune(S, G) to old next hop;set join Timer to t_periodic|Decrease Join Timer to t_override|Decrease Join Timer to Override
+  
+  ```c++
+  bool JoinDesired(S, G)
+  {
+      return (immediate_olist(S, G) != NULL OR
+              (KeepaliveTimer(S, G) is running AND
+               inherited_olist(S, G) != NULL))
+  }
+  ```
+  
+  Transitions from NotJoined State:
+  * JoinDesired(S, G) become True
+  
+  Transitions from Joined State:
+  * JoinDesired(S, G) become False
+  * Join Timer Expires
+  * See Join(S, G) to RPF'(S, G)
+  * See Prune(S, G) to RPF'(S, G)
+  * **See Prune(S, G, rpt) to RPF'(S, G)**
+  * See Prune(\*, G) to RPF'(S, G)
+  * RPF'(S, G) changes due to an Assert
+  * RPF'(S, G) changes not due to an Assert
+  * RPF'(S, G) GenID changes
+  
+###### (S, G, rpt) Peroidic Message
+  (S, G, rpt) Joins and Prunes are **(S, G) Joins and Prunes sent on the RP tree with the RPT bit set**, either to modify the results of (\*, G) Joins, or to override the behavior of other upstream LAN peers.
+  
+  When a router is going to send a Join(\*, G), it should use the following pseudocode, for each (S, G) for which it has state, to decide whether to include a Prune(S, G, rpt) in the compound Join/Prune message:
+  ```c++
+  if (SPTbit(S, G) == TRUE){
+      // Note: if receiving (S, G) on the SPT, we only prune off shared tree if the RPF neighbor differ
+      if (RPF'(*, G) != RPF'(S, G)){
+          add Prune(S, G, rpt) to compound message
+      }
+  } else if (inherited_olist(S, G, rpt) == NULL){
+      // Note: all (*, G) olist interfaces received RPT prunes for (S, G)
+      add Prune(S, G, rpt) to compound message
+  } else if (RPF'(*, G) != RPF'(S, G, rpt)){
+      // Note: we joined the shared tree, but there was an (S, G) assert and the source tree RPF neighbor is different
+      add Prune(S, G, rpt) to compound message
+  }   
+  ```
+  
+  Note that **Join(S, G, rpt)** is normally sent not as a periodic message, but only as a triggered message.
+  
+###### State Machine for (S, G, rpt) Trigger Messages
+  The state machine for (S, G, rpt) trigger
   
   
   
@@ -221,3 +354,20 @@
   
   
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  **_Page 63_**  
