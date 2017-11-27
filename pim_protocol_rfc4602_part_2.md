@@ -368,6 +368,10 @@
   
   
   
+  参考文档:
+  * [PIM Protocol independent multicast 协议无关组播](http://blog.sina.com.cn/s/blog_5d16ca0c0100bzov.html)  
+  * [PIM-SM Multicast Routing Protocol ](https://msdn.microsoft.com/en-us/library/bb742462.aspx)  
+  * [Understanding PIM Sparse Mode](https://www.juniper.net/documentation/en_US/junos/topics/concept/multicast-pim-sparse-characteristics.html)
   
   
-  **_Page 63_**  
+  **_Page 77_**  
