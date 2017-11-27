@@ -162,14 +162,16 @@
   * NoInfo (NI): The interface has no (S, G, rpt) Prune state and no (S, G, rpt) timer running
   * Prune (P): The interface has (S, G, rpt) Prune state, which will cause the router not to forward packets from S destined for G from this interface even though the interface has active (\*, G) Join state.
   * Prune-Pending (PP): The router has received a Prune(S, G, rpt) on this interface from a downstream neighbor and is waiting to see whether the prune will be overridden by another downstream router. For forwarding purposes, the Prune-Pending state **functions exactly like the NoInfo state**.
-  * PruneTmp (P'): This state is a **transient state** that for forwarding purposes behave exactly **liek the Prune state**. A (\*, G) Join has been received (which may cancel the (S, G, rpt) prune).
-  * Prune-Pending-Tmp (PP')
+  * PruneTmp (P'): This state is a **transient state** that for forwarding purposes behave exactly **like the Prune state**. A **(\*, G) Join** has been received (which may cancel the (S, G, rpt) prune). As we parse the Join/Prune message from top to bottom, we first enter this state if **the message contains a (\*, G) Join**. Later in the message, we will normally encounter an (S, G, rpt) prune to reinstate the Prune State. **However, if we reach the end of the message without encoutering such a (S, G, rpt) prune, then we will revert to NoInfo state in this state machine**.
+  * Prune-Pending-Tmp (PP'): This state is a transient state that is identical to P' except that it is associate with the PP state that the P state. For forwarding purposes, PP' behaves exactly like PP state.
   
   In addition, there are two timers:
-  * Expiry Timer (ET)
-  * Prune-Pending Timer (PPT)
+  * Expiry Timer (ET): This timer is set when a valid Prune(S, G, rpt) is received. Expiry Of Expiry Timer cause this state machine to **NoInfo state**.
+  * Prune-Pending Timer (PPT): This timer is set when a valid Prune(S, G, rpt) is received. Expiry of the Prune-Pending timer cause this state machine to **Prune state**.
   
-  **_Page 57_**
+  Prev State|Receive Join(\*, G)|Receive Join(S, G, rpt)|Receive Prune(S, G, rpt)|End of Message|Prune-Pending Timer Expires|Expiry Timer Expires
+  ----------|-------------------|-----------------------|------------------------|--------------|---------------------------|------------
+  NoInfo|-|-|->PP state(start Prune-Pending Timer; start Expiry Timer)|-|-|-
   
   
   
