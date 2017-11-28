@@ -379,4 +379,4 @@
   * [Understanding PIM Sparse Mode](https://www.juniper.net/documentation/en_US/junos/topics/concept/multicast-pim-sparse-characteristics.html)
   
   
-  **_Page 77_**  
+  **_Page 78_**  
