@@ -329,9 +329,14 @@
   Note that **Join(S, G, rpt)** is normally sent not as a periodic message, but only as a triggered message.
   
 ###### State Machine for (S, G, rpt) Trigger Messages
-  The state machine for (S, G, rpt) trigger
+  The state machine for (S, G, rpt) trigger message is required pre-(S, G) when there is (\*, G) or (\*, \*, RP) join state at a router and the router or any of its upstream LAN peers wishes to prune S off the RP tree.
   
+  There are three states in the state machine:
+  * Pruned(S, G, rpt): (\*, G) or (\*, \*, RP(G)) Joined, but (S, G, rpt) pruned
+  * NotPruned(S, G, rpt): (\*, G) or (\*, \*, RP(G)) Joined, and (S, G, rpt) not pruned
+  * RPTNotJoined(G): neither (\*, G) nor (\*, \*, RP(G)) has been joined
   
+  In addition, there is an (S, G, rpt) override timer, OT(S, G, rpt), which is used to delay triggered Join(S, G, rpt) messages to prevent implosions of trigger messages.
   
   
   
