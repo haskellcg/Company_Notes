@@ -338,7 +338,17 @@
   
   In addition, there is an (S, G, rpt) override timer, OT(S, G, rpt), which is used to delay triggered Join(S, G, rpt) messages to prevent implosions of trigger messages.
   
+  Prev State|PruneDesired(S, G, rpt)->True|PruneDesired(S, G, rpt)->False|RPFJoinDesired(G)->False|inherited_olist(S, G, rpt)->non-NULL
+  ----------|-----------------------------|------------------------------|------------------------|------------------------------------
+  RPTNotJoined(G) (NJ)|->P state|-|-|->NP state
+  Pruned(S, G, rpt) (P)|-|NP state(Send Join(S, G, rpt))|NJ state|-
+  NotPruned(S, G, rpt) (NP)|->P sate(Send Prune(S, G, rpt);Cancel OT)|-|->NJ state(Cancel OT)|-
   
+  **In NotPruned(S, G, rpt) state**:  
+  
+  Override Timer expires|See Prune(S, G, rpt) to RPF'(S, G, rpt)|See Join(S, G, rpt) to RPF'(S, G, rpt)|See Prune(S, G) to RPF'(S, G, rpt)|RPF'(S, G, rpt)->RPF'(\*, G)
+  ----------------------|---------------------------------------|--------------------------------------|----------|-----------------
+  Send Join(S, G, rpt);Leave OT unset|OT = min(OT, t_override)|Cancel OT|OT = min(OT, t_override)|OT= min(OT, t_override)
   
   
   
