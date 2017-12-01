@@ -350,7 +350,26 @@
   ----------------------|---------------------------------------|--------------------------------------|----------|-----------------
   Send Join(S, G, rpt);Leave OT unset|OT = min(OT, t_override)|Cancel OT|OT = min(OT, t_override)|OT= min(OT, t_override)
   
+  ```c++
+  bool RPTJoinDesired(G)
+  {
+      return ((JoinDesired(*, G)) OR (JoinDesired(*, *, RP(G))))
+  }
   
+  bool PruneDesired(S, G, rpt)
+  {
+      return ((RPTJoinDesired(G)) AND 
+              ((inherited_olist() == NULL) OR 
+               ((SPTbit(S, G) == TRUE) AND (RPF'(*, G) != RPF'(S, G)))))
+  }
+  ```
+  
+###### Backgroud: (\*, \*, RP) and (S, G, rpt) Interaction
+  We first note that reception of a join(\*, \*, RP) by itself does not cancel (S, G, rpt) prune state on the interface, whereas receiving a Join(\*, G) by itself does cancel (S, G, rpt) prune state on that interface.
+  
+  The upshot of this is that to prevent forwarding (S, G) on (\*, \*, RP) state, a Prune(S, G, rpt) must be used.
+  
+  We also note that for historical reasons there is no Assert(\*, \*, RP) message, so any forwarding contention is resolved using Assert(\*, G) messages.
   
   
   
@@ -389,4 +408,4 @@
   * [Understanding PIM Sparse Mode](https://www.juniper.net/documentation/en_US/junos/topics/concept/multicast-pim-sparse-characteristics.html)
   
   
-  **_Page 78_**  
+  **_Page 82_**  
