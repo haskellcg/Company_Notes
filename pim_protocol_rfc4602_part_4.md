@@ -93,6 +93,40 @@
   forward packet on all interfaces in oiflist
   ```
   
+#### PIM Packet Formats  
+  **All PIM protocol messages have IP protocol number 103**.
+  
+  PIM messages are either unicast (e.g., Register and Register-Stop) or multicast with TTL 1 to the 'ALL-PIM-ROUTERS' group (e.g., Join/Prune, Assert, etc.). 
+  
+  **The source address used for unicast message is a domain-wide reachable address**. 
+  
+  **The source address used for multicast messages is the link-local address of the interface on which the message is being sent**.
+  
+  **The IPv4 'ALL-PIM-ROUTERS' group is '224.0.0.13'. The IPv6 'ALL-PIM-ROUTERS' group is 'FF02::d'.**
+  
+  The PIM header common to all PIM message is:
+  
+  PIM Ver|Type|Reserved|Checksum
+  -------|----|--------|--------
+  3|7|15|31
+  
+  * PIM Ver: PIM Version number is 2
+  * Type: Types for specific PIM messages are:
+    * 0:
+    * 1:
+    * 2:
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
