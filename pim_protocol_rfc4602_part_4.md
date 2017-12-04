@@ -29,7 +29,27 @@
 ###### Hash Function
   The hash function is used by all routers within a domain, to map a group to one of the RPs from the matching set of group-range-to-RP mappings (this set all have the same longest mask length and same highest priority).
   
-  The algorrithms takes as input the group address,
+  The algorrithms takes as input the group address, and the addresses of the candidate RPs from the mappings, and **gives as output one RP address to be used**.
+  
+  The protocol requires that **all routers hash to the same RP within a domain (except fro transients)**. The following hash function must be used in each router:  
+  * For RP addresses in the macthing group-range-to-RP mappings, compute a value:
+  ```
+  Value(G, M, C(i)) = (1103515245 * ((1103515245 * (G & M) + 12345) XOR C(i)) + 12345) mod 2^31
+  
+  C(i): the RP address
+  M: hash-mask, hash-mask allows a small number of consecutive groups to always hash to the sam RP
+  ```
+  For instance, hierarchically-encoded data can be sent on consecutive group addresses to get the same delay and fate-sharing characteristics.
+  
+  * The candidate RP with the highest resulting hash value is then the RP chosen by this Hash Function. If more than one RP has the same highest hash value, the RP with the highest IP address is chosen.
+  
+  
+#### Source-Specific Multicast  
+  The Source-Specific Multicast (SSM) service model can be implemented with a strict subset of the PIM-SM protocol machanisms. **Both regular IP multicast and SSM semantics can coexist on a single router, and both can be implemented using the PIM-SM protocol**.
+  
+  A range of multicast addresses, currently 232.0.0.0/8 in IPv4 and FF3x::/32 for IPv6, is reserved for SSM, and the choice of semantics is determined by the multicast group address in both data packets and PIM messages.
+  
+######  
   
   
   
@@ -51,6 +71,4 @@
   
   
   
-  
-  
-  **_105_**
+  **_106_**
