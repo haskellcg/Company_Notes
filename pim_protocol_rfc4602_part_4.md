@@ -246,7 +246,7 @@
   * As Join/Prune messages are targeted to a single PIM neighbor, including both a (S, G) Join and (S, G, rpt) Prune in the same message, **The (S, G) Join informs the neighbor that the sender wishes to receive the particular source on the shortest path tree. It is therefore unnecessary for the router to say that it no longer wishes to receive it on the shared tree.** However, there is a valid interpretation for this combination of entries. A downstream router my have to instruct its upstream only to start forwarding a specific source once it has started receiving the source on the shotest path tree  
   * The combination of a (S, G) Prune and a (S, G, rpt) Join could possibly be used by router to switch from recieving a particular source on the shortest-path tree back to receiving it on the shared tree.
   
-  |Join(\*, G)|Prune(\*, G)|Join(S, G, rpt)|Prune(S, G, rpt)|Join(S, G)|Prune(S, G)
+  -|Join(\*, G)|Prune(\*, G)|Join(S, G, rpt)|Prune(S, G, rpt)|Join(S, G)|Prune(S, G)
   -------------|-----------|------------|---------------|----------------|----------|-----------
   Join(\*, G)|-|no|?|yes|yes|yes
   Prune(\*, G)|no|-|?|?|yes|yes
@@ -255,33 +255,34 @@
   Join(S, G)|yes|yes|yes|yes|-|no
   Prune(S, G)|yes|yes|?|?|no|-
   
-  |Join(\*, \*, RP)|Prune(\*, \*, RP)|all others
+  -|Join(\*, \*, RP)|Prune(\*, \*, RP)|all others
   -------------|----------------|-----------------|----------
   Join(\*, \*, RP)|-|no|yes
   Prune(\*, \*, RP)|no|-|yes
   all others|yes|yes|see above
   
+  **Group Set Fragmentation**
   
+  When building a Join/Prune for a particular neighbor, a router should try to include in the message as much of the information it needs to convey to the neighbot as possible.
   
+  There is an exeption with group sets that contain a (\*, G) Joined source list entry. The group set expresses the router's interest in receiving all traffic for the specified group on the shared tree, and it MUST include an (S, G, rpt) Prune source list entry for every source that the router does not wish to receive. This list of (S, G, rpt) Prune source-list entries MUST not be split in multiple messages.
   
+#### Assert Message Format  
+  The Assert message is used to resolve forwarder conflicts between routers on a link. It is sent when a router receives a multicast data packet on an interface on which the router would normally have forwarded that packet.
   
+  PIM Ver|Type|Reserved|Checksum|Group Address|Source Address|R|Metric Preference|Metric
+  -------|----|--------|--------|-------------|--------------|-|-----------------|------
+  4|4|8|16|32|32|1|31|32
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  **_126_**
+  * PIM Version, Type, Reserved, Checksum
+  * Group Address: The group address for which the router wishes to resolve the forwarding conflict.
+  * Source Address: Source address for which the router wishes to resolve the forwarding conflict. The source address May be set to zero for (\*, G) asserts.
+  * R: RPT-bit is a 1-bit value. **The RPT-bit is set to 1 for Assert(\*, G) messages and 0 for Assert(S, G) messages**.
+  * Metric Preference: Preference value assigned to the unicast routing protocol that provided the route to the multicast source or Rendezvous-Point.
+  * Metric: The unicast routing table metric associate with the route used to reach the multicast source or Rendezvous-Point. The metric is in units applicable to the unicast routing protocol used.
+
+  Assert messages:
+  * Assert(S, G): Source-specific asserts are sent by routers forwarding a specific source on the shortest-path tree (SPTbit is TRUE). (S, G) Asserts have the Group-Address field set to the group G and the Source-Address field set to the source S. **The RPTbit is set to 0, the Metric_Preference is set to MRIB.pref(S) and the Metric is set to MRIB.metric(S)**.   
+  * Assert(\*, G): For data-triggered Asserts, the Source-Address field MAY be set to the IP source address of the data packet that triggered the Assert and is set to zero otherwise. The RPT-bit is set to 1, the Metric-Preference is set to MRIB.pref(RP(G)), and the Metric is set to MRIB.metric(RP(G))
+
+
