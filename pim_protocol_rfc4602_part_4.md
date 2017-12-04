@@ -192,6 +192,74 @@
   * Option Type 65001-65535 are reserved for Private Use
   
 ###### Register Message Format  
+  A Register message is sent by **the DR or a PMBR to the RP when a multicast packet needs to be transmitted on the RP-tree**. The IP source address is set to the address of DR, the destination address to the RP's address. The IP TTL of the PIM packet is the system's normal unicast TTL.
+  
+  PIM Ver|Type|Reserved|Checksum|B|N|Reserved2|Multicast Data Packet
+  -------|----|--------|--------|-|-|---------|---------------------
+  4|4|8|16|1|1|30|32
+  
+  * PIM Ver, Type, Reserved, Checksum: Note that in order to **reduce encapsulation overhead**, the checksum for Register is done only on the first 8 bytes of the packet, including the PIM header and the next 4 bytes, excluding the data packet portion.
+  * B: The Border bit. If the router is a DR for a source that it is directly connected to, it sets the B bit to 0. If the router is a PMBR for a source in a directly connected cloud, it sets the B bit to 1.
+  * N: The Null-Register bit. Set to 1 by the DR that is probing the RP before expiring its local Register-Suppression Timer. Set to 0 otherwise.
+  * Reserved2: Transmitted as zero, ignored on receipt.
+  * Multicast Data Packet: The original packet sent by the source. Note that the TTL of the original packet is decremented before encapsulation, just like any other packet that is forwarded.
+  
+###### Register-Stop Message Format  
+  A Register-Stop is unicast from the RP to the sender of the Register message. The IP source address is the address to which the register was addressed. The IP destination address is the source address of the register message.
+  
+  PIM Ver|Type|Reserved|Checksum|Group Address (Encoded-Group Format)|Source Address (Encoded-Unicast Format)
+  -------|----|--------|--------|------------------------------------|---------------------------------------
+  4|4|8|16|32|32
+  
+  * PIM Ver, Type, Reserved, Checksum
+  * Group Address: The group address from the multicast data packet in the Register. Note that for Register-Stops the Mask Len field contains the full address length * 8, if the message is sent for a single group
+  * Source Address: The host address of the source from the multicast data packet in the register. A special wild card value consisting of an address field of all zeros can be used to indicate any source.
+  
+###### Join/Prune Message Format  
+   A Join/Prune Message is sent by routers towards upstream sources and RPs. **Joins are sent to build shared trees (RP trees) or source trees (SPT)**. Prunes are sent to prune source trees when members leave groups as well as sources that do not use the shared tree.
+   
+   PIM Ver|Type|Reserved|Checksum|Upstream Neighbor Address|Reserved|Num Groups|Holdtime
+   -------|----|--------|--------|-------------------------|--------|----------|--------
+   4|4|8|16|32|8|8|16
+   
+   Multicast Group Address 1|Number of Joined Sources|Number of Prune Sources|Joined Source Address 1|...|Joined Source Address n|Prune Source Address 1|...|Prune Address n|......|Multicast Group Address n...
+   -------------------------|------------------------|-----------------------|-----------------------|---|-|-|-|-|-|-
+   32|16|16|32|...|32|32|...|32|......|32...
+   
+   * PIM Ver, Type, Reserved, Checksum
+   * Unicast Upstream Neighbor Address: The address of the upstream neighbor that is the target of the message. The format for this address is given in the Encoded-Unicast Address. For IPv6 the source address used for multicast message is the link-local address of the interface on which the message is being sent. For IPv4, the source address is the primary address associate with that interface.
+   * Reserved: Transmitted as zero, ignored on receipt
+   * Holdtime: The amount of time a receiver must keep the Join/Prune state alive, in seconds. If the Holdtime is set to '0xffff', the receiver of this message should hold the state until canceled by the appropriate canceling Join/Prune message, or timed out according to local policy. **Note that the HoldTime must be larger than the J/P_Override_Interval(I)**.
+   * Number of Groups: The number of multicast group sets contained in the message.
+   * Multicast group address
+   * Number of Joined Sources
+   * Joined Source Address 1 .. n: This list contains the sources for a given group that the sending router will forward multicast datagrams from if received on the interface on which the Join/Prune message is sent.
+   * Number of Pruned Sources
+   * Pruned Source Address 1 .. n: This list contains the sources for a given group that the sending router dose not want to forward multicast datagrams from when received on the interface on which the Join/Prune message is sent.
+  
+  **There are two valid group set types**:
+  * Wildcard Group Set: The beginning of the multicast address range in the group address field and the prefix length of the multicast address range in the mask length field of the Multicast Group Address (i.e., '224.0.0.0/4' for IPv4 or 'ff00::/8' for IPv6). **Each Join/Prune message should contain at most one wildcard group set**. [(\*, \*, RP)]
+  * Group-Specific Set: A Group-Specific Set is represented by a valid IP multicast address in the group address field and the full length of the IP address in the mask length field of the Multicast Group Address. [(\*, G), (S, G, rpt), (S, G)]
+  
+  There are a number of combinations that have a valid interpretation but that are not generated by the protocol as described in this specification:
+  * Combining a (\*, G) Join and a (S, G, rpt) Join/Prune entry
+  * As Join/Prune messages are targeted to a single PIM neighbor, including both a (S, G) Join and (S, G, rpt) Prune in the same message, **The (S, G) Join informs the neighbor that the sender wishes to receive the particular source on the shortest path tree. It is therefore unnecessary for the router to say that it no longer wishes to receive it on the shared tree.** However, there is a valid interpretation for this combination of entries. A downstream router my have to instruct its upstream only to start forwarding a specific source once it has started receiving the source on the shotest path tree  
+  * The combination of a (S, G) Prune and a (S, G, rpt) Join could possibly be used by router to switch from recieving a particular source on the shortest-path tree back to receiving it on the shared tree.
+  
+  |Join(\*, G)|Prune(\*, G)|Join(S, G, rpt)|Prune(S, G, rpt)|Join(S, G)|Prune(S, G)
+  -------------|-----------|------------|---------------|----------------|----------|-----------
+  Join(\*, G)|-|no|?|yes|yes|yes
+  Prune(\*, G)|no|-|?|?|yes|yes
+  Join(S, G, rpt)|?|?|-|no|yes|?
+  Prune(S, G, rpt)|yes|?|no|-|yes|?
+  Join(S, G)|yes|yes|yes|yes|-|no
+  Prune(S, G)|yes|yes|?|?|no|-
+  
+  |Join(\*, \*, RP)|Prune(\*, \*, RP)|all others
+  -------------|----------------|-----------------|----------
+  Join(\*, \*, RP)|-|no|yes
+  Prune(\*, \*, RP)|no|-|yes
+  all others|yes|yes|see above
   
   
   
@@ -216,4 +284,4 @@
   
   
   
-  **_116_**
+  **_126_**
