@@ -49,7 +49,49 @@
   
   A range of multicast addresses, currently 232.0.0.0/8 in IPv4 and FF3x::/32 for IPv6, is reserved for SSM, and the choice of semantics is determined by the multicast group address in both data packets and PIM messages.
   
-######  
+###### Protocol Modifications for SSM Destination Addresses
+  The following rules override the normal PIM-SM behavior for a multicast address G in the SSM range:
+  * A router must not send a (\*, G) Join/Prune message for any reason
+  * A router must not send an (S, G, rpt) Join/Prune message for any reason
+  * A router must not send a Register message for any packet that is destined to an SSM address
+  * A router must not forward packets based on (\*, G) or (S, G, rpt) state
+  * A router acting as an RP must not forward any Register-encapsulated packet that has an SSM destination address
+  
+  Addinationally:
+  * A router MAY be configured to advertise itself as a Candidate RP for an SSM address. If so, it should respond with a Register-Stop message to any Register message containning a packet destined for an SSM address
+  * A router MAY optiomize out the creation and maintenance of (S, G, rpt) and (\*, G) state for SSM destination addresses -- this state is not needed for SSM packets
+  
+###### PIM-SSM-Only Routers
+  An implementer may choose to implement only the subset of PIM Sparse-Mode that provides SSM forwarding semantics.
+  
+  A PIM-SSM-Only router MUST implement the following portions of this specifications:
+  * Upstream (S, G) state machine
+  * Downstream (S, G) state machine
+  * (S, G) Assert state machine
+  * Hello messages, neighbor discovery, and DR election
+  * Packet forwarding rules
+  
+  A PIM-SSM-Only routers does not need to implement the following protocol elements:
+  * (\*, G), (S, G, rpt), (\*, \*, RP) Downstream state machine
+  * (\*, G), (S, G, rpt), (\*, \*, RP) Upstream state machine
+  * (\*, G) Assert state machine
+  * Bootstrap RP election
+  * Keepalive Timer
+  * SPTbit
+  
+  The Keepalive Timer should be treated as always running, and SPTbit should be treated as always being set for an SSM address.
+  
+  The Packet forwarding rules can be simplified in a PIM-SSM-Only router:
+  ```c++
+  if (iif == RPF_interface(S) AND UpstreamJPState(S, G) == Joined){
+      oiflist = inherited_olist(S, G)
+  } else if (iif is in inherited_olist(S, G)){
+      send Assert(S, G) on iif
+  }
+  
+  oiflist = oiflist (-) iif
+  forward packet on all interfaces in oiflist
+  ```
   
   
   
@@ -69,6 +111,4 @@
   
   
   
-  
-  
-  **_106_**
+  **_108_**
