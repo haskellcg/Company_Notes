@@ -108,13 +108,90 @@
   
   PIM Ver|Type|Reserved|Checksum
   -------|----|--------|--------
-  3|7|15|31
+  4|4|8|16
   
   * PIM Ver: PIM Version number is 2
   * Type: Types for specific PIM messages are:
-    * 0:
-    * 1:
-    * 2:
+    * 0: Hello, Multicast to ALL-PIM-ROUTERS
+    * 1: Register, Unicast to RP
+    * 2: Register-Stop, Unicast to source of Register packet
+    * 3: Join/Prune, Multicast to ALL-PIM-ROUTERS
+    * 4: Bootstrap, Multicast to ALL-PIM-ROUTERS    
+    * 5: Assert, Multicast to ALL-PIM-ROUTERS
+    * 6: Graft (used in PIM-DM only), Unicast to RPF'(S)
+    * 7: Graft-Ack (used in PIM-DM only), Unicast to source of Graft packet
+    * 8: Candidate-RP-Advertisement, Unicast to Domain's BSR
+  * Reserved: Set to zero on transmission, Ignored upon receipt
+  * Checksum: The checksum is a standard IP checksum, the 16-bit one's complement of the one's complement sum of the entire PIM message, excluding the "Multicast data packet" section of the Register message. **For computing the check sum, the checksum field is zeroed. If the packet's length is not an integral number of 16-bit words, the packet is padded with a trailing byte of zero before performing the checksum.**
+  
+###### Encoded Source And Group Address Formats  
+  **Encoded-Unicast Address:**
+  
+  Addr Family|Encoding Type|Unicast Address
+  -----------|-------------|---------------
+  8|8|16
+  
+  * Addr Family: The PIM address family of the 'Unicast Address' field of this address. Values 0-127 are as assigned by the IANA for Internet Address Families. Values 128-250 are reserved to be assigned by the IANA for PIM-specific Address Families. Values 251-255 are desinated for private use.
+  * Encoding Type: The type of encoding used within a specific Address Family. The value '0' is reserved for this field and represents the native encoding of the Address Family.
+  * Unicast Address: The unicast address as represented by the given Address Family and Encoding Type.
+  
+  **Encoded-Group Address:**
+  
+  Addr Family|Encoding Type|B|Reserved|Z|Mask Len|Group multicast Address
+  -----------|-------------|-|--------|-|--------|-----------------------
+  8|8|1|6|1|8|32
+  
+  * Addr Family
+  * Encoding Type
+  * [B]idirectional PIM: Indicates the group range should use Bidirectional PIM. For PIM-SM defined in this specification, this bit MUST be zero
+  * Reserved: Transmitted as zero. Ignore upon receipt.
+  * Admin Scope [Z]one: Indicates the group range is an admin scope zone. This is used in the Bootstrap Router Mechanism only. For othr purposes, this bit is set to zero and ignored on receipt.
+  * Mask Len: The Mask Length fiels is 8 bits. The value is the number of contiguous one bits that are left justified and used as a mask; when combined with the group address, it describes a range of groups.
+  * Group multicast Address: Contains the group address
+  
+  **Encoded-Source Address**
+  
+  Addr Family|Encoding Type|Reserved|S|W|R|Mask Len|Source Address
+  -----------|-------------|--------|-|-|-|--------|--------------
+  8|8|5|1|1|1|8|32
+  
+  * Addr Family
+  * Encoding Type
+  * Reserved: Transimitted as zero, ignored on receipt
+  * S: The Sparse bit is a 1-bit value, set to 1 for PIM-SM. It is used for PIM Version 1 compatibility.
+  * W: The WC (or WildCard) bit is a 1-bit value for use with PIM Join/Prune messages
+  * R: The RPT (or Rendezvous Point Tree) bit is a 1-bit value for use with PIM Join/Prune messages. If the WC bit is 1, the RPT bit MUST be 1.
+  * Mask Len: The mask length field is 8 bits. The value is the number of contiguous one bits left justified used as a mask which, combined with the Source Address, describes a source subnet.
+  * Source Address
+  
+###### Hello Message Format  
+  It is sent periodically by routers on all interfaces:
+  
+  PIM Ver|Type|Reserved|Checksum|Option Type|Option Length|Option Value|....|Option Type|Option Length|Option Value
+  -------|----|--------|--------|----------|------------|-----------|----|----------|------------|-----------
+  4|4|8|16|16|16|32|....|16|16|32
+  
+  * PIM Ver, Type, Reserved, Checksum
+  * Option Type: The type of the option given in the following OptionValue field
+  * Option Length: The length of the OptionValue field in bytes
+  * Option Value: A variable length field, carrying the value of the option
+  
+  **The option fields may contain the following values**:
+  
+  Option Type|Option Length|Option Value
+  -----------|-------------|------------
+  1|2|HoldTime
+  2|4|T[1] + Propagation_Delay[15] + Override_interval[16]
+  19|4|DR Priority
+  20|4|Generation ID
+  24|Variable|Secondary Address 1-N[Encoded-Unicast format][32]
+  
+  * Option Type 3-16: reserved to be defined in future version of this document
+  * Option Type 18: deprecated and should not be used
+  * Option Type 17-65000 are assigned by the IANA
+  * Option Type 65001-65535 are reserved for Private Use
+  
+###### Register Message Format  
   
   
   
@@ -139,10 +216,4 @@
   
   
   
-  
-  
-  
-  
-  
-  
-  **_108_**
+  **_116_**
