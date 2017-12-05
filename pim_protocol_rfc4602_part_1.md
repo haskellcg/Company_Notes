@@ -6,7 +6,7 @@
   
 #### Terminology
   * **Rendezvous Point (RP)**: An RP is a router that has been configured to be used as root of the non-source-specific distribution tree for a multicast group. Join messages from receivers for a group are sent towards the RP, and data from senders is sent to the RP so that receivers can discover who the senders are and start to receive traffic destined for the group.
-  * **Designated Router (DR)**: A shared-media LAN like Ethernet may have multiple PIM-SM routers connected to it. A single one of these routers, the DR, will act on behalf of directly connected hosts with respect to the PIM-SM protocol. A single DR is elected per inetrface (LAN or otherwise) using a simple election process.
+  * **Designated Router (DR)**: A shared-media LAN like Ethernet may have multiple PIM-SM routers connected to it. A single one of these routers, the DR, will act on behalf of directly connected hosts with respect to the PIM-SM protocol. A single DR is elected per interface (LAN or otherwise) using a simple election process.
   * **MRIB**: Multicast Routing Information Base. this is multicast topology table, which is typically derived from the unicast routing table, or routing protocols such as Multiprotocol BGP (MBGP) that carry multicast-specific topology information. In PIM-SM, the MRIB is used to decide where to send Join/Prune messages. A secondary function of the MRIB is to provide routing metrics for destination address; these metrics are used when sending and processing Assert messages.
   * **RPF Neighbor**: RPF stands for "Reverse Path Forwarding". The RPF Neighbor of a router with respect to an address is the neighbor that the MRIB an indicates should be used to forward packets to that address. In the case of a PIM-SM multicast group, the RPF neighbor is the router that Join message for that group would be directed to, in the absence of modifying Assert state.
   * **TIB**: Tree Information Base. This is the collection of state at PIM router that has been created by receiving PIM Join/Prune messages, PIM Assert messages, and Internet Group Management Protocol (IGMP) or **Multicast Listener Discovery (MLD)** information from local hosts. It essentially stores the state of all multicast distribution trees at that router.
@@ -14,10 +14,10 @@
   * **Upstream**: Towards the root of the tree. The Root of tree may be either the source or the RP, depending on the context.
   * **Downstream**:  Away from the root of the tree.
   * **GenID**: Generation Identifier, used to detect reboots.
-  * **PMBR**: PIM Multicast Border Router, joinin a PIM domain with another multicast domain.
+  * **PMBR**: PIM Multicast Border Router, joining a PIM domain with another multicast domain.
   
 #### PIM-SM Protocol Overview
-  PIM relies on an underlying topology-gathering protocol to populate a routing table with routes. This table is called the MRIB. In contrast to the unicast RIB, which specifies the next hop that a data packet would take to get to some subnet, the <RIB gives reverse-path information and indicates the path that a multicast data packet would take from its origin subnet to the router that has the MRIB.
+  PIM relies on an underlying topology-gathering protocol to populate a routing table with routes. This table is called the MRIB. In contrast to the unicast RIB, which specifies the next hop that a data packet would take to get to some subnet, the MRIB gives reverse-path information and indicates the path that a multicast data packet would take from its origin subnet to the router that has the MRIB.
   
   Like all multicast routing protocols that implement the service model from RFC 1112, PIM-SM must be able to route data packet from sources to the receivers **without either the sources or receivers knowing a priori of the existence of the others**. This is essetially done in three phases, although as senders and receivers may come and go at any time, all three phases may occur suimultaneously.
   
