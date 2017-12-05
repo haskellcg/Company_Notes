@@ -95,17 +95,23 @@
   
 ###### Protecting Unicast Messages
   * Register Messages
+  * Register-Stop Messages
   
+#### Denial-of-Service Attacks
+  Authenticating PIM protocol traffic prevents some, but not all, of DOS attacks. Three of possible attacks include:
+  * Sending packets to many different group addresses quickly can be a denial-of-service attack in and of itself
+  * Forging Join messages can cause a multicast tree to get set up. A large number of forged joins can consume router resources and result in deniaal of service
+  * Forging a (\*, \*, RP) Join presents a possibility for a denial-of-service attack by cause all traffic in the domain to flow to the PMBR issuing the join.
 
+## Acknowledgements
 
+## Normative References
 
+## Informative References
 
+## Appendix A. PIM Multicast Border Router Behavior
 
-
-
-
-
-
+## Appendix B. Index
 
 
 
