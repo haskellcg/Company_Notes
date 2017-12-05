@@ -1,7 +1,7 @@
 #### PIM Register Messages
   The Designated Router (DR) on a LAN or point-to-point link encapsulates multicast packets from local sources to the RP for the **relevant group** unless it recently received a **Register-Stop message** for that (S, G) or (\*, G) from the RP.
   
-  When the DR receives a Register-Stop message from the RP, it starts a **Register-Stop Timer** to maintain this state. Just before the Register-Stop timer Expires, the DR sends a **Null-Register Message** to the RP to allow the RP to refressh the Register-Stop information for the DR.
+  When the DR receives a Register-Stop message from the RP, it starts a **Register-Stop Timer** to maintain this state. Just before the Register-Stop timer Expires, the DR sends a **Null-Register Message** to the RP to allow the RP to refresh the Register-Stop information for the DR.
   
   If the Register-Stop timer actually expires, the DR will resume encapsulating packets from the source to the RP.
   
