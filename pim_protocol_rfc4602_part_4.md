@@ -29,7 +29,7 @@
 ###### Hash Function
   The hash function is used by all routers within a domain, to map a group to one of the RPs from the matching set of group-range-to-RP mappings (this set all have the same longest mask length and same highest priority).
   
-  The algorrithms takes as input the group address, and the addresses of the candidate RPs from the mappings, and **gives as output one RP address to be used**.
+  The algorithms takes as input the group address, and the addresses of the candidate RPs from the mappings, and **gives as output one RP address to be used**.
   
   The protocol requires that **all routers hash to the same RP within a domain (except fro transients)**. The following hash function must be used in each router:  
   * For RP addresses in the macthing group-range-to-RP mappings, compute a value:
