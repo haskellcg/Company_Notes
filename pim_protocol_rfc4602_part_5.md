@@ -112,15 +112,3 @@
 ## Appendix A. PIM Multicast Border Router Behavior
 
 ## Appendix B. Index
-
-
-
-
-
-
-
-
-
-
-
-  **_136_**
