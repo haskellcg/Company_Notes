@@ -60,7 +60,42 @@
   
   
 ## IANA Considerations
-###### PIM Address Family
+#### PIM Address Family
+#### PIM Hello Options
+
+
+## Security Considerations
+  **The IPsec authentication header** MAY be used to provide data intergrity protection and groupwise data origin authentication of PIM protocol messages. Authentication of PIM messages can protect against unwanted behaviors caused by unauthorized or altered PIM messages.
+
+#### Attacks Based on Forged Messages
+  The extent of possible damage depends on the type of counterfeit messages accepted.
+  
+###### Forged Link-Local Messages  
+  * A forged Join/Prune message
+  * A forged Leave message
+  * A forged Hello message
+  * A forged Assert message
+  
+###### Forged Unicast Messages  
+  * Register messages
+  * Register-Stop messages
+  
+#### Non-Cryptographic Authentication Mechanisms  
+  A PIM router should provide an option to limit the set of neighbors from which it will accept Join/Prune, Assert, and Hello messages. Either static configuration of IP addresses or an IPsec security association may be used. Furthermore, a PIM router should not accept protocol messages from a router from which it has not yet received a valid Hello message.
+
+#### Authentication Using IPsec
+  The IPsec transport mode using the Authentication Header (AH) is the recommended method to prevent the above attacks against PIM. The specific AH authentication algorithms and paramters, including **the choice of authentication algorithm and the choice of key**, are configured by the network administrator.
+  
+  To use IPsecs, the administrator of a PIM network configures each PIM router with one or more security associations (SAs) and associated Secuiry Parameter Indexes (SPIs) that are used by senders to authenticate PIM protocol messages and are used by receivers to authenticates received PIM protocol messages.
+  
+  It assums the manual configuration of SAs is performed, but it does not preclude the use of a negotiation protocol such as **the Internet Key Exchange** to establish SAs.
+  
+###### Protecting Link-Local Multicast Messages  
+  IPsec allows (but does not requies) different Security Policy Database (SPD) for each router interface. If available, it may be desirable to conigure the Security Policy Database at a PIM router such that all incoming and outgoing Join/Prune, Assert, and Hello packets use a different SA for each incoming or outgoing interface.
+  
+###### Protecting Unicast Messages
+  * Register Messages
+  
 
 
 
@@ -82,11 +117,4 @@
 
 
 
-
-
-
-
-
-
-
-  **_128_**
+  **_136_**
