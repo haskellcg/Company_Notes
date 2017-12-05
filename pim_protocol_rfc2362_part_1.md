@@ -19,7 +19,7 @@
   
 #### Establishing the RP-rooted shared tree
   Triggered by the (\*, G) state, the DR creates a Join/Prune message with the RP address in its join list and the wildcard bit (WC-bit) and RP-tree bit (RPT-bit) set to 1.
-  * The WC-bit indicates that any source may match and be forwarded according to this entry if there is no longer match.
+  * The WC-bit indicates that any source may match and be forwarded according to this entry if there is no longer match.
   * The RPT-bit indicates that this join is being sent up the shared, RP-tree.
   * The Prune list is left empty
   
