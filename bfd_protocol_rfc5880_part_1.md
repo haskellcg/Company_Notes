@@ -50,6 +50,64 @@
   
   Demand mode is useful in situations where the overhead of a periodic protocol might prove onerous, such as a system with a very large number of BFD symmetrically. It is also useful when the Echo function is being used symmetrically. Demand mode has the disadvantage that Detection Times are essetially driven by the heuristics of the system implementation and are not the BFD protocol. Demand mode may not be used when the path round-trip time is greater than the desired Detection Time, or the protocol will fail to work properly.
   
+## BFD Control Pakcet Format  
+### Generic BFD Control Packet Format
+  BFD Control pakcets are sent in an encapsulation appropriate to the environment.
+  
+  The BFD Control packet has a Mandatory Section and an optional Authentication Section. The format of the Authentication Section, if present, is dependent on the type of authentication in use.
+  
+  The Mendatory Section of a BFD Control packet has the following format:
+  
+  Vers|Diag|Sta|P|F|C|A|D|M|Detect Mult|Length|My Discriminator|Your Discriminator|Desired Min TX Interval|Required Min RX Interval|Required Min Echo RX Interval
+  ----|----|---|-|-|-|-|-|-|-----------|------|----------------|------------------|-----------------------|--------|------
+  3|5|2|1|1|1|1|1|1|8|8|32|32|32|32|32
+  
+  
+  An optional Authentication Section May be present:
+  
+  Auth Type|Auth Len|Authentication Data
+  ---------|--------|-------------------
+  8|8|16
+  
+  
+  * Version (Vers): The version number of the protocol. This document defines protocol version 1.
+  * Diagnotic (Diag): A diagnostic code specifying the local system's reason for last change in session state (This field allows remote systems to determine the reason that the previous session failed, for example):
+    * 0 -- No Diagnostic
+    * 1 -- Control Detection Time Expired
+    * 2 -- Echo Function Failed
+    * 3 -- Neighbor Signal Session Down
+    * 4 -- Forwarding Plane Reset
+    * 5 -- Path Down
+    * 6 -- Concatenated Path Down
+    * 7 -- Administratively Down
+    * 8 -- Reverse Concatenated Path Down
+    * 9-31 --  Reserved for future use
+  * State (Sta): The current BFD session staate as seen by the transmitting system, values are:
+    * 0 -- AdminDown
+    * 1 -- Down
+    * 2 -- Init
+    * 3 -- Up
+  * Poll (P): 
+    * If set, the transmitting system is requesting verification of connectivity, or of a parameter change, and is expecting a packet with the Final (F) bit in reply
+    * If clear, the transimitting system is not requesting verification
+  * Final (F):
+    * If set, the transimitting system is responding to a receive BFD Control packet that had the Poll (P) bit set
+    * If clear, the transmitting system is not responding to a Poll
+  * Control Plane Independent (C):
+    * If set, the transmitting system's BFD implementation does not share fate with its control plane (in other words, BFD is implemented in the forwarding plane and can continue to function through disruptions in the control plane)
+    * If clear, the transmitting system's BFD implementation shares fate with its control plane
+  * Authentication Present (A):
+    * If set, the Authentication Section is present and the session is to be authenticated
+  * Demand (D):
+    * If set, Demand mode is active in the transimitting system (the system wishes to operate in Demand mode, knows that the session is Up in both directions, and is directing the remove system to cease the periodic transmission of BFD Control packets)
+    * If clear, Demand mode is not active in the transmitting system
+  * Multipoint (M): This bit is reserved for furture point-to-multipoint extensions to BFD. It MUST be zero on both transmit and receipt
+  * Detect Mult: Detection time multiplier. The negotiate transmit interval, multiplied by this value, provides the Detection Time for the receiving system in Asynchronous mode
+  * Length: Length of the BFD Control packet, **_in bytes_**
+  * 
+    
+  
+    
 
 
 
@@ -84,4 +142,4 @@
 
 
 
-**_page 5_**
+**_page 9_**
