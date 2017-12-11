@@ -34,7 +34,22 @@
   A BFD session is established based on the needs of the application that will be making use of it. It is up to the application to determine the need for BFD, and the addresses to use -- there is no discovery mechanism in BFD. For example, an OSPF implementation may request a BFD session to be established to be a neighbor discovered using the OSPF Hello protocol.
   
 ### Operating Modes  
-  BFD has two operating modes that may be selected, as well as an additional function
+  BFD has two operating modes that may be selected, as well as an additional function that can be used in combination with the two modes.
+  
+  The primary mode is known as Asynchronous mode. In this mode, the system periodically sent BFD Control packets to one another, and if a number of those packets in a row are not received by the other system, the session is decalred to be down.
+  
+  The second mode is known as Demand mode. In this mode, it is assumed that a system has an independent way of verifying that it has connectivity to the other system. Once a BFD session is established, such a system may ask the other system to stop sending BFD Control packets, except when the system feels the need to verify connectivity explicitly, in which case a short sequence of BFD Control packets is exchanged, and then the far system quiesces. Demand mode may operate independently in each direction, or simultaneously.
+  
+  An adjunct to both modes is the Echo function. When the Echo function is active, a stream of BFD Echo packets is transmitted in such a way as to have the other system loop them back through its forwarding path. If a number of packets of the echoed data stream are not received, the session is declared to be down. The Echo function may be used with either Asynchronous or Demand mode. Since the Echo function is handing the task od detection, the rate of periodic transmission of Control packets may be recuded or eliminated completely.
+  
+  Pure Asynchronous mode is advantageous in that it requires half as many packets to achieve a particular Detection Time as does the Echo function. It is also used when the Echo function cannot be supported for some reason.
+  
+  The Echo function has the advantage of truly testing only the forwarding path on the remote system. This may recude round-trip jitter and thus allow more aggressive Detection Times, as well as potentially detecting some classes of failure that might not otherwise be detected.
+  
+  The Echo function may be enabled individually in each direction. It is enabled in a particular direction only **_when the system that loops the Echo packets back signals that it will allow it, and when the system that sends the Echo packets decides it wishes to_**.
+  
+  Demand mode is useful in situations where the overhead of a periodic protocol might prove onerous, such as a system with a very large number of BFD symmetrically. It is also useful when the Echo function is being used symmetrically. Demand mode has the disadvantage that Detection Times are essetially driven by the heuristics of the system implementation and are not the BFD protocol. Demand mode may not be used when the path round-trip time is greater than the desired Detection Time, or the protocol will fail to work properly.
+  
 
 
 
