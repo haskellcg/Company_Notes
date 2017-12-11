@@ -1,1 +1,39 @@
+# Bidirectional Forwarding Detection (BFD)
+  It intends to detect faults in the bidirectional path between two forwarding engines, including interfaces, data link(s), and to the extent
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**_page 1_**
