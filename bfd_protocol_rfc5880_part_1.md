@@ -22,7 +22,19 @@
   BFS can be abstracted as a simple service. The service primitives provided by BFD are to create, destroy, and modify a session, given the destination address and other parameters. BFD in return provides a signal to its clients indicating when the BFD session goes up or down.
   
 ## Protocol Overview  
+  BFD is a simple Hello protocol that, in many respects, is similar to the detection coponents of well-known routing protocols. A pair of systems transmit BFD packets periodically over each path between the two systems. Under some conditions, systems may negotiate not to send periodic BFD packets in order to reduce overhead.
   
+  The path is only declared to be operational when two way communication has been establishedd between systems, though this does not preclude the use of unidirectional links.
+  
+  A separate BFD session is created for each communications path and data protocol in use between two systems.
+  
+  Each system estimates how quickly it can send and receive BFD packets in order to come to an agreement with its neighbor about how rapidly detection of failure will take place. These estimates can be modified in real time in order to adapte to unusual situations. This desgin also allows for fast systems on shared medium with a slow system to be able to more rapidly detect failures between the fast systems while allowing the slow system to participate to the best of its ability.
+  
+### Addressing and Session Establishment  
+  A BFD session is established based on the needs of the application that will be making use of it. It is up to the application to determine the need for BFD, and the addresses to use -- there is no discovery mechanism in BFD. For example, an OSPF implementation may request a BFD session to be established to be a neighbor discovered using the OSPF Hello protocol.
+  
+### Operating Modes  
+  BFD has two operating modes that may be selected, as well as an additional function
 
 
 
@@ -52,8 +64,8 @@
 
 
 
-
-
+## Issues:
+  * The UDP port is 3784, how to generate multiple BFD session on a single port?
 
 
 
