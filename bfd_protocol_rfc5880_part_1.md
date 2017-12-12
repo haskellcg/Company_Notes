@@ -303,6 +303,55 @@
   **_remote Demand mode active: bfd.RemoteDemandMode_**
   
 #### State Variables 
+  A minimum amount of information about a session needs to be tracked in order to achieve the elements of procedure described here. The following is a set of state variables that are helpful in describing the mechanisms of BFD. Any means of tracking this state may be used so long as the protocol behaves as described.
+  
+  When the text refers to initializing a state variable, this takes place only at the time that the session (and the corresponding state variables) is created. The state variable are subsequently manipulated by the state machine and are never reinitialized, even if the session fails and is reestablished.
+  
+  Once session state is created, and at least one BFD Control packet is received from the remote end, it must be preserved for at least one Detection Time subsequent to the receipt of the last BFD Control packet, regardless of the session state.
+  
+  * bfd.SessionState: The perceived state of the session (Init, Up, Down, AdminDown). It is expected that this state change (particularly, to and from Up state) is reported to other components of the system. **_This varibale must be initialized to Down_**.
+  
+  * bfd.RemoteSessionState: The session state last reported by the remote system in the State (Sta) field of the BFD Control Control packet. **_This variable must be initialized to Down_**.
+  
+  * bfd.LocalDiscr: The local discriminator for this BFD session, used to uniquely identify it. It must be unique across all BFD sessions on this systems, and nonzero. **_It should be set to random (but still unique) value to improve security_**.
+  
+  * bfd.RemoteDiscr: The remote discriminator for this BFD session. This is the discriminator chosen by the remote system, and is totally opaque to local system. **_This must be initialized to zero_**. If a period of a Detection Time passes without the receipt of a valid, authenticated BFD packet from the remote system, this variable must be set to zero.
+  
+  * bfd.LocalDiag: the diagnostic code specifying the reason for the most recent change in the local session state. **_This must be initialized to zero (No Diagnostic)_**.
+  
+  * bfd.DesiredMinTxInterval: The minimum interval, in microseconds, between transmitted BFD Control packets that this system would like to use at the current time, less any jitter applied. The actual interval is negotiated between the two systems. This must be initialized to a value of **_at least one second (1,000,000 microseconds)_**.
+  
+  * bfd.RequiredMinRxInterval: The minimum interval, in microseconds, between received BFD Control packets that this system requires, less any jitter applied by the sender. **_A value of zero means that this system does not want to receive any periodic BFD control packets_**.
+  
+  * bfd.RemoteMinRxInterval: The last value of Required Min RX Interval received from the remote system in a BFD Control packet. **_This variable must be initialized to 1_**.
+  
+  * bfd.DemandMode: Set to 1 if the local system wishes to use Demand mode, or 0 if not.
+  
+  * bfd.RemoteDemandMode: Set to 1 if the remote system wishes to use Demand mode, or 0 if not. This is the value of the Demand (D) bit in the last received BFD Control packet. **_This variable must be intialized to zero_**.
+  
+  * bfd.DetectMult: The desired Detection Time multiplier for BFD Control packets on the local system. The negoriated Control packet transmission interval, multiplied by this variable, will be the Detection Time for this session. **_This variable must be a nonzero integer_**.
+  
+  * bfd.AuthType: The authentication type in use for this session, or zero if no authentication is in use
+  
+  * bfd.RcvAuthSeq: A 32-bit unsigned integer containing the last sequence number for Keyed MD5 or SHA1 Authentication that was received. **_The Initial value is unimportant_**.
+  
+  * bfd.XmitAuthSeq: A 32-bit unsigned integer containing the next sequence number for Keyed MD5 or SHA1 Authentication to be transmitted. **_This variable must be intialized to a random 32-bit value_**.
+  
+  * bfd.AuthSeqKnown: Set to 1 if the next sequence number for Keyed MD5 or SHA1 authentication expected to be received is known, or 0 if it is not known. **_This variable must be initialized to zero_**. This variable must set to be zero after no packets have been received on this session for at least twice the Detection Time. **_This ensures that the sequence number can be resynchronized if the remote system restarts_**.
+  
+#### Timer Negotiation  
+  The time values used to determine BFD packet transmission intervals and the session Detection Time are continuously negotiated, and thus may be changed at any time. **_The negotiation and time value are independent in each direction for each session_**.
+  
+  Each system reports in the BFD Control packet how rapidly it would like to transmit BFD packets, as well as how rapidly it is prepare to receive them. This allow either **_system to unilaterally determine the maximum packet rate in both directions_**.
+  
+#### Timer Manipulation
+  The time values used to determine BFD packet transimission intervals and the session Detection Time may be modified at any time without affecting the state of the session.
+  
+  If either bfd.DesiredMinTxInterval is changed or bfd.RequiredMinRxInterval is changed, a Poll Sequence must be intiated. **_If the timming is such that a system receiving a Poll sequence wishes to change the paramaters described in this paragraph, the new parameter vaues may be carried in packets with the Final (F) bit set, even if the Poll sequence has not yet been sent_**.
+
+
+
+
 
 
 
@@ -332,4 +381,4 @@
 
 
 
-**_page 27_**
+**_page 31_**
