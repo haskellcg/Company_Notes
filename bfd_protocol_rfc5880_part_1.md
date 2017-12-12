@@ -202,9 +202,19 @@
   
   **_Echo system communicates its session state in the State field in the BFD Control packet, and that received state, in combination with the lodal session state, drives the state machine_**.
   
-  Down state means **_the session is down (or has just been created)_**. A session remains in Down state until the remote system indicates that it agrees that the session is down by sending a BFD Control packet with State field set to anything other than Up. **_If the packet signals Down state_**, the session advances to Init state; **_if that packet signals Init state_**, the session advances to Up state. Semantically, Down state indicates that the forwarding path is unavailable, and that appropriate actions should be taken by the applications monitoring the state of the BFD session. A system may hold a session in Down state indefinitely (by simply refusing to advance the session state). **_This may be done for operational or administrative reasons, among others_**.
+  Down state means that **_the session is down (or has just been created)_**. A session remains in Down state until the remote system indicates that it agrees that the session is down by sending a BFD Control packet with State field set to anything other than Up. **_If the packet signals Down state_**, the session advances to Init state; **_if that packet signals Init state_**, the session advances to Up state. Semantically, Down state indicates that the forwarding path is unavailable, and that appropriate actions should be taken by the applications monitoring the state of the BFD session. A system may hold a session in Down state indefinitely (by simply refusing to advance the session state). **_This may be done for operational or administrative reasons, among others_**.
   
+  Init state means that **_remote system is communicating_** , and the local system desires to bring the session up, but the remote system does not yet realize it. A session will remian in Init state until either a BFD Control Packet is received that is signaling Init or Up state (**_in which case the session advances to Up state_**) or the Detection Time expires, meaning that communicating with the remote system has been lost (**_in which case the session advances to Down state_**).
   
+  Up state means that the BFD session has successfully been established, and implies that connectivity between the system is working. The session will remain in the Up state **_until either connectivity fails or the session is taken down administratively_**. If either the remote system **_signals Down state or the Detection Time expires_**, the session advances to Down state.
+  
+  AdminDown state means that **_the session is being held administratively down_**. This causes the remote system to enter Down state, and remain there until the local system exits AdminDown state. AdminDown state has no semantic implications for the availability of the forwarding path.
+  
+  The following diagram provides an overview of the state machine:
+  
+  ![BFD state machine](https://github.com/haskellcg/Blog_Pictures/blob/master/bfd_protocol_rfc5880_part_1_1.PNG)
+  
+### Demultiplexing and the Discriminator Fields
   
   
   
