@@ -267,9 +267,42 @@
   Note that if Demand mode is enabled in only one direction, continuous bidirectional connectivity verification is lost (only connectivity in the direction from the system in Demand mode to the other system will be verified).
   
 ### Authentication  
+  Implementations supporting authentication must support both types of SHA1 authentication. Other forms of authentication are optional.
 
+#### Enabling and Disabling Authentication
+  In a simple implementation, a BFD session will fail when authentication is either turned on or turned off, because the packet acceptance rules essentially require the local and remote machines to do so in a more or less synchronized fashion (within the Detection Time) -- a packet with authentication will only be accept if authentication is "in use".
+  
+#### Simple Password Authentication  
+  The receiving system accepts he packet if the Password and Key ID macthes one of the Password/ID pairs configured in that system.
+  
+  **_The Auth Len field must be set to the proper length (4 to 19 bytes = 1-16 + 3)_**.
+  
+  For interoperability, the management interface by which the password is configured must accept ASCII strings, and should also allow the configuration of any arbitrary binary string in hexadecimal form.
+  
+#### Keyed MD5 and Meticulous Keyed MD5 Authentication  
+  In these methods of authentication, one or more secret keys (with corresponding key IDs) are configured in each system. One of the keys is included in an MD5 digest calculated over the outgoing BFD Control packet, but the Key itself is not carried in the packet. To help avoid replay attacks, a sequence number is also carried in each packet.
+  
+  The receiving system accepts the packet **_if the key ID macthes one of the configured Keys, an MD5 digest including the selected key matches that carried in the packet, and the sequence number is greater than or equal to the last sequence number received (for Keyed MD5), or strictly greater than the last sequence number received (for Meticulous Keyed MD5)_**.
+  
+  **_An MD5 digest must be calculated over the entire BFD Control packet_**. The resulting digest must be stored in the Auth Key/Digest field prior to transmission.
 
+  For Keyed MD5, **_bfd.XmitAuthSeq_** may be incremented in a criculae fashion (when treated as an unsigned 32-bit value). bfd.XmitAuthSeq should be incremented when the session state changes, or when the transmitted BFD Control packet carries different contents than the previously transmitted packet.
+  
+  If **_bfd.AuthSeqKnown_** is 1, examine the Sequence Number field. For Keyed MD5, if the sequence number lies outside of the range of **_bfd.RcvAuthSeq to bfd.RcvAuthSeq+(3*Detect Mult)_** inclusive, the receivd packet must be discarded. For Meticulous Keyed MD5, if the sequence number lies outside of the range of **_bfd.RcvAuthSeq+1 to bfd.RcvAuthSeq+(3*Detect Mult)_** inclusive the received packet must be discarded.
+  
+  Otherwise, **_bfd.AuthSeq_** must be set to 1, and **_bfd.RcvAuthSeq_** must be set to the value of the received Sequence Number field.
 
+#### Keyed SHA1 and Meticulous Keyed SHA1 Authentication
+  Same as MD5 part.
+   
+### Functional Specifics   
+  **_the Echo function active_**
+  
+  **_local Demand mode active: bfd.DemandMode_**
+  
+  **_remote Demand mode active: bfd.RemoteDemandMode_**
+  
+#### State Variables 
 
 
 
@@ -299,4 +332,4 @@
 
 
 
-**_page 16_**
+**_page 27_**
