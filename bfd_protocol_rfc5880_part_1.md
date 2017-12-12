@@ -163,7 +163,13 @@
   * Auth Key/Hash: This field carries the 20-byte SHA1 hash for the packet. When the hash is calculated, the shared SHA1 key is stored in this field, padded to a length of 20 bytes with trailing zero bytes if needed.
   
 ## BFD Echo Packet Format  
+  **_BFD Echo packets are sent in an encapsulation appropriate to the environment_**. See the appropriate application documents for the specifics of particular environments.
   
+  The payload of a BFD Echo packet is a local matter, since only the sending system ever processes the content. The only requirement is that sufficient information is included to demultiplex the received packet to the correct BFD session after it is looped back to the sender.
+  
+  Some form of authentication SHOULD be included, since Echo packets may be spoofed.
+  
+## Elements of Procedure  
   
   
   
