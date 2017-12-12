@@ -226,9 +226,15 @@
   Note that it is permissible for a system to change its discriminator during a session without affecting the session state, since only **_that system uses its discriminator for demultiplexing purpose (by having the other system reflect it back)_**.
   
 ### The Echo Function and Asymmetry  
+  The Echo function can be run independently in each direction between a pair of systems. For whatever reason, a system may advertise that it is willing to receive (and loop back) Echo packets, but may not wish to ever send any. **_The fact that a system is sending Echo packets is not directly signaled to the system looping them back_**.
   
+  When a system is using the Echo function, it is advantageous to choose a sedate reception rate for Control packets, since liveness detection is being handle by the Echo packets. This can be controlled by manipulating the Required Min RX Interval field.
   
-    
+  If the Echo function is only being run in one direction, the system not running the Echo function will more liekly wish to receive fairly rapid Control packets in order to achieve its desired Detection Time. Since BFD allows independent transmission rates in each direction, this is easily accomplished.
+  
+  A system should otherwise advertise the lowest value of Required Min RX interval and Required Min Echo RX Interval that it can under the circumstances, to give the other system more freedom in choosing its transmission rate. Note that a system is committing to be able to receive both streams of packets at the rate it advertises, so this should be take into acount when choosing the value to advertise
+  
+### The Poll Sequence  
   
     
 
