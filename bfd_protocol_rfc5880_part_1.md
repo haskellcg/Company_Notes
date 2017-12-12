@@ -139,7 +139,7 @@
   
   Auth Type|Auth Len|Auth Key ID|Reserved|Sequence Number|Auth Key/Digest
   ---------|--------|-----------|--------|---------------|---------------
-  8|8|8|8|32|32
+  8|8|8|8|32|128
   
   * Auth Type: 2/3
   * Auth Len: The length of the Authentication Section, in bytes. For keyed MD5 and Meticulous Keyed MD5 authentication, the length is 24 (=4 + 4 + 16)
@@ -149,6 +149,20 @@
   * Auth Key/Digest: This field carries the 16-byte MD5 digest for the packet. When the digest is calsulated, the shared MD5 key is stored in this field, **_padded to 16 bytes with trailing zero bytes if needed_**.
   
 ### Keyd SHA1 and Meticulous keyed SHA1 Authentication Section Format  
+  If the Authentication Present (A) bit is set in the header, and the Authentication Type field contains 4 (Keyed SHA1) or 5 (Meticulous keyed SHA1), the Authentication Section has the following format:
+  
+  Auth Type|Auth Len|Auth Key ID|Reserved|Sequence Number|Auth Key/Hash
+  ---------|--------|-----------|--------|---------------|---------------
+  8|8|8|8|32|160
+  
+  * Auth Type: 4/5
+  * Auth Len: For Keyed SHA1 and Meticulous Keyed SHA1 authenrication, the length is 28 (= 4 + 4 + 20)
+  * Auth Key ID: The authentication key ID in use for this packet. This allow mutiple keys to be active simultaneously.
+  * Reserved: This byte MUST be set to zero on transmit and ignore on receipt
+  * Sequence Number: The sequence number for this packet. **_For Keyed SHA1 Authentication, this value is incremented occasionally. For Meticulous Keyed SHA1 Authentication, this value is incremented for each successive packet transmitted for a session_**. This provides protection against replay attacks
+  * Auth Key/Hash: This field carries the 20-byte SHA1 hash for the packet. When the hash is calculated, the shared SHA1 key is stored in this field, padded to a length of 20 bytes with trailing zero bytes if needed.
+  
+## BFD Echo Packet Format  
   
   
   
