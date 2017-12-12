@@ -170,6 +170,39 @@
   Some form of authentication SHOULD be included, since Echo packets may be spoofed.
   
 ## Elements of Procedure  
+  This section discusses the normative requirements of the protocol in order to achieve interoperability. **_It is important for implementor to enforce only the requirement specified in this section, as misguided pedantry has been proven by experience to affect interoperability adversely_**.
+  
+### Overview  
+  A system may take either an Active role or a Passive role **_in session initialization_**.
+  
+  **_At least one system must take the Active role (possibly both)_**. The role that a system takes is specific to the application of BFD, and is outside the scope of this specification.
+  
+  **_A session begins with the periodic, slow transmission of BFD Control packets_**. When bidirectional communication is achived, the BFD session becomes Up.
+  
+  Once the BFD session is Up, a system can choose to start the Echo function if it desires and the other system signals that it will allow it. **_The rate of transmission of Control packet is typically kept low when the Echo function is active_**.
+  
+  If the Echo function is not active, the transmission rate of Control packets may be increased to a level necessary to achive the Detection Time requirements for the session.
+  
+  **_Once the session is Up, a system may signal that it has entered Demand mode, and the transmission of BFD Control packets by remote system ceases_**. Other means of implying connectivity are used to keep the session alive. If either system wishes to verify bidirectional connectivity, it can initiate a short exchange of BFD Control packets.
+  
+  If Demand mode is not active, and no Control packets are received in the calculated Detection Time, the session is declared Down. This is signaled to the remote end via the state (Sta) field in outgoing packets.
+  
+  If **_sufficient_** Echo packets are lost, the session is declared Down in the same manner.
+  
+  If Demand mode is active and no approptiate Control packets are received in response to a **_Poll Sequence_**, the session is declared Down in the same manner.
+  
+  If the session goes Down, the transmission of Echo packets (if any) ceases, and the transmission of Control packets goes back to the **_slow rate_**.
+  
+  Once a session has been declared Down, it cannot come back up until the remote end first signals that it is down (by leaving the Up state), thus implementing a three-way handshake.
+  
+  **_A session may be kept administratively down by entering the AdminDown state and sending an explanatory diagostic code inthe Diagnostic field_**.
+  
+### BFD State Machine  
+  This allow a three-way handshakes for both session establishment and session teardown (**_assuring that both systems are aware of all session state changes_**). A fouth state (AdminDown) exists so that a session can be administratively put down indefinitely.
+  
+  **_Echo system communicates its session state in the State field in the BFD Control packet, and that received state, in combination with the lodal session state, drives the state machine_**.
+  
+  Down state means **_the session is down (or has just been created)_**. A session remains in Down state until the remote system indicates that it agrees that the session is down by sending a BFD Control packet with State field set to anything other than Up. **_If the packet signals Down state_**, the session advances to Init state; **_if that packet signals Init state_**, the session advances to Up state. Semantically, Down state indicates that the forwarding path is unavailable, and that appropriate actions should be taken by the applications monitoring the state of the BFD session. A system may hold a session in Down state indefinitely (by simply refusing to advance the session state). **_This may be done for operational or administrative reasons, among others_**.
   
   
   
@@ -214,4 +247,4 @@
 
 
 
-**_page 11_**
+**_page 16_**
