@@ -121,6 +121,41 @@
   * Auth Len: The length, **_in bytes_**, of the authenticaton section, including Auth Type and Auth Len fields.
   
 ### Simple Password Authentiation Section Format  
+  If the Authentication Present (A) bit is set in the header, and the Authentication Type field contains 1 (Simple Password), the Authentication Section has the following format:
+  
+  Auth Type|Auth Len|Auth Key ID|Password
+  ---------|--------|-----------|--------
+  8|8|8|8
+  
+  * Auth Type: 1
+  * Auth Len: 3 + len(Password)
+  * Auth Key ID: The authentication key ID in use for this packet. This allow **_multiple keys to be active simultaneously_**.
+  * Password: The simple password in use on this session. The password is a binary string, and MUST be from 1 to 16 bytes in length. The password MUST be encoded and configured.
+  
+### Keyed MD5 and Meticulous Keyed MD5 Authentication Section Format
+  **_The use of MD5-base authentication is strongly discouraged_**. However, it is documented here for compatibility with existing emplementation.
+  
+  If the Authentication Present (A) bit is set in the header, and the Authentication Type field contains 2 (Keyed MD5) or 3 (Meticulous Keyed MD5), the Authentication Section has the following format:
+  
+  Auth Type|Auth Len|Auth Key ID|Reserved|Sequence Number|Auth Key/Digest
+  ---------|--------|-----------|--------|---------------|---------------
+  8|8|8|8|32|32
+  
+  * Auth Type: 2/3
+  * Auth Len: The length of the Authentication Section, in bytes. For keyed MD5 and Meticulous Keyed MD5 authentication, the length is 24 (=4 + 4 + 16)
+  * Auth Key ID: The authentication key ID is use for this packet. This allows mutiple keys to be active simultaneously
+  * Reserved: This byte MUST be set to zero on transmit, and ignore on receipt
+  * Sequence Number: The sequence number for this packet. **_For Keyed MD5 Authentication, this value is incremented occasionally. For meticulous Keyed MD5 Authentication, this value is incremented for each successive packet transmitted for a session_**. This provides protection against replay attacks
+  * Auth Key/Digest: This field carries the 16-byte MD5 digest for the packet. When the digest is calsulated, the shared MD5 key is stored in this field, **_padded to 16 bytes with trailing zero bytes if needed_**.
+  
+### Keyd SHA1 and Meticulous keyed SHA1 Authentication Section Format  
+  
+  
+  
+  
+  
+  
+  
   
     
   
