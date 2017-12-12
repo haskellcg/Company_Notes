@@ -215,9 +215,17 @@
   ![BFD state machine](https://github.com/haskellcg/Blog_Pictures/blob/master/bfd_protocol_rfc5880_part_1_1.PNG)
   
 ### Demultiplexing and the Discriminator Fields
+  Since multiple BFD sessions may be running between two systems, there needs to be a machanism for demultiplexing received BFD packets to the peoper session.
   
+  **_Each system must choose an opaque discriminator value that identifies each session, and which must be unique among all BFD sessions on the system_**. The local discriminator is sent in the My Discriminator field in the BFD Control packet, and is **_echoed back in the Your Discriminator field of packets sent from the remote end_**.
   
+  Once the remote end echoes back the local discriminator, all further received packets are demultiplexed based on the Your Discriminiator field only (**_which means that, among other things, the source address field can change or the interface over which the packets are received change, but the packets will still be associated with the proper session_**).
   
+  The method of demultiplexing the initial packets (in which Your Discriminator is zero) is **_application dependent_**.
+  
+  Note that it is permissible for a system to change its discriminator during a session without affecting the session state, since only **_that system uses its discriminator for demultiplexing purpose (by having the other system reflect it back)_**.
+  
+### The Echo Function and Asymmetry  
   
   
     
