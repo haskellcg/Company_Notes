@@ -235,10 +235,38 @@
   A system should otherwise advertise the lowest value of Required Min RX interval and Required Min Echo RX Interval that it can under the circumstances, to give the other system more freedom in choosing its transmission rate. Note that a system is committing to be able to receive both streams of packets at the rate it advertises, so this should be take into acount when choosing the value to advertise
   
 ### The Poll Sequence  
+  A Poll Sequence is an exchange of BFD Control packets that is used in some circumstances to **_ensure that the remote system is aware of parameter changes_**. It is also used in Demand mode to validate bidirectional connctivity.
   
+  A Poll Sequence consists of a system sending periodic BFD Control packets with the Poll (P) bit set. When the other system receives a Poll, it immediately transmits a BFD Control packet with the Final (F) bit set, independent of any periodic BFD Control packets it may be sending. When the system sending the Poll sequence receives a packet wih Final, the Poll sequence is terminated, and any subsequent BFD Control packets are sent with the Poll bit cleared. **_A BFD Control packet must not have both the Poll (P) and Final (F) bits set_**.
+  
+  If periodic BFD Control packets are already being sent (the remote system is not Demand mode), the Poll Sequence must be performed by setting the Poll (P) bit on those scheduled periodic transmissions, additional packets must not be sent.
+  
+  After a Poll Sequence is terminated, the system requesting the Poll Sequence will cease the periodic transimission of BFD Control packets if the remote end is **_in Demand mode_**; otherwise, it will return to the periodic transmission of BFD Control packets with the Poll (P) bit clear.
+  
+  Typically, the entire sequence consists of a single packet in each direction, though packet losses or relatively long packet latencies may result in multiple Poll packets to be sent before the sequence terminates.
     
-
-
+### Demand Mode
+  Demand mode is requested independently in each direction by virtue of a system setting the Demand (D) bit in its BFD Control packets. The system receiving the Demand bit cease the periodic transimission of BFD Control packets. If both systems are oprating in Demand mode, no periodic BFD Control packets will flow in either direction.
+  
+  Demand mode requires that some mechanism is used to imply continuing connectivity between the two systems. **_The mechanism used does not have to be the same in both directions_**. One possible mechanism is the receipt of traffic from the remote system; another is the use of the Echo function.
+  
+  When a system in Demand mode wishes to verify bidirectional connectivity, **_it initiates a Poll Sequence_**. If no response is received to a Poll, the Poll is repeated until the Detection Time expires, at which point the session is declared to be Down. Note that **_if Demand mode is operating only on the local system_**, the Poll Sequence is performed by simply setting the Poll (P) bit in regular periodic BFD Control packets.
+  
+  **_The Detection Time in Demand mode_** is calculated differently than in Asynchronous mode; it is base on the transmit rate of the local system, rather than the transmit rate of the remote system.
+  
+  Note that the Poll mechanism will always fail unless the negotiated Detection Time is greater than the round-trip time between the two systems.
+  
+  Demand mode MAY be enabled or disabled at any time, independently in each direction, by setting or clearing the Demand (D) bit  in the BFD Control packet, without affecting the BFD session state. **_Note that the Demand bit must not be set unless both systems pereive the session to be Up_**.
+  
+  When the transimitted value of the Demand (D) bit is to be changed, the transmitting system must initiate a Poll Sequence in conjunction with changing the bit in order to ensure that both system are aware of the change.
+  
+  If Denmand mode is active on either or bother systems, a Poll Sequence must be intiate whenever the contents of the next BFD Control packet to be sent would be different than the contents of the previous packet, with the exception of the Poll (P) and Final (F) bits. **_This ensure that parameter changes are transmitted to the remote system and that the remote system acknowledges these changes_**.
+  
+  **_The total Detection Time for a particular system is the sum of the time prior to the initiation of the Poll Sequence, plus the calculated Detection Time_**.
+  
+  Note that if Demand mode is enabled in only one direction, continuous bidirectional connectivity verification is lost (only connectivity in the direction from the system in Demand mode to the other system will be verified).
+  
+### Authentication  
 
 
 
