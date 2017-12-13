@@ -409,8 +409,33 @@
   When it is desired to change the detect multiplier, the value of bfd.DetectMult can be changed to any nonzero value. The new value will be transmitted with the next BFD Control packet, **_and the use a Poll Sequence is not necessary_**.
   
 #### Enabling or Disabling The Echo Function
-  If it is 
-
+  If it is desired to start or stop the transmission of BFD Echo packets, this may be done at any time.
+  
+  If it is desired to enable or disable the looping back of received BFD Echo packets, this may be done at any time by **_changing the value of Required Min Echo RX Interval to zero or nonzero in outgoing BFD Control packets_**.
+  
+#### Enabling or Disabling Demand Mode
+  If it is desired to start or stop Demand mode, this may be done at any time by **_setting bfd.DemandMode to the proper value_**. 
+  
+  If Demand mode is no longer active on the remote system, the local system must begin transmitting periodic BFD Control packets.
+  
+#### Forwarding Plane Reset
+  When the forwarding plane in the local system is reset for some reason, such that the remote system can no longer rely the local forwarding state, **_the local systeem must set bfd.LocalDiag to 4 (Forwarding Plane Reset), and set bfd.SessionState to Down_**.
+  
+#### Administrative Control
+  There may be circumstances where it is desirable to administratively enable or disable a BFD session. When this is desired, the following procedure must be followed:
+  * If enabling session: Set bfd.SessionState to Down
+  * Else: Set bfd.SessionState to AdminDown, set bfd.LocalDiag to an appropriate value, cease the transmission of BFD Echo packets
+  
+  BFD Control packets should be transmitted for at least a Detection Time after transitioning to AdminDown state in order to ensure that remote system is aware of the state change. BFD Control packets may be transmitted indefinitely after transitioning to AdminDown state in order to maintain session state in each system.
+  
+#### Concatenated Paths
+  If the path being monitored by BFD is concatenated with other paths (connected end-to-end in series), it may be desirable to propagate the indication of a failure of one of those paths across the BFD session (providing an interworking function for liveness monitoring between BFD and other technologies).
+  
+  Two diagnostic codes are defined for this purpose: **_Concatenated Path Down and Reverse Concatenated Path Down_**. The first propagetes forward path failures (in which the concatenated path fails in the direction toward the interworking system), and the second propagates reverse path failures (in which the concatenated fails in the direction away from the interworking system, assuming a bidirectional link)
+  
+  A system may signal one of these failures states by simply setting bfd.LocalDiag to the appropriate diagnostic code. Note that the BFD session is **_not taken down_**. If Demand mode is not active on the remote system, no other action is necessary, as the diagnostic code will be carried via the periodic transmission of BFD Control packets. If Demand mode is active on the remote system (the local system is not transmitting periodic BFD Control packets), a Poll Sequence must be initiated to ensure that the diagnostic code is transmitted.
+  
+#### Holding Down Sessions  
 
 
 
@@ -435,6 +460,9 @@
 
 ## Issues:
   * The UDP port is 3784, how to generate multiple BFD session on a single port?
+  
+## References
+  * [Forwarding Plane](https://en.wikipedia.org/wiki/Forwarding_plane)
 
 
 
