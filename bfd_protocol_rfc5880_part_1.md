@@ -445,9 +445,60 @@
   So long as the local system continues to transmit BFD Control packets, the remote system is obligated to obey the value carried in Required Min RX Interval. If the remote system does not receive any BFD Control packet for a Detection Time, it should **_reset bfd.RemoteMinRxInterval to its initial value of 1 and can transmit at its own rate_**.
   
 ## Operational Considerations  
+  BFD is likely to be deployed as a critical part of network infrastructure. As such, care should be taken to avoid disruption.
+  
+  Any mechanism that block BFD packets, such as firewalls or other policy process, will cause BFD to fail.
+  
+  Mechanisms that control packet scheduling, such as policers, traffic shapers, priority queueing, etc., have the potential of impacting BFD operations if the Detection Time is similar in scale to the scheduled packet transmit or receive rate.
 
-
-
+  When BFD is used across multiple hops, a congestion control mechanism must be implemented, and when congestion is detected, the BFD implementation must reduce the amount of traffic it generates.
+  
+  Note that "congestion" is not only a traffic phenomenon, but also a computational one. It is possible for systems with a large number of BFD sessions and/or very short packet intervals to become CPU-bound.
+  
+  **_The mechanisms for detecting congestion are outside the scope of this specification, but may include the detection of last BFD Control pakcets (by virtue of holes in the authentication sequence number space, or by the BFD session failure) or other means_**.
+  
+  The mechanisms for reducing BFD's traffic load are the control of the local and remote packet trasmission rate via the Min RX Interval and Min TX Interval fields.
+  
+  It is worth nothing that a single BFD session does not consume a large amount of bandwidth.
+  
+## IANA Consideration
+  This document defines 2 registries administratered by IANA:
+  * BFD Diagnostic Codes
+  * BFD Authentication Types
+  
+## Security Considerations
+  As BFD may be tied into the stability of the network infrastructure (such as routing prrotocols).
+  
+  **_An attacker who is in complete control of the link between the systems_** can easily drop all BFD packets but forward everything else (causing the link to be falsely declared down), or reverse (causing the link to be falsely delcared up). **_This attack cannot be prevented by BFD_**.
+  
+  To minigate threads from less capable attackers, BFD specifies two mechanisms to prevent spoofing of BFD Control packets:
+  * Generalized TTL Security Mechanism [GTSM] uses the time to live (TTL) or Hop Count to prevent off-link attackers from spoofing packets
+  * The Authentication Section authenticates the BFD Control packets.
+  
+  When a BFD session is directly connected across a single link (physical, or a secure tunnel such as IPsec), the TTL or Hop Count **_must be set to the maximum on transmit_**, and checked to be equal to the maximum value on reception (and the packet dropped if this is not the case). 
+  
+  **_If BFD is running across multiple hops or an insecure tunnel (such as Generic Routing Encapsulation (GRE)), the Authentication Section should be utilized_**.
+  
+  The level of security provided by the Authentication Section varies based on the authentication typee used.
+  
+  * Simple Password authentication is **_obviously only as secure as the securecy of the password used, and should be considered only if the BFD session is guaranteed to be run over an infrastructure not subject to packet interception_**. Its chief advantage is that it minimizes the computational effort required for authentication
+  
+  * Keyed MD5 Authentication is much stronger than Simple Password Authentication **_since the keys cannot be discerned by interception packets_**. It is vulnerable to replay attacks in between increments of the sequence number. The sequence number can be incremented as seldom (or as often) as desired, trading off resistance to replay attacks with the computational effort requied for authentication
+  
+  * Meticulous Keyed MD5 authentication is stronger yet, as it requires the sequence number to be incremented for every packet. Replay attack vulnerability is reduced due to the requirement that the sequence number must be incremented on every packet, the window size of acceptable packets is small, and the initial sequence number is randomized. **_There is still a window of attack at the beginning of session while the sequence number is being determined_**. This authentication scheme requires an MD5 calculation on every packet transmitted and received.
+  
+  * Using SHA1 is believed to have stronger security properties than MD5. All comments about MD5 in this section also apply to SHA1
+  
+  Both Keyed MD5/SHA1 and Meticulous Keyed MD5/SHA1 use the "secret suffix" construction (also called "append only") in which the shared secret key is appended to the data before calculating the hash, instead of the more common Hashed Message Authentication Code (HMAC) construction. **_This construction is believed to be appropriate for BFD, but designers of any additional authentication mechanism for BFD are encouraged to read [HMAC] and its reference_**.
+   
+  If both systems randomize their Local Discriminator values at the beginning of a session, replay attacks may be further mitigated, regarless of the authentication type in use. Since the local discriminator may be changed at any time during a session, this mechanism may also help mitigate attacks. 
+  
+  The security implications of the use of BFD Echo packets are dependent on how thoes packets are defined, since their structure is local to the transmitting system and outside the scope of this sepcification. However, since Echo packet are defined and processed only by the transmitting system, the use of **_cryptographic authentication does not guarantee that the other system is actually alive_**. GTSM could be applied to BFD Echo packets, though the TTL/Hop Count will be decremented by 1 in the course of echoing the packet, so spoofing is possible from one hop away.
+  
+## References  
+### Normative References
+### Informative References
+  
 
 
 
@@ -470,3 +521,7 @@
   
 ## References
   * [Forwarding Plane](https://en.wikipedia.org/wiki/Forwarding_plane)
+  * [Replay Attack](https://en.wikipedia.org/wiki/Replay_attack)
+  * [HMAC]()
+  * [GTSM]()
+  
