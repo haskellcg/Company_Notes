@@ -436,34 +436,37 @@
   A system may signal one of these failures states by simply setting bfd.LocalDiag to the appropriate diagnostic code. Note that the BFD session is **_not taken down_**. If Demand mode is not active on the remote system, no other action is necessary, as the diagnostic code will be carried via the periodic transmission of BFD Control packets. If Demand mode is active on the remote system (the local system is not transmitting periodic BFD Control packets), a Poll Sequence must be initiated to ensure that the diagnostic code is transmitted.
   
 #### Holding Down Sessions  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Issues:
-  * The UDP port is 3784, how to generate multiple BFD session on a single port?
+  A system may choose to prevent a BFD session from being established. This can be done by holding the session in Down or AdminDown state, as appropriate.
   
-## References
-  * [Forwarding Plane](https://en.wikipedia.org/wiki/Forwarding_plane)
+  There are 2 related mechanisms that are avalable to help with this task:
+  * a system is REQUIRED to maintain session state (including timing parameters), even when a session is down, until a Detection Time has passed without the receipt of any BFD Control packets. This means that a system may take down a session and transmit an arbitrarily large value in the Required Min RX Interval field to control the rate at which it receives packets
+  * a system may transmit a value of zero for Required Min RX Interval to indicate that the remote system should send no packet whatsoever
+  
+  So long as the local system continues to transmit BFD Control packets, the remote system is obligated to obey the value carried in Required Min RX Interval. If the remote system does not receive any BFD Control packet for a Detection Time, it should **_reset bfd.RemoteMinRxInterval to its initial value of 1 and can transmit at its own rate_**.
+  
+## Operational Considerations  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 **_page 31_**
+  
+## References
+  * [Forwarding Plane](https://en.wikipedia.org/wiki/Forwarding_plane)
