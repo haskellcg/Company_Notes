@@ -349,9 +349,51 @@
   
   If either bfd.DesiredMinTxInterval is changed or bfd.RequiredMinRxInterval is changed, a Poll Sequence must be intiated. **_If the timming is such that a system receiving a Poll sequence wishes to change the paramaters described in this paragraph, the new parameter vaues may be carried in packets with the Final (F) bit set, even if the Poll sequence has not yet been sent_**.
 
+  If bfd.DesiredMinTxInterval is increased and bfd.SessionState is Up, the autual transimission interval must not change until the Poll Sequence described above has terminated. **_This is to ensure that the remote system updates its Detection Time before the transimission interval increases_**.
+  
+  If bfd.RequiredMinRxInterval is reduced and bfd.SessionState is Up, the previous value of bfd.RequiredMinRxInterval must be used when calculating the Detection Time for the remote system until the Poll Sequence described above has terminated. **_This is to ensure that the remote system is transmitting packets at the higher rate (and those packets are being received) prior to the Detection Time being reduced_**.
+  
+  When bfd.SessionState is not Up, the system must set bfd.DesiredMinTxInterval to a value of not less than one second. **_This is intended to ensure that the bandwidth consumed by BFD sessions that are not Up is negligible, particularly in the case where a neighbor may bot be running BFD_**.
+  
+  If the local system reduces its transmit interval due to bfd.RemoteMinRxInterval being reduced (the remote system has advertised a reduced value in Required Min Rx Interval), and the remote system is not in Demand mode, the local system must honor the new interval immediately. In other words, the local system cannot wait longer than the new interval between the previous packet transmission and the next one.
 
+  When the Echo function is active, a system should set bfd.RequiredMinRxInterval to a value of not less than one second. **_This is intend to keep received BFD Contrpl traffic at a negligible level, since the actual detection function is being performed using BFD Echo packets_**.
+  
+  **_In any case than those explicitly called out abve, timing parameter changes must be effected immediately (changing the transmission rate and/or the Detection Time)_**.
+  
+  Note that the Poll Sequence mechanism is ambiguous if more than one parameter change is made that would required its use, and those multiple changes are spread across multiple packets (**_since the semantics of the returning Final are unclear_**). Therefore, if multiple changes are mode that require the use of a Poll Sequence, there are 3 choinces:
+  * They must have communicated in a single BFD Control packet (so the semantics of the Final replay are clear)
+  * completed to disambiguate the situation (at least a round trip time since the last Poll was transmitted) prior to the initiation of another Poll Sequence
+  * an addition BFD Control packet with the Final (F) bit clear must be received after the Poll Sequence has completed prior to the initiation of another Poll Sequence (this option is not available when Demand mode is active)
+  
+#### Calculating the Detection Time  
+  **_The Detection Time (the period of time without receiving BFD packets after which the session is determined to have failed) is not carried explicitly in the protocol_**.
+  
+  **_Note that there may be different Detection Times in each direction_**.
+  
+  **_The calculation of the Detection Time is slightly different when in Demand mode versus Asynchronous mode_**.
+  
+  In Asynchronous mode (**_The Detect Mult value is the number of packets that have to be missed in a row to declare the session to be down_**):
+  ```
+  local.Detection_Time = remote.Detect_Mult * remote.Agreed_Trasmit_Interval
+  remote.Agreed_Trasmit_Interval = max(bfd.RequiredMinRxInterval, remote.DesiredMinTxInterval)
+  ```
+  
+  If Demand mode is not active, and a period of time equal to the Detection Time passed without receiving a BFD Control packet from the remote system, and bfd.SessionState is Init or Up, **_the session has gone down -- the local system must set bfd.SessionState to Down and bfd.LocalDiag to 1 (Control Detection Time expired)_**.
+  
+  In Demand mode (**_bfd.DetectMult is the number of packets that have to be missed in a row to delcared the session to be down_**):
+  ```
+  local.Detection_Time = bfd.DetectMult * local.Agreed_Transmit_Interval
+  local.Agreed_Transmit_Interval = max(bfd.DesiredMinTxInterval, bfd.RemoteMinRxInterval)
+  ```
+  
+  If Demand mode is active, and a period of time equal to the Detection Time passed after the initiation of a Poll Sequence (the transmission of the first BFD Control packet with the Poll bit set), the session has gone down -- **_the local system must set bfd.SessionState to Down and bfd.LocalDiag to 1 (Control Detection Time expired)_**.
 
+#### Detecting Failures with the Echo Function
 
+#### Receiption of BFD Control Packets
+
+#### Transmitting BFD Control Packets
 
 
 
