@@ -395,6 +395,21 @@
 
 #### Transmitting BFD Control Packets
 
+#### Receipion of BFD Echo Packets
+
+#### Transmitting of BFD Echo Packets
+
+#### Min Rx Interval Change
+  When it is desired to change the rate at which BFD Control packets arrive from the remote system, **_bfd.RequiredMinRxInterval_** can be changed at any time to any value. The new value will be transimitted in the next outgoing Control packet, and the remote system will adjust accordingly.
+  
+#### Min Tx Interval Change  
+  When it is desired to change the rate at which BFD Control packets are transmitted to the remote system (subject to the requirements of the neighboring system), **_bfd.DesiredMinTxInterval_** can be changed at any time to any value.
+  
+#### Detect Multiplier Change  
+  When it is desired to change the detect multiplier, the value of bfd.DetectMult can be changed to any nonzero value. The new value will be transmitted with the next BFD Control packet, **_and the use a Poll Sequence is not necessary_**.
+  
+#### Enabling or Disabling The Echo Function
+  If it is 
 
 
 
