@@ -435,10 +435,52 @@
   * If the packet was not discarded, it has been received for purposes of the Detection Time expiration rules
    
 #### Transmitting BFD Control Packets
+  With the exceptions listed in the remainder of this section, a system must not transimit BFD Control packets at an interval less than the larger of **_bfd.DesiredMinTxInterval and bfd.RemoteMinTxInterval_**, less applied jitter. In other words, the system reporting the slower rate determines the transmission rate.
+  
+  **_The periodic transmission of BFD Control packets must be jittered on a per-packet basis by up to 25%_**, that is, the interval must be reduced by a random value of 0 to 25%, in order to avoid self-synchronization with other systems on the same subnetwork. Thus, the average interval between packets will be roughly 12.5% less than that negotiated.
+  
+  If **_bfd.DetectMult is equal to 1_**, the interval between transmitted BFD Control packets must be no more than 90% of the negotiated transmission interval, and must be no less than 75% of the negotiated transmission interval. **_This is to ensure that, on the remote system, the calculated Detection Time does not pass prior to the receipt of the next BFD Control packet_**.
+  
+  The transmit interval must be recalculated whenever bfd.DesiredMinTxInterval changes, or whenever bfd.RemoteMinRxInterval changes, and is equal to the greater of those two values.
+  
+  A system must not transmit BFD Control packets if **_bfd.RemoteDiscr_** is zero and the system is taking the Passive role.
+  
+  A system must not periodically transmit BFD Control packets if bfd.RemoteMinRxInterval is zero.
+  
+  A system must not periodically transmit BFD Control packets if Demand mode is active on the remote system (bfd.RemoteDemandMode is 1, bfd.SessionState is Up, and bfd.RemoteSessionState is Up) and a Poll Sequence is not being transmitted.
+  
+  A system may limit the rate at which such packets are transmitted. If rate limit is in effect, the advertised value of Desired Min Tx Interval must be greater than or equal to the interval between transmitted packets imposed by the rate limiting function.
+  
+  A system must not set the Demand (D) bit unless bfd.DemandMode is 1, bfd.SessionState is Up, and bfd.RemoteSessionState is Up.
+  
+  A BFD Control packet should be transmitted during the interval between periodic Control packet transmissions when the contents of that packet would differ from that in the previously transmitted packet (other than the Poll and Final bits) in order to more rapidly communicate a change in state.
+  
+  The content of transmitted BFD Control packets must be set as follows:
+  * Version: Set to the current version number (1)
+  * Diagnostic (Diag): Set to bfd.LocalDiag
+  * State (Sta): Set to the value indicated by bfd.SessionState
+  * Poll (P): Set to 1 if the local system is sending a Poll Sequence, or 0 if not
+  * Final (F): Set to 1 if the local system is responding to a Control packet received with the Poll (P) bit set, or 0 if not
+  * **_Control Plane Independent (C)_**: Set to 1 if the local system's BFD implementation is independent of the control plane (it can continue to function through a disruption of the control plane)
+  * Authentication Present (A): Set to 1 if authentication is in use on this session (bfd.AuthType is nonzero), or  0 if not
+  * Demand (D): Set to bfd.DemandMode if bfd.SessionState is Up and bfd.RemoteSessionState is Up. Otherwise, it is set to 0
+  * Multipoint (M): Set to 0
+  * Detect Mult: Set to bfd.DetectMult
+  * Length: Set to the appropriate length, based on the fixed header length (24) plus any Authentication Section
+  * My Discriminator: Set to bfd.LocalDiscr
+  * Your Discriminator: Set to bfd.RemoteDiscr
+  * Desired Min Tx Interval: Set to bfd.DesiredMinTxInterval
+  * Required Min Rx Interval: Set to bfd.RequiredMinRxInterval
+  * Required Min Echo Rx Interval: Set to the minimum required Echo packet received interval for this session. If this field is set to zero, the local system is unwilling or unable to loop back BFD Echo packets to the remote system, and the remote system will not send Echo packets
+  * Authentication Section: ...
 
 #### Receipion of BFD Echo Packets
+  A received BFD Echo packets must be demultiplexed to the appropriate session for processing. A means of detecting missing Echo packets
+
 
 #### Transmitting of BFD Echo Packets
+
+
 
 #### Min Rx Interval Change
   When it is desired to change the rate at which BFD Control packets arrive from the remote system, **_bfd.RequiredMinRxInterval_** can be changed at any time to any value. The new value will be transimitted in the next outgoing Control packet, and the remote system will adjust accordingly.
@@ -545,4 +587,5 @@
   * [Replay Attack](https://en.wikipedia.org/wiki/Replay_attack)
   * [HMAC]()
   * [GTSM]()
+  * [Control Plane](http://networkstatic.net/the-control-plane-data-plane-and-forwarding-plane-in-networks)
   
