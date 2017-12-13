@@ -475,12 +475,12 @@
   * Authentication Section: ...
 
 #### Receipion of BFD Echo Packets
-  A received BFD Echo packets must be demultiplexed to the appropriate session for processing. A means of detecting missing Echo packets
-
+  A received BFD Echo packets must be demultiplexed to the appropriate session for processing. A means of detecting missing Echo packets must be implemented, which most likely involves processing of the Echo packets that are received. 
 
 #### Transmitting of BFD Echo Packets
-
-
+  BFD Echo packets must not be transmitted when bfd.SessionState is not Up. BFD Echo packets must not be transmitted unless the last BFD Control packet received from the remote system contains a nonzero value in **_Required Min Echo Rx Interval_**.
+  
+  BFD Echo packet may be transmitted when bfd.SessionState is Up. The interval between transmitted BFD Echo packets must not be less than the value advertised by the remote system in **Required Min Echo RX Interval, except as follows__**: A 25% jitter may be applied to the rate of transmission, such that the actually interval may be between 75% and 100% of the advertised value. A single BFD Echo packet may be transmitted between normally scheduled Echo transmission intervals.  
 
 #### Min Rx Interval Change
   When it is desired to change the rate at which BFD Control packets arrive from the remote system, **_bfd.RequiredMinRxInterval_** can be changed at any time to any value. The new value will be transimitted in the next outgoing Control packet, and the remote system will adjust accordingly.
