@@ -390,9 +390,50 @@
   If Demand mode is active, and a period of time equal to the Detection Time passed after the initiation of a Poll Sequence (the transmission of the first BFD Control packet with the Poll bit set), the session has gone down -- **_the local system must set bfd.SessionState to Down and bfd.LocalDiag to 1 (Control Detection Time expired)_**.
 
 #### Detecting Failures with the Echo Function
+  When the Echo function is active and a sufficient number of Echo packets have not arrived as they should, the session has gone down -- **_the local system must set bfd.SessionState to Down and bfd.LocalDiag to 2 (Echo Function Failed)_**.
+  
+  Any means that will detect a communication failure are acceptable.
 
 #### Receiption of BFD Control Packets
-
+  When a BFD Control packet is received, the following procedure must be followed, in the order specific. If the packet is discarded according to these rules, processing of the packet must cease at that point:
+  * If the **_version number_** is not correct (1), the packet must be discarded
+  * If the **_Length field_** is less than the minimum correct value (24 if the A bit is clear, or 26 if the A bit is set), the packet must be discarded
+  * If the **_Length field_** is greadter than the payload of the encapsulation protocol, the packet must be discarded
+  * If the **_Detect Mult field_** is zero, the packet must be discarded
+  * If the **_Multipoint (M) bit_** is nonzero, the packet must be discarded
+  * If the **_My Discriminator field_** is zero, the packet must be discarded
+  * If the **_Your Discriminator field_** is nonzero, it must be used to select the session with which this BFD packet is associated. If no session is found, the packet must be discarded
+  * If the **_Your Discriminator field_** is zero and the State field is not Down or AdminDown, the packet must be discarded
+  * If the **_Your Discriminator field_** is zero, the session must be selected based on some combination of other fields, possibly including source addressing information, the My Discriminator field, and the interface over which the packet was received. If a matching session is not found, a new session may be created, or the packet may be discarded
+  * If the **_A bit_** is set and no authentication is in use (bfd.AuthType is zero), the packet must be discarded
+  * If the **_A bit_** is clear and authentication is in use (bfd.AuthType is nonzero), the packet must be discarded
+  * If the **_A bit_** is set, the packet must be authenticated under the rules, based on the authentication type in use (bfd.AuthType). This may cause the packet to be discarded
+  * Set **_bfd.RemoteDiscr_** to the value of My Discriminator
+  * Set **_bfd.RemoteState_** to the value of the State (Sta) field
+  * Set **_bfd.RemoteDemandMode_** to the value of the Demand (D) bit
+  * Set **_bfd.RemoteMinRxInterval_** to the value of the Required Min RX Interval
+  * If the **_Required Min Echo RX Interval field_** is zero, the transmission of Echo packet, if any, must cease
+  * If a **_Poll Sequence_** is being transmitted by the local system and the Final (F) bit in the received packet is set, the Poll Sequence must be terminated
+  * Up **_the transmit interval_**
+  * Up **_the Detection Time_**
+  * If **_bfd.SessionState_** is AdminDown: discard the packet
+  * If **_received state_** is AdminDown:
+    * If bfd.SessionState is not Down: Set bfd.LocalDiag to 3 (neighbor signaled session down), set bfd.SessionState to Down
+    * Else: nothing to do
+  * Else:
+    * If bfd.SessionState is Down:
+      * If received State is Down: set bfd.SessionState to Init
+      * Else: set bfd.SessionState to Up
+    * Else If bfd.SessionState is Init:
+      * If received State is Init or Up: set bfd.SessionState to Up
+    * Else (bfd.SessionState is Up):
+      * If received State is Down: set bfd.LocalDiag to 3 (Neighbor signaled session down), set bfd.SessionState to Down
+  * Check to see if **_Demand mode_** should become active or not
+  * If **_bfd.RemoteDemandMode_** is 1, bfd.SessionState is Up, and bfd.RemoteSessionState is Up, Demand mode is active on the remote system and local system must cease the periodic transmission of BFD Control packets.
+  * If **_bfd.RemoteDemandMode_** is 0, or bfd.SessionState is not Up, or bfd.RemoteSesionState is not Up, Demand mode is not active on the remote system and the local system must send periodic BFD Control packets
+  * If **_the Poll (P) bit_** is set, send a BFD Control packet to the remote system with the Poll (P) bit clear, and the Final (F) bit set
+  * If the packet was not discarded, it has been received for purposes of the Detection Time expiration rules
+   
 #### Transmitting BFD Control Packets
 
 #### Receipion of BFD Echo Packets
@@ -499,27 +540,7 @@
 ### Normative References
 ### Informative References
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-**_page 31_**
-  
-## References
+## My References
   * [Forwarding Plane](https://en.wikipedia.org/wiki/Forwarding_plane)
   * [Replay Attack](https://en.wikipedia.org/wiki/Replay_attack)
   * [HMAC]()
