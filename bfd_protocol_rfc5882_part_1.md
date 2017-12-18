@@ -65,7 +65,79 @@
   Slightly different mechanisms are used if the control protocol supports the routing of multiple data protocols, **_depending on whether the control protocol supports separate topologies for each data_**.
   
 ##### Shared Topologies  
+  With a share topology, if one of the data protocols fails (as signaled by the associated BFD session), it is necessary to consider the path to have failed for all data protcols.
   
+  Therefore, when a BFD session transitions from Up to Down, action should be taken in the control protocol to signal the lack of connectivity for the path in the topology corresponding to the BFD session. **_If this cannot be signaled otherwise, a control protocol timeout should be emulated for the associate neighbor_**.
+  
+##### Independent Topologies
+  With individual routing topologies for each data protocol, only the failed data protocol needs to be rerouted around the failed path.
+  
+  Generally, this can be done without impacting the connectivity of other topologies (since otherwise it is very difficult to support separate topologies  for multiple data protocols).
+  
+### Interactions with Graceful Restart Mechanisms  
+  A number of control protocol support Graceful Restart mechanisms, including IS-IS, OSPF, BGP. These mechanisms are desinged to allow a control protocol to restart without perturbing network connectivity state (lest it appear that the system and/or all of its links had failed). They are predicated on the existence of a separate forwarding plane that does not necessarily share fate with the control plane in which the routing protocols operate. **_In particular, the assumption is that the forwarding plane can continue to function while the protocols restart and sort things out_**.
+   
+  **_BFD implementations annouce via the Control Plane Independent "C" bit whether or not BFD shares fate with the control plane. This information is used to determine the actions to be taken in conjuntion with Graceful Restart_**.
+   
+  If BFD does not share its fate with the control plane on either system, it can be used to determine whether **_Graceful Restart in a control protocol is not viable (the forwarding plane is not operating)_**.
+   
+  If the control protocol has a Graceful Restart mechanism, BFD may be used in conjunction with this mechanism. The interaction between BFD and the control protocol depends on the capabilities of the control protocol and whether or not BFD shares fate with the control plane. **_In particular, it may be desirable for a BFD session failure to abort the Graceful Restart process and allow the failure to be visible to network_**.
+  
+#### BFD Fate Independent of the Control Plane  
+  If BFD is implemented in the forwarding plane and does not share fate with the control plane on either system (the "C" bit is set in the BFD Control packets in both directions), **_control protocol restarts should not affect the BFD session_**. In this case, a BFD session failure implies that data can no longer be forwarded, so any Graceful Restart in progress at that time of the BFD session failure should be aborted in order to avoid black holes, and a topology change should be signaled in the control protocol.
+   
+#### BFD Shares Fate with the Control Plane   
+  If BFD shares fate with the control plane on either system (the "C" bit is clear in either direction), a BFD session failure connot be disentangled from other events taking place in the control plane. In many cases, the BFD session will fail as a side effect of the restart taking place. As such, it would be best to avoid aborting any Graceful Restart staking place, if possible (since otherwise BFD and Graceful Restart cannot coexist)
+  
+##### Control Protocols with Planned Restart Signaling
+  Some control protocols can signal a planned restart prior to the restart taking place. In this case, if a BFD session failure occurs during the restart, such a planned restart should not be aborted and the session failure should not result in a topology change being signaled in the control protocol.
+  
+##### Control Protocols without Planned Restart Signaling  
+  Control protocols that cannot signal a planned restart depend on the recently restarted system to signal the Graceful Restart prior to the control protocol adjacency timeout. In most cases, whether the restart is planned or unplanned, it is likely that the BFD session will time out prior to the onset of Graceful Restart, in which case a topology change should be signaled in the control protocol.
+  
+  However, if the restart is in fact planned, an implementation may adjust the BFD session timing parameters prior to restarting in such a way that the Detection Time in each direction is longer than the restart period of the control protocol, providing the restarting system the same opportunity to enter Graceful Restart as it would have without BFD. 
+  
+  The restarting system should not send any BFD Control packets until there is a high likelihood that its neighbors know a Graceful Restart is taking place, as the first BFD Control packet will cause the BFD session to fail.
+  
+### Interaction with Multiple Control Protocols
+  
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
   
   
 
