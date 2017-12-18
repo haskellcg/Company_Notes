@@ -100,7 +100,24 @@
   The restarting system should not send any BFD Control packets until there is a high likelihood that its neighbors know a Graceful Restart is taking place, as the first BFD Control packet will cause the BFD session to fail.
   
 ### Interaction with Multiple Control Protocols
+  If multiple control protocols wish to establish BFD sessions with the same remote system for the same data protocol, all must share a single BFD session.
   
+  If hierarchical or dependent layers of control protocols are in use (say, OSPF and Internet BGP (IBGP)), it may not be useful for more than one of them to interact with BFD. In this example, because IBGP is dependent on OSPF for its routing information, the faster failure detection replayed to IBGP may actually be detrimental. **_The cost of a peer state transition is high in BGD, and OSPF will naturally heal the path through the network if it were to receive the failure detection_**.
+  
+  In general, it is best for the protocol at the lowest point in the hierarchy to interact with BFD, and then to use existing interactions between the control protocols to effect changes as necessary. This will provide the fastest possible failure detection and recovery in a network.
+  
+## Interaction with Non-Protocol Functions
+  BFD session status may be used to affect other system functions that are not protocol based (for example, **_static routes_**). If the path to a remote system fails, it may be desirable to avoid passing traffic to that remote system, so the local system may wish to take internal measures to accomplish this (such as **_withdrawing a static route and withdrawing that route from routing protocols_**).
+  
+  If it is known, or presumed, that the remote system is BFD capable and the BFD session is not in Up state, appropriate action should be taken (**_such as withdrawing a static route_**).
+  
+  If it is known, or presumed, that the remote system does not support BFD, action such as withdrawing a static route should not be taken.
+  
+  Bootstrapping of the BFD session in the non-protocol case is likely to be derived from configuration information.
+  
+  There is no need to exchange endpoints or discriminator values via any mechanism other than configuration (via Operational Support Systems or any other means) as the endpoints must be knwon and configured by the same means.
+  
+## Data Protocols and Demultiplexing  
    
    
    
