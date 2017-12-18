@@ -21,7 +21,25 @@
   As such, both sides of a session must take the active role, and any BFD packet from the remote machine with a zero value of Your Discriminator must be associated with the session to the remote system, interface, and the protocol.
   
 ## Encapsulation
-  BFD Control packets must be transmitted in UDP packets
+  BFD Control packets must be transmitted in UDP packets with **_destination port 3784, within an IPv4 or IPv6 packet_**. The source port must be in range **_49152 through 65535_**. The same UDP source port must be used for all BFD Control packets associated with a particular session. The source port should be unique among all BFD sessions on the system.
+  
+  If more than 16384 BFD sessions are simultaneously active, UDP source port numbers may be reused on multiple session, but the number of distinct uses of the same UDP source port number should be minimized. An implementation may use the UDP port source port number to aid in demultiplexing incoming BFD Control packets, but ultimately the mechanisms in BFD must be used to demultiplex incoming packets to the proper session.
+  
+  BFD Echo packets must be transmitted in UDP packets with destination UDP port **_3785 in an IPv4 or IPv6 packets_**. The setting of the UDP source port is outside the scope of this specification. The destination address must be chosen in such a way as to preclude the remote system from generating ICMP or Neighbor Discovery Redirect messages.
+  
+  In particular, the source address should not be part of the subnet bound to the interface over which the BFD Echo packet is being transmitted, and it should not be an IPv6 link-local address, unless it is known by other means that the remote system will not send Redirects.
+  
+  The above requirements may require the bypassing of some common IP layer functionality, particularly in host implementations.
+  
+## TTL/Hop Limit Issues
+  If BFD authentication is not in use on a session, all BFD Control packets for the session must be sent with a Time to Live (TTL) or Hop Limit value of 255. All received BFD Control packets that are demultiplexed to the session must be **_discard if the received TTL or Hop Limit is not euqal to 255_**.  A discussion of this mechanism can be founf in GTSM.
+  
+  If BFD authentication is in use on a session, all BFD Control packets must be sent with a TTL or Hop Limit value of 255. All received BFD Control packets that are demultiplexed to the session may be discard if the received TTL or Hop Limit is not euqal to 255. If the TTL/Hop Limit check is made, it may be done before any cryptographic authentication takes place if this will avoid unnecessary calculation that would be detrimental to the receiving system.
+  
+  "authentication in use" means that the system is sending BFD Control packets with the Authentication bit set and with the Authentication Section included and that all unauthenticated packets demultiplexed to the session are discarded, per the BFD base specification.
+  
+## Addressing Issues  
+  
   
   
   
@@ -38,3 +56,4 @@
   
 ## My References
   * [TFRC](https://baike.baidu.com/item/TFRC/6527816?fr=aladdin)
+  * [GTSM](https://tools.ietf.org/pdf/rfc5082.pdf)
