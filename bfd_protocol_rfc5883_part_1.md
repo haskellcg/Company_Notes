@@ -58,27 +58,19 @@
   The encapsulation of BFD Control packets for multihop appliaction in IPv4 and IPv6 is identical to that define in BFD-1HOP, **_except that the UDP destination port must have a value 4784_**. This can aid in the demultiplexing and internal routing of incoming BFD packets.
   
 ## Authentication
-  By their nature, multihop paths expose BFD to spoofing. As the 
+  By their nature, multihop paths expose BFD to spoofing. As the number of hops increase, the exposure to attack grows. As such, implementations of BFD should utilize cryptographic authentication over multihop paths to help mitigate denial-of-service attacks.
   
+## IANA Consideratrions
+  Port 4784 has been assigned by IANA for use with BFD Multihop Control.
   
+## Security Considerations
+  As the number of hops increase, BFD becomes further exposed to attack. The use of strong forms of authentications is strongly encouraged.
   
+  No additional security issues are raised in this document beyond those that exist in the reference BFD documents.
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+## Reference  
   
 ## My References
   * [OAM](https://baike.baidu.com/item/OAM/2260538?fr=aladdin)
   * [out-of-band](https://baike.baidu.com/item/out-of-band/15801641?fr=aladdin)
-  
-
   
