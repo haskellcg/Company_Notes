@@ -39,21 +39,31 @@
   "authentication in use" means that the system is sending BFD Control packets with the Authentication bit set and with the Authentication Section included and that all unauthenticated packets demultiplexed to the session are discarded, per the BFD base specification.
   
 ## Addressing Issues  
+  Implementations must ensure that all BFD Control packets are transmitted over the one-hop path being protected by BFD.
   
+  On a multiaccess network, BFD Control pakcets must be transmitted with source and destination addresses that are part of the subnet (addresses from and to interfaces on the subnet).
   
+  On a point-to-point link, the source address of a BFD Control packet must not be used to identify the session. This means that the initial BFD packets must be accepted with any source address, and that subsequent BFD packets must be demultiplexed solely by the Your Discriminator field (as is always the case). 
   
+  This allows the source address to change if necessary. 
   
+  If the received source address changes, the local system must not use that address as the destination in outgoing BFD Control packets; rather, **_it must continue to use the address configured at session creatation_**. An implementation may notify the application that the neighbor's source address has changed, so that the application might choose to change the destination address ot take some other action. 
   
+  Note that the TTL/Hop Limit Check described in section 5 (or the use of authentication) precludes the BFD packets from having come from any source other than the immediate neighbor.
   
+## BFD for Use with Tunnels
+  A number of mechanism are available to tunnel IPv4 and IPv6 over arbitrary topologies. If the tunnel mechanism does not decrement the TTL or Hop Limit of the network protocol carried within, the mechanism described in this document may be used to provide liveness detection for the tunnel. The BFD authentication mechanism should be used and is strongly encouraged.
   
+## IANA Considerations
+  Ports **_3784 and 3875_** were assigned by IANA for use with the BFD Control and BFD Echo protocols, respectively.
   
+## Security Considerations
+  In this application, the use of TTL=255 on transmit and receive, coupled with an association to an incoming interface, is viewed as supplying equivalent security characteristic to other protocols used in the infrastructure, as it is not trivially spoofable
   
+  The use of the TTL=255 check simultaneously with BFD authentication provides a low overhead mechanism for discarding a class of unauthorized packets and may be useful in implementations in which cryptographic checksum use is susceptible to denial-of-service attacks. The use or non-use of this mechanism does not impact interoperability.
   
-  
-  
-  
-  
-  
+## References  
+
 ## My References
   * [TFRC](https://baike.baidu.com/item/TFRC/6527816?fr=aladdin)
   * [GTSM](https://tools.ietf.org/pdf/rfc5082.pdf)
