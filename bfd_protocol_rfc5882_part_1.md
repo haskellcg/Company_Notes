@@ -140,9 +140,23 @@
   Combinations of more than one of the scenarios listed above may be useful in some cases.
    
 ## Other Application Issues   
+  Running BFD inside the tunnel is recommended, as it exercises more aspects of the path. One way to accommodate this is to address BFD packets based on the tunnel endpoints, assuming that they are numbered.
    
-   
-   
+  If a planned outage is to take place on a path over which BFD is run, it is prefreable to take down the BFD session by going to AdiminDown state prior to the outage. The system asserting AdminDown should do so for at least one Detection Time in order to ensure that the remote system is aware of it.
+  
+  Similar, if BFD is to be deconfigured from a system, it is desirable not to trigger any client application action. Simply ceasing the transmission of BFD Control packets will cause the remote system to detect a session failure. In order to avoid this, the **_system on which BFD is being deconfigured should put the session into AdminDown state and maintain this state for a Detection Time to ensure that the remote system is aware of it_**.
+  
+## Interoperability Issues  
+  Asynchronous mode is mandatory and is always available, and other modes and functions are negotiated at run time.
+  
+  The interaction between BFD and other protocols and control functions is very loosely coupled. The action taken are based on existing mechanisms in those protocols and functions, so interoperability problems are very unlikely unless BFD is applied in contradictory ways (**_such as a BFD session failure causing one implementation to go down and another implementation to come up_**).
+  
+## Specific Protocol Interactions (Non-Normative)  
+  Since the interactions do not affect interoperability, they are non-normative
+  
+### BFD Interactions with OSPFv2, OSPFv3, and IS-IS
+#### Session Establishment
+  The most obvious choice
    
    
    
