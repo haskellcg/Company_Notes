@@ -156,34 +156,33 @@
   
 ### BFD Interactions with OSPFv2, OSPFv3, and IS-IS
 #### Session Establishment
-  The most obvious choice
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
+  The most obvious choice for triggering BFD session establishment with these protocols would be to use the discovery mechanism inherent in the Hello protocols in OSPF and IS-IS to bootstrap the establishment of the BFD session. Any BFD sessions established to support OSPF and IS-IS across a single IP hop must operate in accordance with BFD-1HOP.
   
+#### Reactione to BFD State Changes  
+  At this time, OSPFv2 and OSPFv3 carry routing information for a single data protocol (IPV4 and IPv6, respectively) so when it is desired to signal a topology change after a BFD session failure, this should be done by tearing down the corresponding OSPF neighbor.
   
-
-
+  IS-IS may be used to support only one data protocol, or multiple data protocols. [ISIS] specifies a common topology for multiple data protocols, but work is under way to support multiple data protocols. If multiple topologies are used to support multiple data protocols (or multiple classes of service of the same data protocol), the topology-specific path associate with a failing BFD session should no longer be advertised in IS-IS Label Switched Paths (LSPs) in order to **_signal a lack of connectibity_**. Otherwise, a failing BFD session should be signaled by simulating an IS-IS adjacency failure.
+  
+  OSPF has a planned restart signaling mechanism, whereas IS-IS does not.
+   
+#### OSPF Virtual Links
+  If it is desired to use BFD for failure detection of OSPF Virtual Links, the mechanism described in [BFD-MULTI] must be used, since OSPF Virtual Links may traverse an arbitrary number of hops. BFD authentication should be used and is strongly encouraged.
+  
+### Interaction with BGP
+  BFD maybe useful with External Border Gateway Protocol (EBGP) session [BGP] in order to **_more rapidly trigger topology changes in the face of path failure_**. It is generally unwise for IBGP sessions to interact with BFD if the underlying IGP is already doing so.
+  
+  EBGP sessions being advised by BFD establish either a one-hop [BFD-1HOP] or a multihop [BFD-MULTI] session, depending on whether or not neighbot is immediately adjacent. The BFD session should be established to the BGP neighbor (as opposed to any other Next Hop advertised in BGP). BFD authentication should be used and is strongly encouraged.
+  
+  [BGP-GRACE] describes a Graceful Restart mechanism for BPG. If Graceful Restart is not taking place on an EBGP session, and the corresponding BFD session fails, the EBGP session should be torn down. If Graceful Restart is taking place. BGP Graceful Restart does not signal planned restarts. 
+  
+### Interactions with RIP
+  The Routing Information Protocol (RIP) is somewhat unique in that, at least as specified, neighbor adjacency state is not stored per se. Rather, installed routes contain a next hop address, which in most cases is the address of the advertising neighbor (but may not be).
+  
+  In the case of RIP, when the BFD session associate with a neighbor fails, an expiration of the "timeout" timer for each route installed from the neighbor (for which the neighbor is the next hop) should be simulated.
+  
+  Note that if a BFD session fails, and a route is received from that neighbor with a next hop address that is not the address of the neighbor itself, the router will linger until it natually times out (after 180 seconds). However, if an implementation keep track of all of the routes received from each neighbor, all of the routes from the beighbor corresponding to the failed BFD session should be timed out, regardless of the next hop specified therein, and thereby avoiding the lingering route problem.
+  
+## Security Considerations  
+   
+## References   
+ 
