@@ -118,14 +118,28 @@
   There is no need to exchange endpoints or discriminator values via any mechanism other than configuration (via Operational Support Systems or any other means) as the endpoints must be knwon and configured by the same means.
   
 ## Data Protocols and Demultiplexing  
+  BFD is intended to **_protect a single "data protocol" and is encapsulated within that protocol_**.
    
+  The BFD Control packets must be marked in the same way as the data packets, partly to ensure as much fate sharing as possible between BFD and data traffic, and also to demultiplex the initial packet if the discriminator values have not been changed.
    
+## Multiple Link Subnetworks   
+  A number of technologies exist for aggregating multiple parallel links at layer N-1 and treating them as a single link at layer N.
+  
+### Complete Decoupling  
+  The simplest approach is to simply run BFD over the layer N path, with no interaction with the layer N-1 mechanisms.
+  
+### Layer N-1 Hints  
+  This approach is to have the layer N-1 mechanism inform the layer N BFD when the aggregated link is no longer viable. In this case, the BFD need not wait for the session to time out. This is analogous to triggering a session failure based on the hardware-detected failure of a single link.
    
+### Aggregating BFD Sessions   
+  This approach would be to use BFD on each layer N-1 link and to aggregate the state of the multiple sessions into a single indication to the layer N clients. This approach has the advantage that it is independent of the layer N-1 technology.
+  
+  However, this approach only works if the layer N neighbor is the same as the layer N-1 neighbor (a single hop at layer N-1)
+  
+### Combinations of Scenarios
+  Combinations of more than one of the scenarios listed above may be useful in some cases.
    
-   
-   
-   
-   
+## Other Application Issues   
    
    
    
