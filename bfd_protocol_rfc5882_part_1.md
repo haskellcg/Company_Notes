@@ -18,7 +18,9 @@
   It is important to remember that the interaction between BFD and its client applications has essentially no interoperability issues, because BFD is acting in an advisory nature and existing mechanisms in the client applications are used in reaction to BFD events.
   
 ## Basic Interaction between BFD Sessions and Clients  
-
-
+  One way of modeling this interaction is to create an adaptation layer between the BFD state machine and the client application. The adaptation layer is cognizant of both the internals of the BFD implementation and the requirements of the clients
+  
+### Session State Hysteresis  
+  Implementors may **_choose to hide rapid Up/Down/Up transitions of BFD session form its clients_**. 
 
 
