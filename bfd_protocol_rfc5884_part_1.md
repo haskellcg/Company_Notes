@@ -62,6 +62,68 @@
   
   For fault detection for MPLS PWs, this document assume that the PW control channel type is configured and the support of LSP Ping is also configured.
   
+## Initialization and Demultiplexing  
+  A BFD session may be established for a FEC associated with an MPLS LSP. As described above, in the case of PHP or when the egress LSR distributes an explicit nul label to the penultimate hop router, or next-hop label allocation, the BFD Control packet received by the egress LSR does not contain sufficient information to associate it with a BFD session.
   
+  Hence, the demultiplexing must be done using the remote discriminator field in the received BFD Control packet.
+  
+## Sesison Establishment  
+  A BFD session is bootstrapped using LSP Ping. The initiation of fault detection for a particular <MPLS LSP, FEC> combination results in the exchange of LSP Ping Echo request and Echo reply packets, in the ping mode, between the ingress and egress LSRs for that <MPLS LSP, FEC>.
+  
+  To establish a BFD session, an LSP Ping Echo request message must carry the local discriminator assigned by the ingress LSR for the BFD session. This must subsequently be used as the My Discriminator field in the BFD session packets sent by the ingress LSR.
+  
+  On the receipt of the LSP Ping Echo request message, the egress LSR must send a BFD Control packet to the ingress LSR, if the validation of the FEC in the LSP Ping Echo request message succeeds. This BFD Control packet must be set the Your Discriminator field to the discriminator received from the ingress LSR in the LSP Ping Echo request message. The egress LSR may respond with an LSP Ping Echo reply message that carries the local discriminator assigned by it for the BFD session. 
+  
+  The local discriminator assigned by the egress LSR must be used as the MY Discriminator field in the BFD session packets sent by the egress LSR.
+  
+  The ingress LSR follows the procedures in BFD to sent BFD Control packets to the egress LSR in response to the BFD Control packets received fron the egress LSR. The BFD Control packets from the ingress to the egress LSR must set the local discriminator of the egress LSR, in the Your Discriminator field.
+  
+  The egress LSR demultiplexes the BFD session based on the received Your Discriminator field. As mentioned above, the gress LSR must sent Control packets to the ingress LSR with the Your discriminator field set to the local discriminator of the ingress LSR. **_The ingress LSR uses this to demultiplex the BFD session_**.
+  
+### BFD Discriminator TLV in LSP Ping
+  LSP Ping Echo request and Echo reply messages carry a BFD discriminator TLV for the purpose of session establishment as described above.
+  
+  IANA has assigned **_a type value of 15 to this TLV_**. This TLV has a length 4. The value contains the 4-byte local discriminator that the LSR, sending the LSP Ping message, associates with the BFD session.
+  
+  If the BFD session is not in Up state, the periodic LSP Ping Echo request messages must include the BFD Discriminator TLV.
+  
+## Encapculation
+  BFD Control packets sent by the ingress LSR must be encapsulated in the MPLS label stack that corresponding to the FEC for which detection is being performed. If the label stack has a depth greater than one, the TTL of the inner MPLS label may be set to 1. This may be necessary for certain FECs to enable the egress LSR's control plane to receive the packet. For MPLS PWs, alternatively, the presence of a fault detection message may be indicated by setting a bit in the control word.
+  
+  The BFD Control packet sent by the ingress LSR must be a UDP packet with a well-known destination port 3784 and a source port assigned by the sender as per the procedures in BFD-IP. The source IP address is a routable address of the sender.
+  
+  The destination IP address must be randomly chosen from the 127/8 range for IPv4 and from the 0:0:0:0:0:FFFF:7F00/104 range for IPv6 with the following exception. If the FEC is an LDP IP FEC, the ingress LSR may discover multiple alternate paths to the egress LSR for this FEC using LSP Ping traceroute.
+  
+  In this case, the destination IP address, used in a BFD session established for one such alternate path, is the address in the 127/8 range for IPv4 or 0:0:0:0:0:FFFF:7F00/104 range for IPv6 discovered by LSP Ping traceroute to exercise that particular alternate path.
+  
+  The IP TTL or Hop limit must be set to 1.
+  
+  BFD Control packet sent by the egress LSR are UDP packets. The source IP address is a routable address of the replier.
+  
+  The BFD Control packet sent by the egress LSR to the ingress LSR may be routed based on the destination IP address as per the procedures in BFD-MHOP. If this is the case, the destination IP address must be set to the source IP address of the LSP Ping Echo request message , received by the egress LSR from the ingress LSR.
+  
+  Or the BFD Control packet sent by the egress LSR to the ingress LSR may be encapsulated in an MPLS label stack. In this case, the presence of the fault detection message is indicated as described above. This may be the case if the FEC for which the fault detection is being performed corresponds to a bidirectional LSP from the egress LSR to the ingress LSR. In this case, the destination IP address must be randomly chosen from the 127/8 range for IPv4 and from the 0:0:0:0:0:FFFF:7F00/104 range for IPv6.
+  
+  The BFD Control packet sent by the egress LSR must have a well-known destination port 4784, if it is routed BFD-MHOP, or it must have a wll-known destination port 3784 BFD-IP if it is encapsulated in a MPLS label stack. The source port must be assigned by the egress LSR as per the procedures in BFD-IP.
+  
+  Note that once that BFD sesison for the MPLS LSP is Up, either end of the BFD session must not change the source IP address and the local discriminator values of the BFD Control packets it generates, unless it first brings down the session. This implies that an LSR must ignore BFD packets for a given session, demultiplexed using the Your Discriminator field, if the session is in Up state and if the My Disriminator or the Source IP address fields of the received packet do not match the valuies associated with the session.
+  
+## Security Considerations
+  For BFD Control packets sent by the ingress LSR or when the BFD Control packet sent by the egress LSR are encapsulated in an MPLS label stack, MPLS security considerations apply.
+  
+  When BFD Control packets sent by the egress LSR are routed, the authentication considerations discuessed in BFD-MHOP should be followed.
+  
+## IANA Considerations
+  This document introduces a BFD discriminator TLV in LSP Ping. The BFD Discriminator has been assgined a value of 15 from the LSP Ping TLVs and sub-TLVs registry maintained by IANA.
+  
+## Acknowledgments
+
+## References
+  
+## My References
+  * [TLV]()
+  * [FEC]()
+  * [egress, ingress]()
+  * [traceroute]()
   
   
