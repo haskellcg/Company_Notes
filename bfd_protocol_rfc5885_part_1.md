@@ -76,11 +76,51 @@
   * Once a PE has chosen a single BFD CV Type to use, it must continue using it until when the PW is re-signaled. In order to change the negotiated and selected BFD CV Type, the PW must be torn down and re-established
   
 ## Capability Selection  
+  The precedence rules for selection of various CC and CV Types is clearly outlined in Section 7 in RFC5085. This section augments there rules when the BFD CV Type to use out of the four available CV Types defined is tied to multiple factors, as described in Section 3.3. 
   
+  Given that BFD is bidirectional in nature, only CV Types that are both received and sent in VCCV capability signaling advertisement can be selected.
   
+  When multiple BFD CV Types are advertised, and after applying the rules in Section 3.3, the set that both ends of the pesudowire have in common is determined. If the two ends have more than one BFD CV Type in common, the following list of BFD CV Types is considered in the order of the lowest list number CV Type to the highest list number CV Type, and the CV Type wioth the lowest list number is used:
+  * 0x20 - BFD PW-ACH-encapsulated (without IP/UDP headers), for PW Fault Detection and AC/PW Fault Status Signaling
+  * 0x10 - BFD PW-ACH-encapsulated (without IP/UDP headers), for PW Fault Detection only
+  * 0x08 - BFD IP/UDP-encapsulated, for PW Fault Detection and AC/PW Fault Signaling
+  * 0x04 - BFD IP/UDP-encapsulated, for PW Fault Detection only
   
+## IANA Considerations  
+### MPLS CV Types for the VCCV Interface Paramters Sub-TLV 
+  IANA has augmented the "VCCV Connectivity Verification (CV) Types" registry in the Pseudowire Name Spaces reachable from [IANA]. These are bit field values.
   
+  MPL Connectivity Verification (CV) Types:
   
+  Bit (Value)|Description
+  -----------|-----------
+  Bit 2 (0x04)|BFD IP/UDP-encapsulated, for PW Fault Detection only
+  Bit 3 (0x08)|BFD IP/UDP-encapsulated, for PW Fault Detection and AC/PW Fault Status Signaling
+  Bit 4 (0x10)|BFD PW-ACH-encapsulated, for PW Fault Detection only
+  Bit 5 (0x20)|BFD PW-ACH-encapsulated, for PW Fault Detection and AC/PW Fault Status Signaling
+  
+### PW Associated Channel Type
+  The PW Associated Channel Types used by VCCV rely on repviously allocated numbers from the Pseudowire Associated Channel Types Registry [RFC4385] in the Pseudowire Name Spaces reachable from [IANA].
+  
+  Registry:
+  
+  Value|Description|TLV Follows|Reference
+  -----|-----------|-----------|---------
+  0x0007|BFD Control, PW-ACH encapsulation (without IP/UDP Headers)|No|[This document]
+  
+### L2TPv3 CV Types for the VCCV Capability AVP
+  IANA has reserved the following L2TPv3 Connectivity Verification (CV) Types in the VCCV Capability AVP (Values) registry:
+  
+  VCCV Capability AVP (Attribute Type 96) Values:
+  
+  Bit (Value)|Description
+  -----------|-----------
+  Bit 2 (0x04)|BFD IP/UDP-encapsulated, for PW Fault Detection only
+  Bit 3 (0x08)|BFD IP/UDP-encapsulated, for PW Fault Detection and AC/PW Fault Status Signaling
+  Bit 4 (0x10)|BFD PW-ACH-encapsulated, for PW Fault Detection only
+  Bit 5 (0x20)|BFD PW-ACH-encapsulated, for PW Fault Detection and AC/PW Fault Status Signaling
+  
+## Congestion Considerations  
   
   
   
