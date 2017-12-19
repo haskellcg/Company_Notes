@@ -121,24 +121,27 @@
   Bit 5 (0x20)|BFD PW-ACH-encapsulated, for PW Fault Detection and AC/PW Fault Status Signaling
   
 ## Congestion Considerations  
+  The congestion considerations that apply to RFC5085 apply to this mode of operation as well. 
   
+  BFD as a VCCV application is required to provide details on congestion and bandwidth considerations. BFD provides with a desired minimum transmit interval and a required minimum receive interval, negotiates the transmission interval using these configurable fields, and has a packet of fixed size (setting the transmission rate).
   
+  Therefore, it results in a configuration limit bandwidth utilization. As state in RFC5805, this is sufficient protection agianst congestion as long as BFD's configured maximum bit-rate is minimal compared to the bit-rate of the pseudowire the VCCV channel is associated with.
   
+  If the pseudowire bit-rate can't be guaranteed to be minimal, like potentially for highly variable bit-rate and/or congestion responsive pseudowires, BFD will be required to operate using an daptive congestion control mechanism (for example, including a throttled transmission rate on "congestion detected" situations, and a slow-start after shutdown due to congestion and until basic connectivity is verified).
   
+  Since the bandwidth utilized by BFD is configuration-limited, the VCCV channel must not be rate-limited below this maximum configurable bandwidth or BFD will not operate correctly.
   
+  The VCCV channel could provide rate-limiting above the maximum BFD rate, to protect from a misbehaving BFD application, so that it does not conflict and can coexist. Additionally, the VCCV channel should not use any additional congestion control loop that would interface or negatively interact with that of BFD.
   
+## Security Considerations
+  Routers that important the additional CV Types defined herein are subject to the same security considerations as defined in RFC5085, RFC5880, RFC5881.
   
+  This specification does not raise any additional security issues beyong these. The IP/UDP-encapsulated BFD makes use of the TTL/Hop Limit procedures described in Section 5 of RFC5881, including the use of the Generalized TTL Security Mechanism (GTSM) as a security mechanism.
   
+## Acknowledgements
+
+## References
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
 ## My References
   * [Pseudowire](https://baike.baidu.com/item/Pseudowire/3780134?fr=aladdin)
