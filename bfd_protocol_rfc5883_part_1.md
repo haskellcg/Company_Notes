@@ -43,12 +43,12 @@
   
   The disadvantage is that it requires at least some level of BFD-specific knowledge in parts of the system outside of BFD.
   
-### Undirectional Links
+### Unidirectional Links
   Unidirectional links are classified as multihop paths because the return path (which should exist at some level in order to make the link useful) may be arbitrary, and the return paths for BFD sessions protecting parallel unidirectional links may be overlap or even be identical. (If two unidirectional links, one in each direction, are to carry a single BFD session, this can be done using the single-hop approach).
   
   Either of the two method outlined earlier may be used in the unidirectional link case, but a more general solution can be found strictly within BFD and without addressing limitations.
   
-  The approach is simmilar to the one-hop sepcification, since the unidirectional link is a single hop. Lets define the two systems as the Unidirectional Sender and Unidirectional Reciever. In this approach, the Unidirectional Sender must operate in the Active role, and the Unidirectional Recieved must operat in the Passive role.
+  The approach is similar to the one-hop sepcification, since the unidirectional link is a single hop. Lets define the two systems as the Unidirectional Sender and Unidirectional Reciever. In this approach, the Unidirectional Sender must operate in the Active role, and the Unidirectional Recieved must operat in the Passive role.
   
   In the Passive role, by definition, the Unidirectional Receiver does not transmit any BFD Control Packets until it learns the discriminator value in use by the other system (upon receipt of the first BFD Control packet).
   
