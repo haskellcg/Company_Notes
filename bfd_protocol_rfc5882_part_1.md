@@ -7,7 +7,7 @@
 ## Overview
   The promptness of the detection of a path failure can be controlled by trading off protocol overhead and system load with detection times.
   
-  BFD is not intended to directly provided control protocol liveness informartion; those protcols have their own **_means and vagaries_**. Rather, control protocols can use the services provided by BFD to inform their operation. **_BFD can be viwed as a service provided by the layer in which it is running_**.
+  BFD is not intended to directly provided control protocol liveness informartion; those protocols have their own **_means and vagaries_**. Rather, control protocols can use the services provided by BFD to inform their operation. **_BFD can be viwed as a service provided by the layer in which it is running_**.
   
   **_The service interface with BFD is straightforward. The application supplies session parameters (neighbor address, time parameters, protocol options), and BFD provides the session state, of which the most interesting transitions are to and from the Up state. The application is expected to bootstrap the BFD session, as BFD has no discovery mechanism_**
   
@@ -57,7 +57,7 @@
   For other transitions from Up to Down state, the mechanism by which the protocol reacts to a path failure signaled by BFD depends on the capabilities of the protcol.
   
 #### Control Protocol with a Single Data Protocol  
-  Note that this should not be interpreted as BFD replacing the control protcol liveness mechanism, if any, as the control protocol may rely on machanisms not verified bt BFD (multicast, for instance) so BFD most liekly cannot detect all failures that would impact the control protocol. **_However, a control protcol may choose to use BFD session state information to more rapidlt detect an impending control protocol failure, particularly if the control protocol operates in-band (over the data protocol)_**.
+  Note that this should not be interpreted as BFD replacing the control protcol liveness mechanism, if any, as the control protocol may rely on machanisms not verified bt BFD (multicast, for instance) so BFD most likely cannot detect all failures that would impact the control protocol. **_However, a control protcol may choose to use BFD session state information to more rapidly detect an impending control protocol failure, particularly if the control protocol operates in-band (over the data protocol)_**.
   
   If the control protocol has an explicit mechanism rather than impacting the connectivity of the control protocol, particularly if the control protocol operates out-of-band from the failed data protocol.
   
@@ -87,7 +87,7 @@
   If BFD is implemented in the forwarding plane and does not share fate with the control plane on either system (the "C" bit is set in the BFD Control packets in both directions), **_control protocol restarts should not affect the BFD session_**. In this case, a BFD session failure implies that data can no longer be forwarded, so any Graceful Restart in progress at that time of the BFD session failure should be aborted in order to avoid black holes, and a topology change should be signaled in the control protocol.
    
 #### BFD Shares Fate with the Control Plane   
-  If BFD shares fate with the control plane on either system (the "C" bit is clear in either direction), a BFD session failure connot be disentangled from other events taking place in the control plane. In many cases, the BFD session will fail as a side effect of the restart taking place. As such, it would be best to avoid aborting any Graceful Restart staking place, if possible (since otherwise BFD and Graceful Restart cannot coexist)
+  If BFD shares fate with the control plane on either system (the "C" bit is clear in either direction), a BFD session failure connot be disentangled from other events taking place in the control plane. In many cases, the BFD session will fail as a side effect of the restart taking place. As such, it would be best to avoid aborting any Graceful Restart taking place, if possible (since otherwise BFD and Graceful Restart cannot coexist)
   
 ##### Control Protocols with Planned Restart Signaling
   Some control protocols can signal a planned restart prior to the restart taking place. In this case, if a BFD session failure occurs during the restart, such a planned restart should not be aborted and the session failure should not result in a topology change being signaled in the control protocol.
@@ -102,7 +102,7 @@
 ### Interaction with Multiple Control Protocols
   If multiple control protocols wish to establish BFD sessions with the same remote system for the same data protocol, all must share a single BFD session.
   
-  If hierarchical or dependent layers of control protocols are in use (say, OSPF and Internet BGP (IBGP)), it may not be useful for more than one of them to interact with BFD. In this example, because IBGP is dependent on OSPF for its routing information, the faster failure detection replayed to IBGP may actually be detrimental. **_The cost of a peer state transition is high in BGD, and OSPF will naturally heal the path through the network if it were to receive the failure detection_**.
+  If hierarchical or dependent layers of control protocols are in use (say, OSPF and Internet BGP (IBGP)), it may not be useful for more than one of them to interact with BFD. In this example, because IBGP is dependent on OSPF for its routing information, the faster failure detection replayed to IBGP may actually be deterimental. **_The cost of a peer state transition is high in BFD, and OSPF will naturally heal the path through the network if it were to receive the failure detection_**.
   
   In general, it is best for the protocol at the lowest point in the hierarchy to interact with BFD, and then to use existing interactions between the control protocols to effect changes as necessary. This will provide the fastest possible failure detection and recovery in a network.
   
