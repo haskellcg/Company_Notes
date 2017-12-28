@@ -584,6 +584,7 @@
   
 ## My References
   * [Cisco BFD](https://supportforums.cisco.com/t5/service-providers-documents/bfd-support-on-cisco-asr9000/ta-p/3153191)
+  * [BFD Echo](https://ahmedmuhi.wordpress.com/2015/10/19/bfd-the-confusing-parts-what-is-bfd-echo-mode/)
   * [Forwarding Plane](https://en.wikipedia.org/wiki/Forwarding_plane)
   * [Replay Attack](https://en.wikipedia.org/wiki/Replay_attack)
   * [HMAC]()
