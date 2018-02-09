@@ -6,3 +6,4 @@ some notes about company study
   * [Email](https://exmail.qq.com/cgi-bin/loginpage)
   * [OA](http://1.119.4.50:8081/seeyon/index.jsp)
   * [Jira](http://10.0.0.88:8080/secure/Dashboard.jspa)
+  * [Confluence](http://10.0.0.88:8090/#all-updates)
