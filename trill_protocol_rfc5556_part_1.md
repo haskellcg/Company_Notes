@@ -101,6 +101,20 @@
   * The other, which uses 802.1ah, is, according to the IEEE Draft, limited in applicability to networks of no more than 1000 shortest path bridges.
 
 ### 2.6. Problems Not Addressed
+  There are other chanllenges to deploying Ethernet subnets that are not addressed in this document other than, in some cases, to mention relevant IEEE 802.1 documents, although it is possible for a solution to address one or more of these in addition to the TRILL problem:
+  * increased Ethernet link subnet scale
+  * increased node relocation
+  * security of the Ethernet link subnet management protocol
+  * flooding attacks on a Ethernet link subnet
+  * support for "Provider" services such as Procider Bridges (802.1ad), Provider Backbone Bridges (802.1ah), or Provider Backbone Traffic Engneering (802.1Qay)
+
+  Solutions to TRILL need not support deployment of larger scale of Ethernet link subnet than current broadcast domains can support.
+
+  Similarly, solution to TRILL need not address link-layer node migration, which can complicate the caches in learning bridges. Similar challenges exist in the ARP, where link-layer forwarding is not updated appropriately when nodes move to ports on other bridges. Again, the compartmentalization available in the networl routing, like that of network-layer Autonomous Systems (ASes), can help hide the effect of migration. That is a side effect, however, and not a primary focus of this work.
+
+  Current link-layer control-plane protocols, including Ethernet link subnet management (spanning tree) and link/network integration (ARP), are vulnerable to a variety of attacks. **Solutions to TRILL need not address these insecurities**. Similar attacks exist in the data plane.
+
+  TRILL solutions need not address any of these issues, although it is cirtical that they do not introduce new vulnerabilities in the process.
 
 ## 3. Desired Properties of Solutions to TRILL
 ### 3.1. No CHange to Link Capabilities
