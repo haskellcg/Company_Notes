@@ -117,7 +117,17 @@
   TRILL solutions need not address any of these issues, although it is cirtical that they do not introduce new vulnerabilities in the process.
 
 ## 3. Desired Properties of Solutions to TRILL
-### 3.1. No CHange to Link Capabilities
+  This section describes some of the desirable or required properties of any system that would solve the TRILL problems, independent of the details of such a solution. Most of these are based on retaining useful properties of bridges, or maintaining those properties while solving the problems listed in section 2.
+
+### 3.1. No Change to Link Capabilities
+  There must be no change to the service that Ethernet subnets already provides as a result of deploying a TRILL solution. Ethernet supports unicast, broadcast, and multicast ntively. Although network protocols, notably IP, can tolerate link layers that do not provide all three, it would be useful to retain the support already in place.
+
+  So called "zero configuration protocols" (also known as "zeroconf", e.g., as used to configure link-local addresses [RFC3927]), as well as existing bridge autoconfiguration, are also dependent on broadcast.
+
+  Current Ethernet ensures in-order delivery for frames of the same priority and no duplicated frames, under normal operation (excepting transients during reconfiguration). These criteria apply in varying degrees to the different types of Ethernet, e.g., basic Ethernet up through basic VLAN (802.1Q) ensures that all frames with the same priority between two link addresses have both properties, but protocol/port VLAN (802.1v) ensures this only for packets with the requirement.
+
+  Bridge autolearning already is susceptible to moving nodes between ports, because previously learned associatetions between the port and link address change. A TRILL solution could be similarly susceptible to such changes
+
 ### 3.2. Zero Configuration and Zero Assumption
 ### 3.3. Forwarding Loop Mitigation
 ### 3.4. Spanning Tree Management
