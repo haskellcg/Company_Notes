@@ -60,6 +60,12 @@
   There are a number of features of modern layer 3 routing protocols which would be beneficial if available at layer 2, but which cannot practically be integrated into the spanning tree system such as multipath routing. Layer 3 routing typically optimizes paths between pairs of enpoints based on a cost metric, conventionally based on bandwidth, hop count, latency, and/or policy measures.
 
 ### 2.2. Multipath Forwarding
+  The discussion above assumes that all traffic flowing from one point to another follows a single path. Using spanning trees reduces aggregate bandwidth by forcing all such paths onto one tree, while modern routing causes such paths to be selected based on a cost metric. However, extensions to modern routing protocols enable even greater aggregate bandwidth by permitting traffic flowing from one endpoint to another to be sent over multiple, typically equal-cost paths.
+
+  Multipathing typically spreads the traffic more evenly over the available physically links. The addition of multipathing to a routed network would typically result in only a small improvement in capacity for a network with roughly equal traffic between all pairs of nodes, because in that situation traffic is already fairly well dispersed. 
+
+  Conversely, multipathing can produce a dranamic improvment in a routed network where the traffic between a small number of pairs of nodes dominates, because such traffic can -- under the right sirsumstances -- be spread over multiple paths that might otehrwise be lightly loaded.
+
 ### 2.3. Convergence and Safety
 ### 2.4. Stability of IP Multicast Optimization
 ### 2.5. IEEE 802.1 Bridging Protocols
