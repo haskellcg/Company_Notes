@@ -20,6 +20,45 @@
   The spanning tree protocol reacts to certain small topology changes with large effects on the reconfiguration of links in use. Each of these aspects of the spanning tree protocol can cause problems for current link-layer deployments.
 
 ### 2.1. Inefficient Paths
+  The STP helps breaks cycles in a set of interconnected bridges, but it also can limit the bandwidth among that set and cause traffic to take circuitous paths. 
+
+                              [A]
+                             // \    [C]
+                            //   \   / \\  [D]
+                           //     \ /   \\ //
+                          [B]=====[H]=====[E]
+                            \     //      ||
+                             \   //       ||
+                              \ //        ||
+                               [G]--------[F]
+           Figure 1: Bridged subnet with spanning tree shown
+
+  One possible spanning tree is shown by double lines.
+
+                                  [A]
+                                  1           [C]
+                                 1              1
+                                1                1
+                              [B]1111111[H]121212[E]
+                                         2       2
+                                        2        2
+                                       2         2
+                                      [G]       [F]
+         Figure 2: Traffic from A..C (1) and G..F (2) share a link
+
+  The spanning tree limits the capacity of the resulting subnet.
+
+                                  [A]
+                                  1           [C]
+                                 1              1
+                                1                1
+                              [B]1111111[H]111111[E]
+
+                                      [G]2222222[F]
+       Figure 3: Traffic from A..C (1) and G..F (2) with full routing
+
+  There are a number of features of modern layer 3 routing protocols which would be beneficial if available at layer 2, but which cannot practically be integrated into the spanning tree system such as multipath routing. Layer 3 routing typically optimizes paths between pairs of enpoints based on a cost metric, conventionally based on bandwidth, hop count, latency, and/or policy measures.
+
 ### 2.2. Multipath Forwarding
 ### 2.3. Convergence and Safety
 ### 2.4. Stability of IP Multicast Optimization
