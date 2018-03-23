@@ -129,6 +129,16 @@
   Bridge autolearning already is susceptible to moving nodes between ports, because previously learned associatetions between the port and link address change. A TRILL solution could be similarly susceptible to such changes
 
 ### 3.2. Zero Configuration and Zero Assumption
+  Both bridges and hubs are zero configuration devices; hubs having no configuration at all, and bridges being automatically self-configured. Bridge are further **zero-assumption** devices, unlike hubs.
+
+  Bridges can be interconnected in arbitrary topologies, without regard for cycles or even self-attachment. Spanning tree protocols (STPs) remove the impact of cycles automatically, and port autolearning reduces unnecessary broadcast of unicast traffic.
+
+  **A TRILL solution should strive to have a similar zero-configuration, zero-assumption operation**. This includes having TRILL solution components automatically discover other TRILL solution components and organize themselves, as well as to configure that organization for proper operation (plug-and-play). It also includes zero-configuration backward compatibility with existing bridges bridges and hubs, which may include interacting with some of the bridge protocols, such as spanning tree.
+
+  VLANs add a caveat to zero configuration; a TRILL solution should support automatic use of a default VLAN (like non-VLAN bridges), but would undoubtedly require explicit configuration for VLANs where bridges require such configuration.
+
+  Autoconfiguration extends to optional services, such as multicast support via Internet Group Management Protocol (IGMP) snooping, broadcast support via service copy, and support of multiple VLANs.
+
 ### 3.3. Forwarding Loop Mitigation
 ### 3.4. Spanning Tree Management
 ### 3.5. Multiple Attachments
