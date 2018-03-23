@@ -140,6 +140,8 @@
   Autoconfiguration extends to optional services, such as multicast support via Internet Group Management Protocol (IGMP) snooping, broadcast support via service copy, and support of multiple VLANs.
 
 ### 3.3. Forwarding Loop Mitigation
+  Using spanning trees avoid forwarding loops by construction, although transient loops can occur, e.g., via the temporarily undetected appearance of new link connectivity or the loss a sufficient number of spanning-tree control frames. Solutions to TRILL are intended to use adapted network-layer routing protocols that may introduce 
+
 ### 3.4. Spanning Tree Management
 ### 3.5. Multiple Attachments
 ### 3.6. VLAN Issues
