@@ -83,6 +83,23 @@
   However, a solution based on link-state routing, for example, can form and maintain a global view of the multicast group membership and multicast router situation in a similar fashion to that in which it maintains a global view of the status of links. Thus, such a solution can adjust the forwarding of multicast data and control traffic immediately as it sees the LAN topology change.
 
 ### 2.5. IEEE 802.1 Bridging Protocols
+  There have been a variety of IEEE protocols beyond the initial shared-media Ethernet variant, inluding:
+  * 802.1D - added bridges and a spanning tree protocol
+  * 802.1w - extension for rapid reconvergence of the spanning tree protocol (RTSP)
+  * 802.1Q - added VLAN and priority support, where each link address maps to one VLAN
+  * 802.1v - added VLANs where segments map to VLANs based link address together with network protocol and transport port
+  * 802.1s - added support for multiple spanning trees, up to a maximum of 65, one per non-overlapping group of VLANs
+
+  In addition, the following more recent extensions have been standardized to specify provider/carrier Ethernet services that can be effectively transparent to the previously specified customer Ethernet services. The TRILL problem as described in this document is limited to customer Ethernet services; however, there is no reason that a TRILL solution might not be easily applicable to both customer and provider Ethernet:
+  * 802.1ad (Provider Bridges) - added support for a second level of VLAN tag, called a "service tag", and renamed the original 802.1Q tag "customer tag". Also known as **Q-in-Q** because of the stacking of 802.1Q VLAN tags
+  * 802.1ah (Provider Backbone Bridges) - added support for stacking of MAC address by providing a tag to contain the original source and destination MAC address. Also known as **MAC in MAC**.
+
+  It is useful to note that no extension listed above in this section addresses the issue of independent, localized routing in a single LAN -- which is the focus of TRILL.
+
+  The TRILL problem and a sketch of a possible solution were presented to both the IETF (via a BoF) and IEEE 802 (via an IEEE 802 Plenary Meeting Tutorial). The IEEE, in response, approved a project callled **Shortest Path Bridging (IEEE Project P802.1ap)**, taking a different approach than that presented in [Pe04]. The current Draft of 802.1aq appears to describe two different techniques:
+  * One, which does not use encapsulation, is , according to the IEEE Draft, limited in applicability to small networks of no more than 100 shortest path bridges
+  * The other, which uses 802.1ah, is, according to the IEEE Draft, limited in applicability to networks of no more than 1000 shortest path bridges.
+
 ### 2.6. Problems Not Addressed
 
 ## 3. Desired Properties of Solutions to TRILL
