@@ -76,6 +76,12 @@
   The spanning tree protocol is inherently global to an entire layer 2 subnet; there is no current way to contain, partition, or otherwise factor the protocol into a number of smaller, more stable subnets that interact as groups. Contrast this with Internet routing, which includes both interdomain and intradomain variants, split to provide exactly that containment and scalability within a domain while allowing domains to interact freely independent of what happens within a domain.
 
 ### 2.4. Stability of IP Multicast Optimization
+  Although it is a layer violation, it is common for high-end bridges to snoop on IP multicast control messages for the purpose of optimizing the distribution of IP multicast data and of those control messages. When such snooping and optimization is performed by spanning-tree-based bridges, it done at each bridge based on the traffic observed on that bridge's ports. Changes in topology may reverse or otherwise change the required forwarding ports of messages for a multicast group. 
+
+  Bridges must relearn the correct multicast forwarding from the receipt of multicast control messages on new ports. Such control messages are sent to establish multicast distribution state and then to refresh it, sometimes at intervals of seconds. If a bridging topology change has occured during such intervals, multicast data maybe disdirected and lost.
+
+  However, a solution based on link-state routing, for example, can form and maintain a global view of the multicast group membership and multicast router situation in a similar fashion to that in which it maintains a global view of the status of links. Thus, such a solution can adjust the forwarding of multicast data and control traffic immediately as it sees the LAN topology change.
+
 ### 2.5. IEEE 802.1 Bridging Protocols
 ### 2.6. Problems Not Addressed
 
