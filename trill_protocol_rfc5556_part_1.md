@@ -169,6 +169,12 @@
   Note that this equivalence is not required; a soluyion may act as if an IEEE 802.1 hub, or may not have a corresponding equivalent link layer component at all.
 
 ### 3.8. Optimizations
+  There are a number of optimizations that may be applied to TRILL solutions. These must be applied in a way that does not affect functionality as a tradeoff for increase performance. Such optimizations may address broadcast and multicast frame distribution, VLAN support, and snooping of ARP and IPv6 neighbor discovery.
+
+  In addition, there maybe optimizations which make the implementation of a TRILL solution easier than roughly equivalent existing bridge devices. For example, in many bridged LANs, there are topologies such that central bridges which have both a greater volume of traffic flowing through them as well as traffic to and from a larger variety of end station than do non-core bridges. Thus means that such core bridges need to learn a large number of end station addresses and need to do lookups based on such addresses very rapidly.
+
+  This might require large high speed content addressable memory making implementation of such core bridges difficult. Although a TRILL solution need not provide such optimizations, it may reduce the need for such large, high speed content addressable memories or provide other similar optimizations.
+
 ### 3.9. Internet Architecture Issues
 
 ## 4. Applicability
