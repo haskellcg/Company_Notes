@@ -176,6 +176,13 @@
   This might require large high speed content addressable memory making implementation of such core bridges difficult. Although a TRILL solution need not provide such optimizations, it may reduce the need for such large, high speed content addressable memories or provide other similar optimizations.
 
 ### 3.9. Internet Architecture Issues
+  TRILL solutions are intended to have no impact on the Internet network layer architecture. In particular, the Internet and higher layer headers should remain interact when traversing a deployed TRILL solution, just as they do when traversing any other link subnet technologies. This means that the IP TTL field cannot be co-opted for forwarding loop mitigation, as it would interfere with the Internet layer assuming that the link subnet was reachable with no changes in TTL. (Internet TTLs are changed only at routers, as per RFC 1812, and even if IP TTL were considered, TRILL is expected to support non-IP payload, and so requires a separate solution anyway).
+
+  TRILL solutions should also have no impact on Internet routing or signaling, which also means that broadcast and multicast, both of which can pervade an entire Ethernet link subnet, must be able to transparently pervade a deployed TRILL solution. Changing how either of these capabilities behaves would have significant effects on a variety of protocols, including RIP (broadcast), RIP(multicast), ARP(broadcast), IPv6 neighbor discovery (multicast), etc.
+
+  Note that snooping of network-layer packets may be useful, especially for certain optimizations. These include snooping multicast control-plane packets (IGMP) to tune link multicast to match the network multicast topology, as it already done in exsiting smart switches. This also includes snooping IPv6 neighbor discovery message to assist with governing TRILL solution edge configuration, as is the case in some smart learning bridges.
+
+  Other layers may similarly be snooped, notablt ARP packets, for similar reasons as for IPv4.
 
 ## 4. Applicability
 
