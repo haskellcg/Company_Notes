@@ -185,6 +185,17 @@
   Other layers may similarly be snooped, notablt ARP packets, for similar reasons as for IPv4.
 
 ## 4. Applicability
+  TRILL solutions are intended to address problems of path efficiency and concentration, inability to multipath, and path stability within a single Ethernet link subnet. Like bridges, individual TRILL solution components may find other TRILL solution components within a single Ethernet link subnet and aggregate into a single TRILL solution.
+
+  TRILL solutions are not intended to span separate Ethernet link subnets interconnected by network-layer devices, except via link-layer tunnels, where such tunnels render the distinct subnet undetectably equivalant from a single Ethernet link subnet.
+
+  A currently open question is whether a single Ethernet link subnet should contain components of only one TRILL solution, either of necessity of architecture or utility. Multiple TRILL solutions, like Internet Ases, may allow TRILL routing protocols to be partitioned in ways that help their, but this may come at the price of needing the TRILL solutions to particiapte more fully as nodes (each modeling a bridge) in the Ethernet link subnet STP.
+
+  Each architecture solution should decide whether multiple TRILL solutions are supported within a single Ethernet link subnet, and mehanisms should be included to enforce whatever decision is made.
+
+  TRILL solutions need not address scalability limitations in bridged subnets. Although there may be scale benefits of other aspects of solving TRILL problem, e.g., of using network-layer routing to provide stability under link changes or intermitent outages, this is not a focus of this work.
+
+  As also noted earlier, TRILL solutions are not intended to address security vulnerabilities in either the data plane or control plane of the link layer. This means that TRILL solutions should not limit broadcast frame, ARP requests, or spanning tree protocol messages (if such are interpreted by the TRILL solution or solution edge).
 
 ## 5. Security Considerations
 
