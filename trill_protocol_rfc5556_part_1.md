@@ -150,7 +150,15 @@
   A requirement is that a TRILL solution must not require modifications or exceptions to the existing spanning tree protocols (STP, RSTP, MSTP).
 
 ### 3.5. Multiple Attachments
+  In STP, a single node with multiple attachments to a single spanning tree segment will always get and send traffic over only one of the those attachment points. TRILL must manage all traffic, including multicast and broadcast traffic, so as not to create traffic loops involving Ethernet segments with multiple TRILL attachment points.
+
+  This includes multiple attachments to a single TRILL node and attachments to multiple TRILL nodes. Support for multiple attachments can improve support for forms of mobility that induce topology changes, such as "make before break", although this is not a major goal of TRILL.
+
 ### 3.6. VLAN Issues
+  A TRILL solution should support multiple customer VALNs (802.1Q, which includes 802.1v and 802.1s). This may involve ignorance, just as many bridge devices do not participate in the VALN supports. A TRILL solution may alternately furnish direct VLAN support, e.g., by proiding configurable support for VLAN-ignorant end stations equivalent to that provided by 802.1Q non-provider bridges.
+
+  A TRILL solution might or might not be easily adaptable to handling provider VALNs.
+
 ### 3.7. Operational Equivalence
 ### 3.8. Optimizations
 ### 3.9. Internet Architecture Issues
