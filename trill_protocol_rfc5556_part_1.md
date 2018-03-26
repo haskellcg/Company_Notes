@@ -160,6 +160,14 @@
   A TRILL solution might or might not be easily adaptable to handling provider VALNs.
 
 ### 3.7. Operational Equivalence
+  As with any extension to an existing architecture, it would be useful -- though not strictly necessary -- to be able to describe or consider a TRILL solution as equivalent to an exsiting link layer component. Such equivalence provides a validation model for the architecture and a way for users to predict the effect of the use of a TRILL solution on a deployed Ethernet. In this case, 'user' refers to users of the Ethernet protocol, whether at the host (data segments), bridge (ST control segments), or VLAN (VLAN protocol).
+
+  This provides a sanity check, i.e., "we got it right if we can exchange a TRILL solution component or components with an X" (where "X" might be a single bridge, a hub, or some other link layer abstraction). It does not matter whether "X" can be implemented on the same scale as the corresponding TRILL solution. It also does not matter if it can -- there may be utility to deploying the TRILL solution components incrementally, in ways that a single "X" could not be installed.
+
+  For example, if a TRILL solution's components were equivalent to a single IEEE 802.1D bridge, it would mean that they would -- as a whole - participate in the STP. This need not require that TRILL solution components would propagate STP, any more than a bridge need do so in its on-board control. It would mean that the solution would interact with BPDUs at the edge, where the solution would -- again, as a whole - participate as if a single node in the spanning tree.
+
+  Note that this equivalence is not required; a soluyion may act as if an IEEE 802.1 hub, or may not have a corresponding equivalent link layer component at all.
+
 ### 3.8. Optimizations
 ### 3.9. Internet Architecture Issues
 
