@@ -198,6 +198,9 @@
   As also noted earlier, TRILL solutions are not intended to address security vulnerabilities in either the data plane or control plane of the link layer. This means that TRILL solutions should not limit broadcast frame, ARP requests, or spanning tree protocol messages (if such are interpreted by the TRILL solution or solution edge).
 
 ## 5. Security Considerations
+  TRILL solutions should not introduce new vulnerabilities compare to traditional bridged subnet.
+
+  TRILL solutions should not interfere with other protocols intended to address there vulnerabilities, such as those to secure IPv6 neighbor discovery.
 
 ## 6. Acknowledgments
 
