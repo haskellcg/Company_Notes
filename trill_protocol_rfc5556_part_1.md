@@ -145,6 +145,10 @@
   In the Internet, loop mitigation is provided by decrementing hop counts (TTL); in other networks, packets include a trace (sometimes referred to as 'serialized' or 'unioned') of visited nodes. In addition, there may be localized consistency checks, such as whether traffic is recieved on an unexpected interface, which indicates that routing is in flux and that such traffic should probably be discarded for safety. These types of mechanisms limit the impact of loops or detect them explicitly. Mechanisms with similar effect should be included in TRILL solutions
 
 ### 3.4. Spanning Tree Management
+  In order to address convergence under reconfiguration and robustness to link interruption, participation in the spanning tree must be carefully managed. The goal is to provide the desired stability of the TRILL solution and of the entire Ethernet link subnet, which may include bridges using STP. This may involve a TRILL solution participating in the STP, where the protocol used for TRILL might dampen interactions with STP, or it may involved severing the STP into separate STPs on 'stub' external Ethernet link subnet segments.
+
+  A requirement is that a TRILL solution must not require modifications or exceptions to the existing spanning tree protocols (STP, RSTP, MSTP).
+
 ### 3.5. Multiple Attachments
 ### 3.6. VLAN Issues
 ### 3.7. Operational Equivalence
