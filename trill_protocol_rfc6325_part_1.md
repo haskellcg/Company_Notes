@@ -44,8 +44,28 @@
   Without a common spanning tree.
 
 ### 1.2. Normative Content and Precedence
+  The bulk of the normative metarial in this specification appears in 1 through 4.
+
 ### 1.3. Terminology and Notation in This Document
+  "TRILL/RBridge/Rbridge"
+
+  "link/simple link/port/physical port"
+
+  "campus/RBridge campus/spanning tree[classic/rapid]"
+
+  "IETF bit ordering"
+
 ### 1.4. Categories of Layer 2 Frames
+  In this document, Layer 2 frames are divided into five categories:
+  * Layer 2 control frames (such as Bridge PDUs (BPDUs))
+  * native frames (non-TRILL-encapsulated data frames)
+  * TRILL Data frames (TRILL-encapsulated data frames)
+  * TRILL control frames
+  * TRILL other frames
+
+  The way these five types of frames are distinguished is as following:
+  * Layer 2 control frames are those with **a multicast destination address in the range 01-80-C2-00-00-00 to 01-80-C2-00-00-0F or equal to 01-80-C2-00-00-21**. RBridges must not encapsulate and forward such frames, though they MAY, unless otherwise specified in this document, perform the Layer
+
 ### 1.5. Acronyms
 
 ## 2. RBridges
