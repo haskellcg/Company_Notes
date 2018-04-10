@@ -24,8 +24,24 @@
 
   The TRILL protocol, as specified herein, is desinged to be a Local Area Network protocol and not designed **with the goal of scaling beyond the size of existing briged LANs**.
 
-### 1.1. Algorithm V2, by Ray Perlner
-  I hope that we
+### 1.1. Algorhyme V2, by Ray Perlner
+  I hope that we shall one day see  
+  A graph more lovely than a tree.
+
+  A graph to boost efficiency  
+  While still configuration-free.
+
+  A network where Rbridges can  
+  Route packets to their target LAN.
+
+  The paths they find, to our elation,  
+  Are least cost paths to destination!
+
+  With packet hop counts we now see,  
+  The network need not be loop-free!
+
+  Rbridges work transparently,  
+  Without a common spanning tree.
 
 ### 1.2. Normative Content and Precedence
 ### 1.3. Terminology and Notation in This Document
