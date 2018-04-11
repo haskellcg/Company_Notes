@@ -64,7 +64,11 @@
   * TRILL other frames
 
   The way these five types of frames are distinguished is as following:
-  * Layer 2 control frames are those with **a multicast destination address in the range 01-80-C2-00-00-00 to 01-80-C2-00-00-0F or equal to 01-80-C2-00-00-21**. RBridges must not encapsulate and forward such frames, though they MAY, unless otherwise specified in this document, perform the Layer
+  * Layer 2 control frames are those with **a multicast destination address in the range 01-80-C2-00-00-00 to 01-80-C2-00-00-0F or equal to 01-80-C2-00-00-21**. RBridges must not encapsulate and forward such frames, though they MAY, unless otherwise specified in this document, perform the Layer 2 function (such as MAC-level security) of the control frame. Frames with a destination address of **01-80-C2-00-00-00 (BPDU) or 01-80-C2-00-00-21 (VLAN Registration Protocol)** are called "high level control frames" in this document. All other Layer 2 control frames are called "low level control frames"
+  * Native Frames are those that are not control frames and have an **Ethertype other than "TRILL"or "L2-IS-IS" and have a destination MAC address that is not one of the 16 multicast addresses reserved for TRILL**.
+  * TRILL Data frames have the Ethertype "TRILL". In addition, TRILL data frames, if multicast, have the multicast destination MAC address "All-RBridges".
+  * TRILL control frames have the Ethertype "L2-IS-IS". In addition, TRILL control frames, if multicast, have the multicast destination MAC addresses of "ALL-IS-IS-RBridges". (Note that **ESADI frames** look on the outside like TRILL data and are so handled but, when decapsulated, have the L2-IS-IS Ethertype.)
+  * TRILL other frames are those with any of the 16 multicast destination addresses reserved for TRILL other than All-RBridges and All-IS-IS-Rbridges. RBridges conformant to this specification must discard TRILL other frames.
 
 ### 1.5. Acronyms
 
