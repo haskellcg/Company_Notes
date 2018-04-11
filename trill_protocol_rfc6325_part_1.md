@@ -71,6 +71,39 @@
   * TRILL other frames are those with any of the 16 multicast destination addresses reserved for TRILL other than All-RBridges and All-IS-IS-Rbridges. RBridges conformant to this specification must discard TRILL other frames.
 
 ### 1.5. Acronyms
+  * AllL1ISs - All Level 1 Intermediate Systems
+  * AllL2ISs - All Level 2 Intermediate Systems
+  * BPDU - Bridge PDU
+  * CHbH - Critical Hop-by-Hop
+  * CItE - Critical Ingree-to-Egress
+  * CSNP - Complete Sequence Number PDU
+  * DA - Destination Address
+  * DR - Destination Router
+  * DRB - Destination RBridge
+  * EAP - Extensible Authentication Protocol
+  * ECMP - Equal Cost Multipath
+  * EISS - Extended Internal Sublayer Service
+  * ESADI - End-Station Address Distribution Information
+  * FCS - Frame Check Sequence
+  * GARP - Generic Attribute Registration Protocol
+  * GVRP - GARP VLAN Registration Protocol
+  * IEEE/IGMP/IP/IS-IS/LAN/P2P/PDU/PPP/RBridge
+  * ISS - Internal Sublayer Service
+  * LSP - Link State PDU
+  * MAC - Media Access Control
+  * MLD - Multicast Listener Discovery
+  * MRD - Multicast Router Discovery
+  * MTU - Maximum Transmission Unit
+  * MVRP - Multiple VLAN Registration Protocol
+  * NSAP - Network Service Access Point
+  * RPF - Reverse Path Forwarding
+  * SA - Source Address
+  * SNMP - Simple Network Management Protocol
+  * SPF - Shortest Path First
+  * TLV - Type, Length, Value
+  * TRILL - Transparent Interconnection of Lots of Links
+  * VLAN - Virtual Local Area Network
+  * VRP - VLAN Registration Protocol
 
 ## 2. RBridges
 ### 2.1. General Overview
