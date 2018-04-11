@@ -64,7 +64,7 @@
 
   Multipathing typically spreads the traffic more evenly over the available physically links. The addition of multipathing to a routed network would typically result in only a small improvement in capacity for a network with roughly equal traffic between all pairs of nodes, because in that situation traffic is already fairly well dispersed. 
 
-  Conversely, multipathing can produce a dranamic improvment in a routed network where the traffic between a small number of pairs of nodes dominates, because such traffic can -- under the right sirsumstances -- be spread over multiple paths that might otehrwise be lightly loaded.
+  Conversely, multipathing can produce a dranamic improvment in a routed network where the traffic between a small number of pairs of nodes dominates, because such traffic can -- under the right sirsumstances -- be spread over multiple paths that might otherwise be lightly loaded.
 
 ### 2.3. Convergence and Safety
   The spanning tree is dependent on the way a set of bridges are interconnected, i.e., the link-layer topology. **Small changed in this topology can cause large changes in the spanning tree**.Changes in the spanning tree can take time to propagate and converge, especially for older versions fo STP.
