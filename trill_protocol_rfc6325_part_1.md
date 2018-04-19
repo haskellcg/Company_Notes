@@ -238,8 +238,28 @@
   TRILL behaves as conservatively as possible, avoiding loops rather than avoiding partial connectivity. As a result, lack of connectivity may result from bridge or port misconfiguration.
 
 ### 2.6. RBridges and IEEE 802.1 Bridges
+  RBridges ports are, except as describe below, layered on top of IEEE [802.1Q-2005] port facilities.
+
 #### 2.6.1. RBridge Ports and 802.1 Layering
+  RBridges ports make use of [802.1Q-2005] port VLAN and priority processing. In addition, they may implement other lower-level 802.1 prrotocols as well as protocols for the link in use, such as PAUSE (Annex 31B of [802.3]), port-based access control [802.1X], MAC security [802.1AE], or link aggregation [802.11AX].
+
+  However, RBridges do not use spanning tree and do not block ports as spanning tree does. Figure 4 shows a high-level disgram of an RBridge with one port connected to an IEEE 802.3 link. Single lines represent the flow of control information, double lines the flow of both frames and control information.
+
+  The upper interface to the lower-level port/link control logic corresponds to the Internal Sublayer Service (ISS) in [802.1Q-2005]. In RBridges, high-level control frames are processed above the ISS interface.
+
+  The upper interface to the port VLAN and priority processing corresponds to the Extended Internal Sublayer Service (EISS) in [802.1Q-2005]. In RBridges, native and TRILL frames are processed above the EISS interface and are subject to port VLAN and priority processing.
+
 #### 2.6.2. Incremental Deployment
+  Because Rbridge are compatible with IEEE [802.1Q-2005] customer bridges, except as discussed in this document, a bridge LAN can be upgraded by incrementally replcing such bridges with RBridge. Bridges that have not yet been replaced are transparent to RBridge traffic. The physical links directly interconnected by such bridges, together with the bridges themselves, constitute bridged LANs. These bridged LANs apear to RBridges to be multi-access links.
+
+  If the bridges replaced by RBridges were default configuration bridges, then theri RBridge replacements will not require configuration.
+
+  Because RBridges, as described in this document, only provide customer services, they cannot replace provider bridges or provider backbone bridges, just as a customer bridge can't replace a provider bridge. However, **such provider devices can be part of the bridged LAN between RBridges**. Extension of TRILL to support provider services is left for future work and will be separately documented.
+
+  Of course, if the bridges replaced had any port level protocols enabled, such as port-based access control [802.1X] or MAC security [802.1AE], replacement RBridge would **need the same port level protocols enabled and similarly configured**. In addition, the replacement RBridges would have to support the same link type and link level protocols as the replaced bridges.
+
+  An RBridge campus will work best if all IEEE [802.1D] and [802.1Q-2005] bridges are replaced with RBridges, assuming the Rbridges have the same speed and capacity as the bridges. However, there may be intermediate states, where only some bridges have been replaced by RBridges, with inferior performence.
+
 
 ## 3. Details of the TRILL Header
 ### 3.1. TRILL Header Formart
