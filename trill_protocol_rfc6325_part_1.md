@@ -196,8 +196,29 @@
   When forwarding unicast frames beween RBridges, the outer header has the MAC destination address of the next hop RBridge, to avoid frame duplication if the inter-RBridge link is multi-access. This also enables multipathing of unicast, since the transmitting RBridge can specify the next hop. Having the outer header specify the transmitting RBridge as the source address ensures that any bridges inside the Ethernet cloud will not get confused, as they might be if multipathing is in use and they were to see the original source or ingress RBridge in the outer header.
 
 ### 2.4. Forwarding Overview
+  RBridge are ture routers in the sense that, in the forwarding of a frame by a transit RBridge, **the outer Layer 2 header is replaced at each hop with an appropriate Layer 2 header for the next hop, and hop count decreased**. Despite these modifications of the outer Layer 2 header and the hop count in the TRILL header, the original encapsulated frame is preserved, including the original frame's VLAN tag.
+
+  From a forwarding standpoint, transit frames may be classified into two categories: known-unicast and multi-destination. **Layer 2 control frames and TRILL control and TRILL other frames ate not transit frames**, are not forwarded by RBridges, and are not included in these categories.
+
 #### 2.4.1. Known-Unicast
+  These frames have a unicast inner MAC destination address (Inner.MacDA) and are those for which the ingress RBridge knows the egress RBridge for the destination MAC address in the frame's VLAN.
+
+  Such frames are forwarded RBridge hop by RBridge hop to their egress RBridge.
+
 #### 2.4.2. Multi-Destination
+  These are frames that must be delivered to multiple destinations.
+
+  Multi-destination frames include the following:
+  * unicast frames for which the location of the destination is unknow: the Inner.MacDA is unicast, but the ingress RBridge does not know its location in the frame's VLAN
+  * multicast frames for which the Layer 2 destination address is derived from an IP multicast address: the Inner.MacDA is multicast, from the set of Layer 2 multicast addresses derived from IPv4 [RFC1112] or IPv6 [RFC2464] multicast addresses. These frames are handled somewhat differently in different subcases:
+    * IGMP [RFC3376] and MLD [RFC2710] multicast group membership reports
+    * IGMP [RFC3376] and MLD [RFC2710] quries and MRD [RFC4286] announcement messages
+    * other IP-derived Layer 2 multicast frames
+  * multicast frames for which the Layer 2 destnation address is not derived from an IP multicast address: the Inner.MacDA is multicast, and not from the set of Layer 2 multicast addresses derived from IPv4 or IPv6 multicast addresses
+  * broadcast frames: the Inner.MacDA is broadcast (FF-FF-FF-FF-FF-FF)
+
+  RBridges build **distribution trees and use these trees for forwarding multi-destination frames**. Each distribution tree reaches all RBridges in the campus, is shared across all VLANs, and maybe used for the distribution of a native frame that is in any VLAN. However, the distribution of any particular frame on a distribution tree is pruned in different ways for different cases to avoid unnecessary propagation of the frame.
+
 ### 2.5. RBridges and LANs
 #### 2.5.1. Link VLAN Assumptions
 ### 2.6. RBridges and IEEE 802.1 Bridges
