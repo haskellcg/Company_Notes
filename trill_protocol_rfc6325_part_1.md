@@ -285,8 +285,16 @@
   * Options: present if Op-Length is non-zero
 
 ### 3.2. Version (V)
+  Version (V) is a 2-bit field. Version zero of TRILL is specified in this document. An RBridge RB1 must check the V field in a received TRILL-encapsulate frame. If the V field has a value not recognized by RB1, then RB1 must silently discard the frame. The allocation of new TRILL Version numbers requires an IETF Standards Action.
+
 ### 3.3. Reserved (R)
+  The two R bits are reserved for future use in extensions to this version zero of the TRILL protocol. They must be set to zero when the TRILL header is added by an ingress RBridge, transparently copied but otherwise ignored by transit RBridges, and ignored by egress RBridges. The allocation of reserved TRILL header bits requires an IETF Standards Action.
+
 ### 3.4. Multi-Destination (M)
+  The Multi-destination bit indicates that the frame is to be delivered to a class of destination end station via a distribution tree and that the egress RBridge nickname field specifies this tree. In particular:
+  * M = 0 (False) - The egress Rbridge nickname contains a nickname of the egress RBridge for a knwon unicast MAC address
+  * M = 1 (True) - The egress RBridge nickname field contains a nickname that specifies a distribution tree. This nickname is selected by the ingress RBridge for a TRILL Data frame or by the source RBridge for a TRILL ESADI frame.
+
 ### 3.5. Op-Length
 ### 3.6. Hop Count
 ### 3.7. RBridge Nicknames
