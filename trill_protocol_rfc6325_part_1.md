@@ -220,7 +220,23 @@
   RBridges build **distribution trees and use these trees for forwarding multi-destination frames**. Each distribution tree reaches all RBridges in the campus, is shared across all VLANs, and maybe used for the distribution of a native frame that is in any VLAN. However, the distribution of any particular frame on a distribution tree is pruned in different ways for different cases to avoid unnecessary propagation of the frame.
 
 ### 2.5. RBridges and LANs
+  A VLAN is a way to partition end nodes in a campus into different Layer 2 communities [802.1-2005]. Use of VLANs requires configuration. By default, the port of receipt determines the VLAN of a frame sent by an end station. End station can also explicitly insert this information in a frame.
+
+  IEEE [802.1Q-2005] bridges can be configured to support multiple customer VLANs over a single simple link by inserting/removing a VLAN tag in the frame. VLAN tags used by TRILL have the same format as VLAN tags defined in IEEE [802.1Q-2005]. As shown in Figure 2, there are two places where such tags may be present in a TRILL-encapsulated frame sent over an IEEE [802.3] link: one in the outer header (Outer.VLAN) and one in inner header (Inner.VLAN).
+
+  RBridges enforce delivery of a native frame originating in a particular VLAN only to other links in the same VLAN; however, there are a few differences in the handling of VLANs between an RBridge campus and an 802.1 bridged LAN as described below.
+
 #### 2.5.1. Link VLAN Assumptions
+  Certain configurations of bridges may cause partitions of a VLAN on a link. For such configurations, a frame sent by one RBridge to a neighbor on that link might not arrive, if tagged with a VLAN that is partitioned due to bridge configuration.
+
+  TRILL requires at least one VLAN per link that gives full connectivity to all the RBridge on that link. The default VLAN is 1, though RBridges may be configured to use a different VLAN. The DRB dictates to the other RBridges which VLAN to use.
+
+  Since there will be only one appinted forwarder for any VLAN, say, VLAN-x, on a link, if bridges are configured to cause VLAN-x to be partitioned on a link, some VLAN0-x end nodes on that link may be orphaned (unable to communicate with the rest of the campus).
+
+  It is possible for bridge and port configuration to cause **VLAN mapping on a link** (where a VLAN-x frame turns into a VLAN-y frame). TRILL detects this by inserting a copy of the outer VLAN into TRILL Hello messages and checking it on receipt. If detected, it takes steps to ensure that there is at most a single appointed forwarder on the link, to avoid possible frame duplication or loops.
+
+  TRILL behaves as conservatively as possible, avoiding loops rather than avoiding partial connectivity. As a result, lack of connectivity may result from bridge or port misconfiguration.
+
 ### 2.6. RBridges and IEEE 802.1 Bridges
 #### 2.6.1. RBridge Ports and 802.1 Layering
 #### 2.6.2. Incremental Deployment
