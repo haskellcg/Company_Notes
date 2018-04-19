@@ -262,7 +262,28 @@
 
 
 ## 3. Details of the TRILL Header
+  This section specifies the TRILL header. Section 4 below provides other RBridge design details.
+
 ### 3.1. TRILL Header Formart
+  The TRILL header is shown in Figure 5 and is independent of the data link layer used. When that layer is IEEE [802.3], it is prefixed with the 16-bit TRILL Ethertype [RFC5342], making it 64 bit aligned. If Op-Length is a multiple of 64 bits, then 64-bit alignment is normally maintained for the content of an encapsulated frame.
+
+                                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                  | V | R |M|Op-Length| Hop Count |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | Egress RBridge Nickname | Ingress RBridge Nickname      |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        | Options...
+        +-+-+-+-+-+-+-+-+-+-+-+-
+
+  * V (Version): 2-bit unsigned integer
+  * R (Reserved): 2 bits
+  * M (Multi-destination): 1 bit
+  * Op-Length (Options Length): 5-bit unsigned integer
+  * Hop Count: 6-bit unsigned integer
+  * Egress RBridge Nickname: 16-bit identifier
+  * Ingress RBridge Nickname: 16-bit identifier
+  * Options: present if Op-Length is non-zero
+
 ### 3.2. Version (V)
 ### 3.3. Reserved (R)
 ### 3.4. Multi-Destination (M)
