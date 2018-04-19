@@ -132,6 +132,18 @@
   RBridges should support **SNMPv3**. The RBridge MIB will be specified in the separate document. If IP service is available to an RBridge, it should support SNMPv3 over UDP over IPv4 and IPv6, however, management can be used, within a campus, even for an RBridge that lacks an IP or other Layer 3 transpot stack or which does not have a Layer 3 address, by **transporting SNMP with Ethernet**.
 
 ### 2.2. End-Station Addresses
+  An RBridge, RB1, that is the VLNA-x forwarder on any of its links must learn the location of VLAN-x end nodes, both on the links for which it is VLAN-x forwarder and on other links in the campus. RB1 learns the port, VLAN, and layer 2 (MAC) addresses of end nodes on links for which it is VLAN-x forwarder from the source address of frames received, as bridges do, or through configuration or a layer 2 explicit registration protocol such as IEEE 802.11 association and authentication. RB1 learns the VLAN and layer 2 address of distant VLAN-x end nodes, and corresponding RBridge to which they are attached, by looking at the RBridge nickname in the TRILL header and the VLAN and source MAC address of the inner frame of TRILL data frames that it decapsulates.
+
+  Additionally, an RBridge that is the appointed VLAN-x forwarder on one or more links may use  the End-Station Address Distribution Information (ESADI) protocol to announce some or all of the attached VLAN-x end nodes on those links.
+
+  The ESADI protocol could be used to announce end nodes that have been explicitely enrolled. Such information might be more authoritative than that learned from data frames being decapsulated on the link. Also the addresses enrolled and distributed in this way can be more secure for two reasons:
+  * the enrollment might be authenticated (for example, by cryptographically based EAP methods via [802.1X])
+  * the ESADI protocol also supports cryptographic authentication of its messages \[RFC5304\] [RFC5310] for more secure transmission
+
+  If and end station is unpluged from one RBridge and plugged into another, then, depending on circumstances, **frames addressed to that end syayion cna be black-holed**. That is, they can be sent just to the older RBridge that the end station used to be connected to until cached address information at some remote RBridge(s) times out, possibly for a number of minutes or longer. With the ESADI protocol, the link interruption from the unplugging can cause an immediate update to be sent.
+
+  Even if the ESADI protocol is used to announce or learn attached end nodes, RBridges must strill learn from received native frames and decapsulated TRILL Data Frames unless configured not to do so. Advertising end nodes using ESADI is optional, as is learning from these announcements.
+
 ### 2.3. RBridge Encapsulation Architecture
 ### 2.4. Forwarding Overview
 #### 2.4.1. Known-Unicast
