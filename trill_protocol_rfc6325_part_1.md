@@ -106,7 +106,31 @@
   * VRP - VLAN Registration Protocol
 
 ## 2. RBridges
+  This section provides a high-level overview of RBridges, which implement the TRILL protocol, omitting some details.
+
+  TRILL, provides [802.1Q-2005] VLAN-aware customer bridging service. As described below, TRILL is layered above the ports of an RBridge.
+
+  The RBridges specified by this document do not supply provider [802.1ad] or provider backbone [802.1ah] bridging or the like. The extension of TRILL to provide such provider services is left for furture work that will be separately documented. However, provider or provider backbone may be used to interconnect parts of an RBRidge campus.
+
 ### 2.1. General Overview
+  RBridges run a link state protocol amongest themselves. This give then enough information to compute pair-wise optimal paths for unicast, and calculate distribution trees for delivery of frames either to destinations whose location is unknown or to multicast/broadcast groups.
+
+  To mitigate temporary loop issues, RBridges forward based on a header with a hop count. RBridges also specify the next hop RBridge as the frame destination when forwarding unicast frames across a shared-media link, **which avoids spawning additional copies of frames during a temporary loop**. **A Reverse Path Forwarding Check** and other checks are performed on multi-destination frames to further control potentially looping traffic.
+
+  The first RBridge that a unicast frame encounters in a campus, RB1, **encapsulates the received frame with a TRILL header that specifies the last RBridge, RB2**, where the frame is decaosulated. RB1 is known as the "ingress RBridge" and RB2 is known as the "rgress RBridge"
+
+  To save toom in the TRILL header and simplify forwarding loopups, **a dynamic nickname acquisition protocol is run among the RBridges to select 2-octet nicknames for RBridges**, unique within the, which are an abbreviation for the IS-IS ID of the RBridge. The 2-octet nicknames are used to specify the ingree and egress RBridges in the TRILL header.
+
+  Multipathing of multi-destination frames through alternative distribution trees and ECMP (Equal Cost MultiPath) of unicast frames are supported.
+
+  Networks with a more mesh-like structure will benefit to a greater extent from the multipathing and optimal paths provided by TRILL than will more tree-like networks.
+
+  RBridges run a protocol on a link to elect a "Designate RBridge" (DRB). The TRILL-IS-IS election protocol on a link is a little different from the layer 3 IS-IS election protocol, because in TRILL it is essential that only one RBridge be elected DRB, whereas in layer 3 IS-IS it is possible for multiple routers to elected Designated Router (also known as Designated Intermediate System). **As with an IS-IS router, the DRB may give a pseudonode name to the link, issue an LSP (Link State PDU)** on  behalf of the pseudonode, and issue CSNPs (Complete Sequence Number PDUs) on the link. Additionally, the DRB has some TRILL-specific duties, **including specifying which VLAN will be the Designate VLAN used for communication between RBridges on the link**.
+
+  The DRB either encapsulates/decapsulates all data traffic to/from the link, or, for load splitting, delegates this responsibility, for one or more VLANs, to other RBridges on the link. There must at all times be at most one RBridge on the link that encapsulates/decapsulates traffic for a particular VLAN. We will refer to the RBridge appointed to forward VLAN-x traffic on behalf of the link as the "appointed VLAN-x forwarder".
+
+  RBridges should support **SNMPv3**. The RBridge MIB will be specified in the separate document. If IP service is available to an RBridge, it should support SNMPv3 over UDP over IPv4 and IPv6, however, management can be used, within a campus, even for an RBridge that lacks an IP or other Layer 3 transpot stack or which does not have a Layer 3 address, by **transporting SNMP with Ethernet**.
+
 ### 2.2. End-Station Addresses
 ### 2.3. RBridge Encapsulation Architecture
 ### 2.4. Forwarding Overview
