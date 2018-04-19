@@ -314,6 +314,8 @@
   Although the RBridge may decrease the hop count of multi-destination frames by more than 1, under the circumstances above, the RBridge forwarding a frame must decrease the hop count by at least 1, and discard the frame if cannot do so because the hop count is 0. The option to decrease the hop count by more than  1 under the circumstances described above applies only to multi-destination frames, not to known unicast frames.
 
 ### 3.7. RBridge Nicknames
+  Nicknames are 16-bit dynamically assigned quantities that act as abbreviations for RBridges' IS-IS IDs to achieve a more compact encoding and can be used to specify potentially different trees with the same root. This assignment allows specifying up to 2\*\*16 RBridges; However, the value **0x0000** is reserved to indicate that a nickname is not specified, the value **0xFFC0 through 0xFFFE** are reserved for future specification, and the value **0xFFFE** are permanently reserved. RBridges piggyback a nickname acquisition protocol on the link state protocol to acquire one or more nicknames unique within the campus.
+
 #### 3.7.1. Egress RBridge Nickname
 #### 3.7.2. Ingress RBridge Nickname
 #### 3.7.3. RBridge Nickname Selection
