@@ -296,7 +296,23 @@
   * M = 1 (True) - The egress RBridge nickname field contains a nickname that specifies a distribution tree. This nickname is selected by the ingress RBridge for a TRILL Data frame or by the source RBridge for a TRILL ESADI frame.
 
 ### 3.5. Op-Length
+  There are provisions to express in the TRILL header that a frame is using an optional capapbility and to encode information into header in connection with that capapbility.
+
+  The Op-Length header field gives the length of the TRILL header options in units of 4 octets, which allows up to **124 octets of option area**. If Op-Length is zero, there are no options present. If options are present, they follow immediately after the Ingress RBridge Nickname field.
+
 ### 3.6. Hop Count
+  The Hop Count field is a 6-bit unsigned integer. An RBridge drops frames received with a hop count of zero, otherwise it decrements the hop count. (This behavior is different from IPv4 and IPv6 in order to support the later addition of a traceroute-like facility that would be able to get a hop execeeded from an egress RBridge.)
+
+  For known unicast frames, the ingress RBridge should set the Hop Count in excess of the number of RBridge hops it expects to the egress RBridge to allow for alternate routing later in the path.
+
+  For multi-destination frames, the Hop Count should be set by the ingress RBridge (or source RBridge for a TRILL ESADI frame) to at least the expected number of hops to the most distant RBridge. To accomplish this, RBridge RBn calculates, for each branch from RBn of the specified distribution tree rooted at RB1, the maximum number of hops in that branch.
+
+  Multi-destination frames are of particular danger because **a loop involving one or more distribution tree forks could result in the rapid generation of mutliple copies of the frame, even with the normal hop count mechanism**. It is for this reason that multi-destination frames are subject to **a stringent Reverse Path Forwarding Check and other checks as described**. As an optional additional traffic control measure, when forwarding a multi-destination frame onto a distribution tree branch, **transit RBridge RBm May decrease the Hop count by more than 1**, unless decreasing the hop count by more than 1 would result in a hop count insufficent to reach all destinations in that branch of the tree rooted at RBi.
+
+  Using a hop count close or equal to the minimum needed on multi-destination frames provides additional protection against problems with temporary loops when forwarding.
+
+  Although the RBridge may decrease the hop count of multi-destination frames by more than 1, under the circumstances above, the RBridge forwarding a frame must decrease the hop count by at least 1, and discard the frame if cannot do so because the hop count is 0. The option to decrease the hop count by more than  1 under the circumstances described above applies only to multi-destination frames, not to known unicast frames.
+
 ### 3.7. RBridge Nicknames
 #### 3.7.1. Egress RBridge Nickname
 #### 3.7.2. Ingress RBridge Nickname
