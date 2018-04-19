@@ -145,6 +145,56 @@
   Even if the ESADI protocol is used to announce or learn attached end nodes, RBridges must strill learn from received native frames and decapsulated TRILL Data Frames unless configured not to do so. Advertising end nodes using ESADI is optional, as is learning from these announcements.
 
 ### 2.3. RBridge Encapsulation Architecture
+  The Layer 2 technology used to connect RBridges may be either IEEE [802.3] or some other link technology such as PPP [RFC1661]. This is possible since the RBridge relay function is layered on top of the Layer 2 technologies.
+
+                      ------------
+                     /            \
+        +-----+     /  Ethernet    \    +-----+
+        | RB1 |----<                >---| RB2 |
+        +-----+     \   Cloud      /    +-----+
+                     \            /
+                      ------------
+
+  Figure 1 shows two RBridges, RB1 and RB2, interconnected through an Ethernet cloud. The Ethernet cloud may include hubs, point-to-point or shared media, IEEE 802.1D bridges, or 802.1Q bridges.
+
+        +--------------------------------+
+        | Outer Ethernet Header          |
+        +--------------------------------+
+        | TRILL Header                   |
+        +--------------------------------+
+        | Inner Ethernet Header          |
+        +--------------------------------+
+        | Ethernet Payload               |
+        +--------------------------------+
+        | Ethernet FCS                   |
+        +--------------------------------+
+
+  Figure 2 shows the format of a TRILL data or ESADI frame traveling through the Ethernet cloud between RB1 and RB2.
+
+        +--------------------------------+
+        | PPP Header                     |
+        +--------------------------------+
+        | TRILL Header                   |
+        +--------------------------------+
+        | Inner Ethernet Header          |
+        +--------------------------------+
+        | Ethernet Payload               |
+        +--------------------------------+
+        | PPP FCS                        |
+        +--------------------------------+
+
+  In the case of media different from Ethernet, the header specific to that media replaces the oter Ethernet header. For example, Figure 3 shows a TRILL encapsulation over PPP.
+
+  The outer header is link-specific and, although this document specifics only [802.3] link, other links are allowed.
+
+  In both cases, the inner Ethernet header and the Ethernet Payload come from the original frame and are encapsulated with a TRILL header as they travel between RBridges. Use of a TRILL header offers the following benefits:
+  * loop nitigation through use of a hop count field
+  * elimination of the need for end-station VLAN amd MAC address learning in transit RBridges
+  * direction of unicast frames towards the egress RBridges (this enables unicast forwarding tables of transit RBridges to be sized with the number of RBridges rather than the total number of nodes); and
+  * provision of a separate VLAN tag for forwarding traffic between RBridges, independent of the VLAN of the native frame
+
+  When forwarding unicast frames beween RBridges, the outer header has the MAC destination address of the next hop RBridge, to avoid frame duplication if the inter-RBridge link is multi-access. This also enables multipathing of unicast, since the transmitting RBridge can specify the next hop. Having the outer header specify the transmitting RBridge as the source address ensures that any bridges inside the Ethernet cloud will not get confused, as they might be if multipathing is in use and they were to see the original source or ingress RBridge in the outer header.
+
 ### 2.4. Forwarding Overview
 #### 2.4.1. Known-Unicast
 #### 2.4.2. Multi-Destination
