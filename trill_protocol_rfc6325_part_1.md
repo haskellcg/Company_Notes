@@ -460,6 +460,12 @@
   Although the FCS is normally calculated just before transmission, it is desirable, when pratical, for an FCS to accompany a frame within an RBridge after receipt. That FCS could then be dynamically updated to account for changes to the frame during Rbridge processing and used for transmission or checked against the FCS calculated for frame transmission. This optional, more continuous use of an FCS would be helpful in detecting some internal Rbridge failures such as memory errors.
 
 ### 4.2. Link State Protocol (IS-IS)
+  TRILL uses an extension of IS-IS [ISO10589] \[RFC1195\] as its routing protocol. IS-IS has folowing advantages:
+  * It runs directly over Layer 2, so therefore it may be run without configuration (no IP addresses need to be assigned).
+  * It is easy to extend by defining new TLV (type-length-value) data elements and sub-elements for carrying TRILL information
+  
+  This section describes TRILL use of IS-IS, except for the TRILL-Hello protocol, which is described below, and the MTU-probe and MTU-ack messages.
+
 #### 4.2.1. IS-IS RBridge Identity
 #### 4.2.2. IS-IS Instances
 #### 4.2.3. TRILL IS-IS Frames
