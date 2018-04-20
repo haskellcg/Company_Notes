@@ -422,8 +422,26 @@
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 #### 4.1.1. VLAN Tag Information
+  A "VLAN Tag" (formerly known as a Q-tag), also known as a "C-tag" for customer tag, includes a VLAN ID and a priority field as shown in Figure 8. The "VLAN ID" may be zero, indicating that no VLAN is specified, just a priority, although such frames are called "priority tagged" rather than "VLAN tagged" [802.1Q-2005].
+
+  Use of [802.1ad] S-tag, also known as service tags, and use of stacked tagsm are beyond the scope of this document.
+
+            +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+            | Priority  | C |                   VLAN ID                     |
+            +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+
+  As recommended in 802.1Q-2005, RBridge should be implemented so as to allow use of the full range of VLAN IDs from 0x001 through 0xFFE. RBridges may support a smaller number of simultaneously active VLAN IDs. VLAN ID zero is the null VLAN identifier and indicates that no VLAN is specified while VLAN ID 0xFFF is reserved.
+
+  **The VLAN ID 0xFFF must not be used.** RBridge must discard any frame they received with an Outer.VLAN ID of 0xFFF. RBridge must discard any frame for which they examine the Inner.VLAN ID and find it to be 0xFFF; such examination is required at all egress RBridges that decapsulate a frame.
+
+  The "C" bit shown in Figure 8 is **not used in the Inner.VLAN in TRILL**. It must be set to zero there by ingress RBridges, transparently forwarded by transit RBridges, and is ignored by egress RBridge.
+
+  As specified in [802.1Q-2005], the priority field contains an unsigned value from 0 through 7 where 1 indicates the lowest priority, 7 the highest priority, and the default priority zero is considered to be higher than priority 1 but lower than priority 2. The [802.1ad] amendment to [802.1Q-2005] permits mapping some adjacent pairs of priority levels into a single priority level with and without drop eligibility. Ongoing work in IEEE 802.1 (802.1az, Appendix E) suggests the ability to configure "Priority groups" that hav a certain guaranteed bandwidth. RBridge ports may also implement such options. RBridge are not required to implement any particular number of distinct priority levels but may treat one or more adjacent priority levels in the same fashion.
+
+  Frames with the same source address, destination address, VLAN, and priority that are received on the same port as each other and are transmitted on the same port must be transmitted in the order received unless the RBridge classifies the frames into more find-gained flows, in which case this ordering requirement applies to each such flow. Frames in the same VLAN with the same priority and received on the same port may be sent out different ports if multipathing is in effect.
+
 #### 4.1.2. Inner VLAN Tag
-#### 4.1.3. Iuter VLAN Tag
+#### 4.1.3. Outer VLAN Tag
 #### 4.1.4. Frame Check Sequence (FCS)
 ### 4.2. Link State Protocol (IS-IS)
 #### 4.2.1. IS-IS RBridge Identity
