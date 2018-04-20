@@ -341,6 +341,21 @@
   Every nickname in use in a campus identifies an RBridge (or pseudonode) and  every nickname designates a distribution tree rooted at the RBridge (or pseudonode) it identifies. However, only a limited number of these potential distribution trees are actually computed by all the RBridge in a compus.
 
 ### 3.8 TRILL Header Options
+  All RBridges must be able to skip the number of 4-octet chunks indicated by the Op-Length field in order to find the inner frame, since RBridge must be able to find the destination MAC address and VLAN tag in the inner frame. (Transit RBridges need such information to filter VLANs, IP multicast, and the like. Egress RBridge need to find the inner header to correctly decapsulate and handle the inner frame.)
+
+  To ensure backward-compatible safe operation, when Op-Length is non-zero indicating that option are present, the top two bits of the first octet of the options area are specified as follows:
+
+            +------+------+----+----+----+----+----+----+
+            | CHbH | CItE |          Reserved           |
+            +------+------+----+----+----+----+----+----+
+
+  If the CHbH (Critical Hop-by-Hop) bit is one, one or more critical hop-by-hop options are present. Transit RBridge that do not support all of the critical hop-by-hop option present, for example, an RBridge that supported no options must drop the frame. If the CHbH bit is zero, the frame is safe, from the point of view of options processing, for a transit RBridge to forward, regardless of what options that RBridge does or does nor support. A transit RBridge that supports none of the options present must transparently forward the options area when it forward a frame.
+
+  It the CItE (Critical Ingress-to-Egress) bit is one, one or more critical ingress-or-egress options are present. If it is zero, no such options are present. If either CHbH or CItE is non-zero, egress RBridge that dont support all critical options present, for example, an RBridge that supports no options, must drop the frame. If both CHbH and CItE are zero, the frame is safe, from the point of view of options, for any egress RBridge to process, regardless of what options that RBridge does or does not support.
+
+  Options, including the meaning of the bits labeled as Reserved in Figure 6, will be further sepcified in other documents and expected to include provisions for hop-by-hop and ingress-to-egress options as well as critical and non-critical options.
+
+  **Note:** Most RBridge implementations are expected to be optimized for the simplest and most common cases of frame forwarding and processing. The inclusion of options may, and the inclusion of complex or lenghy options likely will, cause frame processing using a "slow path" with inferior performance to "fast path" processing. Limited slow path throughput may cause such frame to be discarded.
 
 ## 4. Other RBridge Design Details
 ### 4.1. Ethernet Data Encapsulation
