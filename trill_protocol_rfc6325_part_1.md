@@ -357,8 +357,70 @@
 
   **Note:** Most RBridge implementations are expected to be optimized for the simplest and most common cases of frame forwarding and processing. The inclusion of options may, and the inclusion of complex or lenghy options likely will, cause frame processing using a "slow path" with inferior performance to "fast path" processing. Limited slow path throughput may cause such frame to be discarded.
 
+
 ## 4. Other RBridge Design Details
+  This section specifies other RBridge design details.
+
 ### 4.1. Ethernet Data Encapsulation
+  TRILL data and ESADI frames in transit on Ethernet links are encapsulated with an outer Ethernet header. This outer header looks, to a bridge on the path between two RBridges, like the header of a regular Ethernet frame; therefore, bridges forward the frame as they normally would. To enable RBridge to distinguish such TRILL Data frames, **a new TRILL Ethertype** is used in the outer header.
+
+  Figure 7 details a TRILL Data frame with an outer VLAN tag traveling on an Ethernet link as shown at the top of the figure, that is, between transit RBridges RB3 and RB4. The native frame originate at end station ESa, was encapsulated by ingress RBridge RB1, and will ultimately be decapsulated by egress RBridge RB2 and delivered to destination end station ESb. The encapsulation shown has the advantage, if TRILL options are absent or the length of such options is a multiple of 64 bits, of aligning the original Ethernet frame at a 64-bit boundary.
+
+  When a TRILL Data frame is carried over an Ethernet cloud, it has three pairs of addresses:
+  * Outer Ethernet Header: Outer Destination MAC address (Outer.MacDA) and Outer Source MAC Address (Outer.MacSA), these addresses are used to specify the next hop RBridge and the transmitting Rbridge respectively.
+  * TRILL Header: Egress Nickname and Ingress Nickname. These specify nicknames of the egress and ingress RBridges, respectively, unless the frame is multi-destination, in which case the Egress Nickname specifies the distribution tree on which the frame is being sent.
+  * Inner Ethernet Header: Inner Destination MAC Address (Inner.MacDA) and Inner Source MAC Address (Inner.MacSA), these addresses are as transmitted by the original end station, specifying, respectively the destination and source of the inner frame.
+
+  A TRILL Data frame also potentially has two VLAN tags, that can carry two different VLAN Identifiers and specify priority.
+
+  Flow:
+            +-----+  +-------+   +-------+       +-------+   +-------+  +----+
+            | ESa +--+  RB1  +---+  RB3  +-------+  RB4  +---+  RB2  +--+ESb |
+            +-----+  |ingress|   |transit|   ^   |transit|   |egress |  +----+
+                     +-------+   +-------+   |   +-------+   +-------+
+
+  Outer Ethernet Header:
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |           Outer Destination MAC Address (RB4)                 |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | Outer Destination MAC Address | Outer Source MAC Address      |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |           Outer Source MAC Address (RB3)                      |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |Ethertype = C-Tag [802.1Q-2005]| Outer.VLAN Tag Information    |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  TRILL Header:
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | Ethertype = TRILL             | V | R |M|Op-Length| Hop Count |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | Egress (RB2) Nickname         | Ingress (RB1) Nickname        |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  Inner Ethernet Header:
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |         Inner Destination MAC Address (ESb)                   |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | Inner Destination MAC Address | Inner Source MAC Address      |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |         Inner Source MAC Address (ESa)                        |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |Ethertype = C-Tag [802.1Q-2005]| Inner.VLAN Tag Information    |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  Payload:
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | Ethertype of Original Payload |                               |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               |
+            |                   Original Ethernet Payload                   |
+            |                                                               |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  Frame Check Sequence:
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |           New FCS (Frame Check Sequence)                      |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
 #### 4.1.1. VLAN Tag Information
 #### 4.1.2. Inner VLAN Tag
 #### 4.1.3. Iuter VLAN Tag
