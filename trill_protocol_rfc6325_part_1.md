@@ -452,7 +452,13 @@
 
   TRILL frames forwarded by a transit RBridge use the priority present in the Inner.VLAN of the frame as received. TRILL Data farmes are sent with the priority associated with the corresponding native frame when received. **TRILL IS-IS frames should be sent with priority 7.**
 
+  Whether an Outer.VLAN tag actually appears on the wire when a TRILL frame is sent depends on the configuration of the RBridge port through which it is sent in the same way as the appearance of a VLAN tag on a frame sent by an [802.1Q-2005] bridge depends on the configuration of the bridge port.
+
 #### 4.1.4. Frame Check Sequence (FCS)
+  Each Ethernet frame has a single Frame Check Sequence (FCS) that is computed to cover that entire frame, for detecting frame corruption due to bit errors on a link. Thus, when a frame is encapsulated, the original FCS is not included but discarded. Any received frame for which the FCS check fails should be discarded (this may not be possible in the case of cur through forwarding). The FCS normally changes on encapsulation, decapsulation, and every TRILL hop due to changes in the outer destiantion and source addresses, the decrementing of the hop count, etc.
+
+  Although the FCS is normally calculated just before transmission, it is desirable, when pratical, for an FCS to accompany a frame within an RBridge after receipt. That FCS could then be dynamically updated to account for changes to the frame during Rbridge processing and used for transmission or checked against the FCS calculated for frame transmission. This optional, more continuous use of an FCS would be helpful in detecting some internal Rbridge failures such as memory errors.
+
 ### 4.2. Link State Protocol (IS-IS)
 #### 4.2.1. IS-IS RBridge Identity
 #### 4.2.2. IS-IS Instances
