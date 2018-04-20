@@ -467,7 +467,21 @@
   This section describes TRILL use of IS-IS, except for the TRILL-Hello protocol, which is described below, and the MTU-probe and MTU-ack messages.
 
 #### 4.2.1. IS-IS RBridge Identity
+  Each RBridge has a unique 48-bit (6-octet) IS-IS System ID. This ID may be derived from any of the RBridge's unique MAC addresses.
+  
+  A pseudonode is assigned a 7-octet ID by the DRB that create it, by taking a 6-octet ID owned by the DRB, and appending another octet. The 6-octet ID used to form a pseudonode ID should be the DRB's ID unless the DRB has to create IDs for pseudonodes for more than 255 links. The only constraint for correct operation is that the 7 octet ID be unique within the campus, and that the 7th octet be nonzero. An Rbridge has a 7-octet ID consisting of its 6-octet system ID concatenated with a zero octet.
+
+  In this document, we use the term "IS-IS ID" to refer to the 7-octet quantity that can be either the ID of an RBridge or a pseudonode.
+
 #### 4.2.2. IS-IS Instances
+  TRILL implements a separate IS-IS instance from any used by Layer 3, that is, different from the one used by routers. Layer 3 IS-IS frames must be distinguished from TRILL IS-IS frames even when those Layer 3 IS-IS frames are transiting an RBridge campus.
+
+  Layer 3 IS-IS native frames have special multicast destination addresses specified for that purpose, such as AllL1ISs or AllL2ISs. When they are TRILL encapsulated, these multicast addresses appear as the Inner.MacDA and the Outer.MacDA will be the All-RBridges multicast address.
+
+  Within TRILL, there is an IS-IS instance across all RBridges in the campus. This instance uses TRILL IS-IS frames that are distinguished by having a different Ethertype "L2-IS-IS". Additionally, for TRILL IS-IS frames that are multicast, there is a distinct multicast destination address of All-IS-IS-Rbridge. TRILL IS-IS frames do not have a TRILL header.
+
+  ESADI is a separate protocol from the IS-IS instance implemented by all the RBridge. There is a separate ESADI instance for each VLAN, and ESADI frames are encapsulated just like TRILL Data frame. After the TRILL header, the ESADI frame has an inner Ethernet header with the Inner.MacDA of "All-ESADI-RBridges" and the "LS-IS-IS" Ethertype followed by the ESADI frame.
+
 #### 4.2.3. TRILL IS-IS Frames
 #### 4.2.4. TRILL Link Hellos, DRBs, and Appointed Forwarders
 ##### 4.2.4.1. P2P Hello Links
