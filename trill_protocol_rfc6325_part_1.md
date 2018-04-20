@@ -441,7 +441,17 @@
   Frames with the same source address, destination address, VLAN, and priority that are received on the same port as each other and are transmitted on the same port must be transmitted in the order received unless the RBridge classifies the frames into more find-gained flows, in which case this ordering requirement applies to each such flow. Frames in the same VLAN with the same priority and received on the same port may be sent out different ports if multipathing is in effect.
 
 #### 4.1.2. Inner VLAN Tag
+  The "Inner VLAN tag Information" (Inner.VLAN) field contains the VLAN tag information associated with the native frame when it was ingressed or the VLAN tag information associated with a TRILL ESADI frame when that frame was created. When a TRILL frame passes through a transit RBridge, the Inner.VLAN must not be changed except when VLAN mapping is being intentionally performed within that RBridge.
+
+  **When a native frame arrives at an RBridge, the associated VLAN ID and priority are determined as specified in [802.1Q-2005]**. If the RBridge is an appointed forwarder for that VLAN and the delivery of the frame requires transmission to one or more other links, this ingress RBridge froms a TRILL Data frame with the associated VLAN ID and priority placed in the Inner.VLAN information.
+
+  The VLAN ID is required at the ingress RBridge as one element in determining the approriate egress RBridge for a known unicast frame and is needed at the ingress and every transit RBridge for multi-destination frames to correctly prune the distribution tree.
+
 #### 4.1.3. Outer VLAN Tag
+  TRILL frames sent by an RBridge, except for some TRILL-Hello frames, use an Outer.VLAN ID specified by the Designate RBridge (DRB) for the link onto which they are being sent, referred to as the Designate VLAN. For TRILL data and ESADI frames, the priority in the Outer.VLAN tag should be set to the priority in the Inner.VLAN tag.
+
+  TRILL frames forwarded by a transit RBridge use the priority present in the Inner.VLAN of the frame as received. TRILL Data farmes are sent with the priority associated with the corresponding native frame when received. **TRILL IS-IS frames should be sent with priority 7.**
+
 #### 4.1.4. Frame Check Sequence (FCS)
 ### 4.2. Link State Protocol (IS-IS)
 #### 4.2.1. IS-IS RBridge Identity
