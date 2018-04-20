@@ -317,8 +317,21 @@
   Nicknames are 16-bit dynamically assigned quantities that act as abbreviations for RBridges' IS-IS IDs to achieve a more compact encoding and can be used to specify potentially different trees with the same root. This assignment allows specifying up to 2\*\*16 RBridges; However, the value **0x0000** is reserved to indicate that a nickname is not specified, the value **0xFFC0 through 0xFFFE** are reserved for future specification, and the value **0xFFFE** are permanently reserved. RBridges piggyback a nickname acquisition protocol on the link state protocol to acquire one or more nicknames unique within the campus.
 
 #### 3.7.1. Egress RBridge Nickname
+  There are two cases for the contents of the egress RBridge nickname field, depending on the M bit. The nickname is filled in **by the ingress RBridge for TRILL Data frames** and **by the source RBridge for TRILL ESADI frames**.
+  * For known unicast TRILL Data frames, M == 0 and the egress RBridge nickname field specifies the egress RBridge; that is, it specifies the RBridge that needs to remove the TRILL encapsulation and forward the native frame. Once the egress nickname field is set, it must not be changed by any subsequent transit RBridge.
+  * For multi-destination TRILL Data frames and for TRILL ESADI frames, M == 1. The egress RBridge nickname field contains a nickname specifying the distribution tree selected to be used to forward the frame. This root nickname must not be changed by transit RBridge.
+
 #### 3.7.2. Ingress RBridge Nickname
+  The ingress RBridge nickname is set to a nickname of the ingress RBridge for TRILL Data frames and to a nickname of the source RBridge for TRILL ESADI frames. If the RBridge setting the ingress nickname has multiple nicknames, it should use the same nickname in the ingress field whenever it encapsulates a frame with any particular Inner.MacSA and Inner.VLAN value. Thsi simplifies end node learning.
+
 #### 3.7.3. RBridge Nickname Selection
+  The nickname selection protocols is piggybacked on TRILL IS-IS as follows:
+  * The nickname or nicknames beding used by an RBridge are carried in an IS-IS TLV (type-length-value data element) along with a priority of use value [RFC6326]. Each RBridge chooses it own nickname or nicknames.
+  * Nickname values may be configured. An RBridge that has been configured with one or more nickname values will has priority for those nickname values over all RBridges with non-configured nicknames.
+  * The nickname value 0x0000 and the value from 0xFFC0 through 0xFFFF are reserved and must not be selected by or configued for an RBridge. The value 0x0000 is used to indicate that a nickname is not known.
+  * The priority of use field reported with a nickname is an unsgined 8-bit value, where was significant bit 0x80 indicate that the nickname value was configured. The bottom 7 bits have the default value 0x40, but may be configured to be some other value. Additionally, an RBridge may increase its priority after holding a nickname for some amount of time. However, the most significant bit of the priority must not be set unless the nickname value was configured.
+  *
+
 ### 3.8 TRILL Header Options
 
 ## 4. Other RBridge Design Details
