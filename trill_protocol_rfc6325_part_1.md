@@ -647,6 +647,10 @@
   The ESADI DRB sends TRILL-ESADI-CSNP frames on the ESADI virtual link. For robustness, a participaing RBridge that determines that some other RBridge should be ESADI DRB on such virtual link but has not received or sent a TRILL-ESADI-CSNP in at least the ESADI DRB holding time may also send a TRILL-ESADI-CSNP on the virtual link. A participating RBridge that determines that no other RBridges are participating in the ESADI protocol for a particular VLAN should not send ESADI information or TRILL-ESADI-CSNPs on the virtual link for the VLAN.
 
 ##### 4.2.5.2. TRILL ESADI Information
+  The information distributed with the ESADI protocol is the list of local end-station MAC addresses knwon to be the originating RBridge and, for each such address, a one-octet unsgined "confident" rating in the range 0-254.
+
+  It is intended to optionally provide for VLAN ID translation within RBridges, as specified in [VLAN-MAPPING]. This includes translating TRILL ESADI frames. If TRILL ESADI frames could contain VLAN IDs in arbitrary internal locations, such translation would be impractical. Thus, TRILL ESADI frames must not contain the VLAN ID of the VLAN to which they apply in the body of the frame after the Inner.VLAN tag.
+
 #### 4.2.6. SPF, Forwarding, and Ambiguous Destinations
 ### 4.3. Inter-RBridge Link MTU Size
 #### 4.3.1. Determining Campus-Wide TRILL IS-IS MTU Size
