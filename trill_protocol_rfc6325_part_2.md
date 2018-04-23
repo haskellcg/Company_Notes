@@ -1,4 +1,8 @@
 ### 4.3. Inter-RBridge Link MTU Size
+  There are two reaons why it is important to known what size of frame each inter-RBridge link in the campus can support:
+  * RBridge RB1 must known the size of link state information messages it can generate that will be guaranteed to be forwardable across all inter-RBridge links in the campus.
+  * If traffic engineering tools knowwn which links support larger than minimally acceptable data packet size, paths can be computed that can support large data packets
+
 #### 4.3.1. Determining Campus-Wide TRILL IS-IS MTU Size
 #### 4.3.2. Testing Link MTU Size
 ### 4.4. TRILL-Hello Protocol
@@ -39,4 +43,3 @@
 ##### 4.9.3.2. Root Bridge Changes
 ##### 4.9.3.3. Transmission of BPDUs
 #### 4.9.4. Dynamic VLAN Registration
-
