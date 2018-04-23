@@ -483,6 +483,34 @@
   ESADI is a separate protocol from the IS-IS instance implemented by all the RBridge. There is a separate ESADI instance for each VLAN, and ESADI frames are encapsulated just like TRILL Data frame. After the TRILL header, the ESADI frame has an inner Ethernet header with the Inner.MacDA of "All-ESADI-RBridges" and the "LS-IS-IS" Ethertype followed by the ESADI frame.
 
 #### 4.2.3. TRILL IS-IS Frames
+  All RBridges must participate in the TRILL IS-IS instance, which constitutes a single Level 1 IS-IS area using the fixed area address zero. TRILL IS-IS frames are never forwarded by an RBridge but are locally prcessed on receipt. (Such processing may cause the RBridge to send additional TRILL IS-IS frame.)
+
+  A TRILL IS-IS frame on an 802.3 link is structured as show below. All such frames are Ehthertype encoded. The RBridge port out of which such a frame is sent will strip the outer VLAN tag if configured to do so.
+
+  Outer Ehthernet Header:
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |           All-IS-IS-RBridges Multicast Address                |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | All-IS-IS-RBridges continued  |  Source RBridge MAC Address   |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |           Source RBridge MAC Address continued                |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |Ethertype = C-Tag [802.1Q-2005]|  Outer.VLAN Tag Information   |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | L2-IS-IS Ethertype            |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  IS-IS Payload:
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | IS-IS Common Header, IS-IS PDU Specific Fields, IS-IS TLVs    |
+
+  Frame Check Sequence:
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |           FCS (Frame Check Sequence)                          |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  The VLAN specified in the Outer.VLAN informarion will be the Designated VLAN for the link on which the frame is sent, except in the case of some TRILL Hellos.
+
 #### 4.2.4. TRILL Link Hellos, DRBs, and Appointed Forwarders
 ##### 4.2.4.1. P2P Hello Links
 ##### 4.2.4.2. Designated RBridge
