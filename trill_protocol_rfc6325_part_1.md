@@ -519,6 +519,14 @@
   If any of the RBridge ports on a link is configured to use TRILL Hellos, one of such RBridge orts using TRILL Hellos is **elected DRB (Desinated RBridge)** for the link. This election is based on configured priority (most significant field), and source MAC address as communicated by TRILL-Hello frames. The DRB, designates the VLAN to be used on the link for inter-RBridge communication by the non-P2P RBridge ports and appoints itself or other RBridges on the link appointed forwarder for VLANs on the link.
 
 ##### 4.2.4.1. P2P Hello Links
+  RBridges ports can be configured to use IS-IS P2P Hellos. This implies that the port is a point-to-point link to another RBridge. An RBridge must not provide any end-station (native frame) service on a port configured to use P2P Hellos.
+
+  As with Layer 3 IS-IS. such P2P ports do not participate in a DRB election. They send all frames VLAN tagged as being in the Deisred Designated VLAN configured for the port, although this tag may be stripped if the port is so configured. Since all traffic through the port should be TRILL frames or Layer 2 control frames, such a port cannot be an appointed forwarder. RBridge P2P ports must use **the IS-IS three-way handshake [RFC5303]** so that extended circuit IDs are associated with the link for tie breaking purposes.
+
+  Even if all simple links in a network are physically point-to-point, if some of the nodes are bridges, the bridged LANs that include those bridges appear to be multi-access links to attached RBridges. This would necessitate using TRILL Hellos for proper operation in many cases.
+
+  While it is safe to erroneously configure ports as P2P, this may result in lack of connectivity.
+
 ##### 4.2.4.2. Designated RBridge
 ##### 4.2.4.3. Appointed VLAN-x Forwardre
 ##### 4.2.4.4. TRILL LSP Information
