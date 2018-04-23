@@ -586,6 +586,58 @@
   1. Optionally, the Authentication TLV #10.
 
 #### 4.2.5. The TRILL ESADI Protocol
+  RBridges that are the appointed VLAN-x forwarder for a link may participate in the TRILL ESADI protocol for that VLAN. But all transit RBridge must properly forward TRILL ESADI frames as if they were mutlicast TRILL Data frames. TRILL ESADI frames are structured like IS-IS frames but are always TRILL encapsulated on the wire as if they are TRILL Data frames.
+
+  Because of this forwarding, it appears to the ESADI protocol at an RBridge that it is directly conencted by a shared virtual link to all other RBridge in the campus running ESADI for that VLAN. RBridges that do not implement the ESADI protocol or are not appointed forwarder for that VLAN do not decapsulated or locally process any TRILL ESADI frames they received for that VLAN. In other words, these frames are transparently tunneled through transit RBridge. Such transit RBridges treat them exactly as multicast TRILL Data frames and no special processing is invoked due to such forwarding.
+
+  TRILL ESADI frames sent on an IEEE 802.3 link are strauctured as shown below. The outer VLAN tag will not be present if it was stripped by the port out of which the frame was sent.
+
+  Outer Ethernet Header:
+
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |               Next Hop Destination Address                    |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | Next Hop Destination Address  |   Sending RBridge MAC Address |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |               Sending RBridge Port MAC Address                |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |Ethertype = C-Tag [802.1Q-2005]| Outer.VLAN Tag Information    |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  TRILL Header:
+
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |       Ethertype = TRILL       | V | R |M|Op-Length| Hop Count |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | Egress (Dist. Tree) Nickname  |   Ingress (Origin) Nickname   |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  Inner Ethernet Header:
+
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |           All-ESADI-RBridges Multicast Address                |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            | All-ESADI-RBridges continued  |   Origin RBridge MAC Address  |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |           Origin RBridge MAC Address continued                |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |Ethertype = C-Tag [802.1Q-2005]| Inner.VLAN Tag Information    |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |       Ethertype = L2-IS-IS    |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  ESADI Payload (formmated as IS-IS):
+
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |   IS-IS Common Header, IS-IS PDU Specific Fields, IS-IS TLVs  |
+
+  Frame Check Sequence:
+
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |               FCS (Frame Check Sequence)                      |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  The Next Hop Destination Address or Outer.MacDA is the All-RBridges multicast address. The VLAN specified in the Outer.VLAN information will always be the Designated VLAN for the link on which the frame is sent. The V and R fields will be zero while the M field will be one. The VLAN specified in the Inner.VLAN information will be the VLAN to which the ESADI frame applies. The origin RBridge MAC Address or Inner.MacSA must be a globally unique MAC address owned by the RBridge originating the ESADI frame, for example, any of its port MAC addresses, and each RBridge must use the same Inner.MacSA for all of the ESADI frames that RBridge originates.
 
 ##### 4.2.5.1. TRILL ESADI Participation
 ##### 4.2.5.2. TRILL ESADI Information
