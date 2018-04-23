@@ -640,6 +640,12 @@
   The Next Hop Destination Address or Outer.MacDA is the All-RBridges multicast address. The VLAN specified in the Outer.VLAN information will always be the Designated VLAN for the link on which the frame is sent. The V and R fields will be zero while the M field will be one. The VLAN specified in the Inner.VLAN information will be the VLAN to which the ESADI frame applies. The origin RBridge MAC Address or Inner.MacSA must be a globally unique MAC address owned by the RBridge originating the ESADI frame, for example, any of its port MAC addresses, and each RBridge must use the same Inner.MacSA for all of the ESADI frames that RBridge originates.
 
 ##### 4.2.5.1. TRILL ESADI Participation
+  An RBridge does not send any Hellos because of participation in the ESADI protocol. The information available the in TRILL IS-IS link state database is sufficient to determine the ESADI DRB on the virtual link for the ESADI protcol for each VLAN. In particular, the link state database information for each RBridge includes the VLANs, if any, for which the RBridge is participating in the ESADI protocol, its priority for being selected as DRB for the ESADI protocol foreach of those VLANs, its holding time, and its IS-IS system ID for breaking ties priority.
+
+  An RBridge need not perform any routing calculating because of participation in the ESADI protocol. Since all RBridges participating in ESADI for a particular VLAN appear to be connected to the same single virutal link, there are no routing decision to be made. A participating RBridge merely transmit the ESADI frames it originates on this virtual link.
+
+  The ESADI DRB sends TRILL-ESADI-CSNP frames on the ESADI virtual link. For robustness, a participaing RBridge that determines that some other RBridge should be ESADI DRB on such virtual link but has not received or sent a TRILL-ESADI-CSNP in at least the ESADI DRB holding time may also send a TRILL-ESADI-CSNP on the virtual link. A participating RBridge that determines that no other RBridges are participating in the ESADI protocol for a particular VLAN should not send ESADI information or TRILL-ESADI-CSNPs on the virtual link for the VLAN.
+
 ##### 4.2.5.2. TRILL ESADI Information
 #### 4.2.6. SPF, Forwarding, and Ambiguous Destinations
 ### 4.3. Inter-RBridge Link MTU Size
