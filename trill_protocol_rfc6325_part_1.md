@@ -374,12 +374,14 @@
   A TRILL Data frame also potentially has two VLAN tags, that can carry two different VLAN Identifiers and specify priority.
 
   Flow:
+
             +-----+  +-------+   +-------+       +-------+   +-------+  +----+
             | ESa +--+  RB1  +---+  RB3  +-------+  RB4  +---+  RB2  +--+ESb |
             +-----+  |ingress|   |transit|   ^   |transit|   |egress |  +----+
                      +-------+   +-------+   |   +-------+   +-------+
 
   Outer Ethernet Header:
+
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             |           Outer Destination MAC Address (RB4)                 |
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -391,6 +393,7 @@
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
   TRILL Header:
+
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             | Ethertype = TRILL             | V | R |M|Op-Length| Hop Count |
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -398,6 +401,7 @@
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
   Inner Ethernet Header:
+
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             |         Inner Destination MAC Address (ESb)                   |
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -409,6 +413,7 @@
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
   Payload:
+
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             | Ethertype of Original Payload |                               |
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               |
@@ -417,6 +422,7 @@
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
   Frame Check Sequence:
+
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             |           New FCS (Frame Check Sequence)                      |
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -488,6 +494,7 @@
   A TRILL IS-IS frame on an 802.3 link is structured as show below. All such frames are Ehthertype encoded. The RBridge port out of which such a frame is sent will strip the outer VLAN tag if configured to do so.
 
   Outer Ehthernet Header:
+
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             |           All-IS-IS-RBridges Multicast Address                |
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -501,10 +508,12 @@
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
   IS-IS Payload:
+
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             | IS-IS Common Header, IS-IS PDU Specific Fields, IS-IS TLVs    |
 
   Frame Check Sequence:
+
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             |           FCS (Frame Check Sequence)                          |
             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -577,6 +586,7 @@
   1. Optionally, the Authentication TLV #10.
 
 #### 4.2.5. The TRILL ESADI Protocol
+
 ##### 4.2.5.1. TRILL ESADI Participation
 ##### 4.2.5.2. TRILL ESADI Information
 #### 4.2.6. SPF, Forwarding, and Ambiguous Destinations
