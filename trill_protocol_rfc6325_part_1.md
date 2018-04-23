@@ -528,6 +528,14 @@
   While it is safe to erroneously configure ports as P2P, this may result in lack of connectivity.
 
 ##### 4.2.4.2. Designated RBridge
+  TRILL IS-IS elects one RBridge for each LAN link to be the Designated RBridge (DRB), that is, to have special duties. The Designated RBridge:
+  * Choose, for the link, and announces in its TRILL Hellos, the Designated VLAN ID to be used for inter-RBridge communication. This VLAN ID to be used for inter-RBridge communication. This VLAN is used for all TRILL-encapsulated data and ESADI frames and TRILL IS-IS frames except some TRILL-Hello frames.
+  * If the link is represented in the IS-IS topology as a pseudonode, chooses a pseudonode ID and announces that in its TRILL Hellos and issues an LSP on behalf of the pseudonode.
+  * Issues CSNPs.
+  * For each VLAN-x apearing on the link, chooses an RBridge on the link to be the appointed VLAN-x forwrder (the DRB may choose itself to be the appointed VLAN-x forwarder for all or some of the VLANs).
+  * Before appointing a VLAN-x forwarder (including appointing itself), wait as least its holding time (to ensure it is the DRB).
+  * If configuted to send TRILL-Hello frames, continues to send them on all its enabled VLANs that have been configured in the Announcing VLANs set of the DRB, which defaults to all enabled VLANs.
+
 ##### 4.2.4.3. Appointed VLAN-x Forwardre
 ##### 4.2.4.4. TRILL LSP Information
 #### 4.2.5. The TRILL ESADI Protocol
