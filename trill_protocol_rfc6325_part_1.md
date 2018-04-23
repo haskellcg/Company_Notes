@@ -512,6 +512,12 @@
   The VLAN specified in the Outer.VLAN informarion will be the Designated VLAN for the link on which the frame is sent, except in the case of some TRILL Hellos.
 
 #### 4.2.4. TRILL Link Hellos, DRBs, and Appointed Forwarders
+  RBridges default to using TRILL Hellos unless, on a per-port basis, they are configured to use P2P Hellos. TRILL-Hello frames are specified in 4.4.
+
+  RBridges are normally configured to use P2P Hellos only when there are exactly two of them on a link. However, it can occur that RBridge are misconfigured as to which type of hello to use. This is safe but may cause lack of RBridge-to-RBridge connectivity. An RBridge port configured to use P2P Hellos ignores TRILL Hellos, and an RBridge port configured to use TRILL Hellos ignores P2P Hellos.
+
+  If any of the RBridge ports on a link is configured to use TRILL Hellos, one of such RBridge orts using TRILL Hellos is **elected DRB (Desinated RBridge)** for the link. This election is based on configured priority (most significant field), and source MAC address as communicated by TRILL-Hello frames. The DRB, designates the VLAN to be used on the link for inter-RBridge communication by the non-P2P RBridge ports and appoints itself or other RBridges on the link appointed forwarder for VLANs on the link.
+
 ##### 4.2.4.1. P2P Hello Links
 ##### 4.2.4.2. Designated RBridge
 ##### 4.2.4.3. Appointed VLAN-x Forwardre
