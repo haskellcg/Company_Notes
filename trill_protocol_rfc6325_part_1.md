@@ -558,6 +558,24 @@
   When an appointed forwarder observer that the DRB on a link has changed, it no longer considers itself appointed for that link until appointed by the new DRB.
 
 ##### 4.2.4.4. TRILL LSP Information
+  The information items in the TRILL IS-IS LSP that are mentioned elsewhere in this document are list below. Unless an item is stated in the list below to be optional, it must be included. Other items may be included unless thier inclusion is prohibited elsewhere in this document. The catual encoding of this information and the IS-IS Type of sub-Type values for any news IS-IS TLV or sub-TLV data elements are specified in separate documents [RFC6165] \[RFC6326\].
+  1. The IS-IS IDs of neighbors (pseudonodes as well as RBridges) of RBridge RBn, and the cost of the link to each of those neighbors. RBridges must use the Extended IS Reachability TLV (#22, also known as "wide metric" [RFC5305]) and must not use the IS Reachability TLV (#2, also known as "narrow metric"). To facilitate efficient operation without configuration and consitent with [802.1D], RBridge should, by defauly, set the cost of a link to the integer part of twenty trillion dividid by the RBridge port's bit rate but not more than 2\*\*24-2; for example, the cost of for a link accessed by a 1Gbps port would default to 20,000. (Note that 2\*\*24-1 has a special meanning in IS-IS and would exclude the linm from SPF routes.) However, the link cose may, by default, be decrease for aggregated links and or increased to nor more than 2\*\*24-2 if the link appears to be a bridged LAN. The tested MTU for the link may be included via a sub-TLV.
+  1. The following information in connection with the nickname or each of the nicknames of RBridge RBn:
+    1. The nickname value (2 octets)
+    1. The unsigned 8-bit priority for RBn to have that nickname
+    1. The 16-bit unsigned priority of that nickname to becoming a distribution tree root
+  1. The maximum TRILL Header Version supported by RBridge RBn
+  1. The Following information, in addition to the per-nickname tree root priority, in connection with distribution tree determination and announment.
+    1. An unsigned 16-bit number that is the number of trees all RBridges in the campus calculate if RBn has the highest priority tree root
+    1. A seconf unsigned 16-bit TODO
+    1. TODO
+    1. TODO
+    1. TODO
+  1. The list of VLAN IDs of VLANs directly connected to RBn for links on which RBn is the appointed forwarder for that VLAN. TODO
+  1. Optionally, the largest TRILL IS-IS frame that the RBridge can handle using the originatingLSPBufferSize TLV #14.
+  1. Optionally, a list of VLAN groups where address learning is shared across that VLAN group. Each VLAN group is a list of VLAN IDs, where the first VLAN ID listed in a group, if present, id the "primary" and the others are "secondary". This is to detect misconfiguration of features outside the scope of this document. RBridge that do not support featires such as "shared VLAN learning" ignore this field.
+  1. Optionally, the Authentication TLV #10.
+
 #### 4.2.5. The TRILL ESADI Protocol
 ##### 4.2.5.1. TRILL ESADI Participation
 ##### 4.2.5.2. TRILL ESADI Information
