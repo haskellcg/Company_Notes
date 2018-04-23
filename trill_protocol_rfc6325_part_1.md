@@ -537,6 +537,26 @@
   * If configuted to send TRILL-Hello frames, continues to send them on all its enabled VLANs that have been configured in the Announcing VLANs set of the DRB, which defaults to all enabled VLANs.
 
 ##### 4.2.4.3. Appointed VLAN-x Forwardre
+  The appointed VLAN-x forwarder for a link is responsible for the following points. In connection with the loop avoidance points, when an appointed forwarder for a port is "inhibited", it drops any native frames it receives and does not transmit but instead drops any native frames it decapsulates, in the VLAN for which it is appointed.
+  * Loop avoidance
+    * Inhibiting itself for a time, configurable per port from zero to 30 seconds, which defaults to 30 seconds, after it sees a root bridge change on the link
+    * Inhibiting itself for VLAN-x, if it has received a Hello in which the sender asserts that it is appointed forwarder and that is either
+      * received on VLAN-x (has VLAN-x as its Outer.VLAN) or
+      * was originally sent on VLAN-x as indicated inside the body of the Hello
+    * Optionally, not decapsulating a frame from ingress RBridge RBm, unless it has RBm's LSP, and the root bridge on the link it is about to forward onto is not listed in RBm's list of root bridges for VLAN-x. This is known as the "decapsulation check" or "root bridge collision check".
+  * Unless inhibited, receiving VLAN-x native traffic from the link and forwarding it as appropriate.
+  * Recieving VLAN-x traffic for the link and, unless inhibited, transmitting it in native from after decapsulating it as appropriate.
+  * Learning the MAC address of local VLAN-x nodes by looking at the source address of VLAN-x frames from the link.
+  * Optionally learning the port of local VLAN-x nodes based on any sort of Layer 2 registration protocols, such as IEEE 802.11 association and authentication.
+  * Keeping track of the {egress RBridge, VLAN, MAC address} of distant VLAN-x end nodes, learned by looking at the fields {ingress RBridge, Inner.VLAN ID, Inner.MacSA} from VLAN-x frames being received for decapsulation onto the link.
+  * Optionally observe native IGMP [RFC3376], MLD [RFC2710], and MRD [RFC4286] frames to learn the present of local multicast listeners and multicast routers,
+  * Optionally listening to TRILL ESADI messages for VLAN-x to learn {egress RBridge, VLAN-x, MAC address} triplets and the confidence level of such expliityly advertised end nodes.
+  * Optionally advertising VLAN-x end nodes, on link for which it is appointed VLAN-x forwarderm in ESADI messages.
+  * Sending TRILL-Hello frames on VLAN-x unless the Announcing VLANs set for the port has been configured to disable them.
+  * Listensing to BPDUs on a common spanning tree tree to learn the root bridge, if any, for that link and to report in its LSP the complete set of root bridges seen on any of its links for which it is appointed forwarder for VLAN-x.
+
+  When an appointed forwarder observer that the DRB on a link has changed, it no longer considers itself appointed for that link until appointed by the new DRB.
+
 ##### 4.2.4.4. TRILL LSP Information
 #### 4.2.5. The TRILL ESADI Protocol
 ##### 4.2.5.1. TRILL ESADI Participation
