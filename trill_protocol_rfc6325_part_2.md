@@ -82,6 +82,31 @@
   To Ensurn that any Rbridge RB2 can definitively determine whether RB1 can hear RB2, RB1's neighbor list must eventually cover every possible range of IDs, that is, within a period that depends on RB1's policy and not necessarily within any specific period such as the holding time. In other words, if X1 is the smallest ID reported in one of RB1's neighbor lists, and the "smallest" flag is not set, then X1 must also appears as the largest ID reported in a different TRILL-Hello Neighbor list. Or, fragments may overlap, as long as there is no gap, such that some range, say between Xi and Xi, never appears in any fragment.
 
 #### 4.4.3. TRILL MTU-Probe and TRILL Hello VLAN Tagging
+  The MTU-probe mechanism is designed to determine the MTU for transmissions between RBridges. MTU-probe and probe acknownledgements are only sent on the Designated VLAN.
+
+  An RBridge RBn maintains for each port the same VLAN information as a customer IEEE [802.1Q-2005] bridge, including the set of VLANs enabled for output through that port. In addition, RBn maintains the following TRILL-specific VLAN parameters per port:
+  * Desired Designated VLAN: TODO
+  * Designate VLAN: TODO
+  * Announcing VLANs set. TODO
+  * Forwarding VLANs set: TODO
+
+  On each of its ports that is not configured to use P2P Hellos, an RBridge sends TRILL-Hellos Outer.VLAN tagged with each VLAN in a set of VLANs. This set depends on the RBridge's DRB status and the above VLAN parameters. Rbridges send TRILL Hellos Outer.VLAN tagged with the Designated VLAN, unless that VLAN is not enabled on that port. In addition, the DRB sends TRILL Hellos Outer.VLAN tagged with  each enabled VLAN in ite announcing VLAN set. All non-DRB RBridge send TRILL-Hellos Outer.VLAN tagged with all enabled VLANs that are in the intersection of their Forwarding VLANs set and their Announcing VLANs set. More symbolically, TRILL-Hello frames, when sent, are sent as follows:
+  ```
+  If sender is DRB:
+    intersection (Enabled VLANs,
+                  union(Designated VLAN, Announcing VLANs))
+  If sender is not DRB:
+    intersection (Enabled VLANs,
+                  union(Designated VLAN,
+                        intersection(Forwarding VLANs, Announcing VLANs)))
+  ```
+
+  Configuring the Announcing VLANs set to be null minimizes the number of TRILL-Hellos. In that case, TRILL Hellos are only tagged with the Designated VLAN. Greate care should be taken in configuring an RBridge to not send TRILL Hellos on any VLAN where that RBridge is appointed forwarder as, under some circumstances, failure to send such Hellos can lead to loops.
+
+  The number of TRILL-Hellos is maximized, within this specification, by configuring the Annoucning VLANs set to be the set of all enabled VLAN IDs, which is the default. In that case, the DRB will send TRILL-Hello frames tagged with all its enabled VLAN tags; in addition, any non-DRB RBridge RBn will send TRILL-Hello frames tagged with the Designated VLAN, if enabled, and tagged with all VLANs for which RBn is an appointed forwarder. (it is possible to send even more TRILL-Hellos. In particular, non-DRB RBridges could send TRILL-Hellos on enabled VLANs for which they are not an appointed forwarder and which are not the Designated VLAN. This would cause no harm other than a further communications and processing burden.)
+
+  When an RBridge port comes up, until it has heard a TRILL-Hello from a Higher priority Rbridge, it considers itself to be DRB on that port and sends TRILL-Hellos on that basis. Similarly, even if it has at some time recognized some other Rbridge one the link as DRB, if it receives no TRILL-Hellos on that port from an Rbridge with highwe priority as DRB for a long enough time, as specified by IS-IS, it will revert to believing itself DRB.
+
 #### 4.4.4. Multiple Ports on the Same Link
 #### 4.4.5. VLAN Mapping within a Link
 ### 4.5. Distribution Trees
