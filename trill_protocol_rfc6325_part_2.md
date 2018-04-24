@@ -24,7 +24,19 @@
   If RB1 fails to receive an MTU-ack to a probe of size X from RB2 after k tries (where k is a configurable parameter whose default is 3), then RB1 assumes the RB1-RB2 link cannot support isze X. If X is not greater than Sz, then RB1 sets the "failed minimum MTU test" flag for RB2 in RB1's hello. If size X succeeds, and X > Sz, then RB1 advertises the largest tested X for each adjacency in the TRILL Hellos RB1 sends on that link, and RB1 may advertise X as attributes of the link to RB2 in RB1's LSP.
 
 ### 4.4. TRILL-Hello Protocol
+  The TRILL-Hello Protocol is a little different from the Layer 3 IS-IS LAN Hello Protocol and uses a new type of IS-IS messages knwon as a TRILL-Hello.
+
 #### 4.4.1. TRILL-Hello Rationale
+  The reason for definninf this new type of link in TRILL is that in Layer 3 IS-IS, the LAN Hello protocol may elect multiple Desinated Routers (DRs) since, when choosing a DR, routers ignore other routers with whom they do not have 2-way connectivity. Also, Layer 3 IS-IS LAN hellos are padded, to avoid forming adjacencies between neighbors that can't speak the maximum-sized packet to each other. This means, in Layer 3 IS-IS, the neighbors that have connectivity to each other, but with an MTU on that connection less than what they percieve as maximum sized packets, will not see each other's hellos. The result is that routers might from cliques, resulting in the link turnning into multiple pseudonodes.
+
+  This behavior is fine for Layer 3, but not for Layer 2, where loops may form if there are multiple DRBs. Thereform, the TRILL-Hello protocol is a little different from Layer 3 IS-IS's LAN Hello protocol.
+
+  One other issue with TRILL-Hellos is to ensure that subnets of the information can appear in any single message, and be processable, in the spirit of IS-IS LSPs and CSNPs. TRILL-Hello frames, even though they are not padded, can become very large. An example where this might be the case is when some sort of backbone technology interconnects hundreds of TRILL sites over what would appear to TRILL to be a giant Ethernet, where the RBridge connected to that cloud will perceive that backbone to be a single link with hundreds of neighbors.
+
+  In TRILL (Unlike in Layer 3 IS-IS), the DRB is selected based solely on priority and MAC address. In other words, if RB2 receives a TRILL-Hello from RB1 with higher (priority, MAC), RB2 defers to RB1 as DRB, regardless of whether RB1 lists RB2 in RB1's TRILL-Hello.
+
+  Although the neighbor list in a TRILL-Hello does not influence the DRB election, it does determine what is announced in LSPs. RB1 only reports links to Rbridges with which it has two way connectivity. If RB1 is the DRB on a link, and for whatever reason (MTU mismatch, or one-way connectivity) RB1 and RB2 to not have two-way connectivity, then RB2 does not report a link to RB1 (or the psedunode), and RB1 (or RB1 on behalf of the pseudonode) does not report a link to RB2.
+
 #### 4.4.2. TRILL-Hello Contents and Timing
 ##### 4.4.2.1. TRILL Neighbor List
 #### 4.4.3. TRILL MTU-Probe and TRILL Hello VLAN Tagging
