@@ -108,6 +108,18 @@
   When an RBridge port comes up, until it has heard a TRILL-Hello from a Higher priority Rbridge, it considers itself to be DRB on that port and sends TRILL-Hellos on that basis. Similarly, even if it has at some time recognized some other Rbridge one the link as DRB, if it receives no TRILL-Hellos on that port from an Rbridge with highwe priority as DRB for a long enough time, as specified by IS-IS, it will revert to believing itself DRB.
 
 #### 4.4.4. Multiple Ports on the Same Link
+  It is possible for an Rbridge RB1 to have multiple ports to the same link. It is important for RB1 to recognize which of its ports are on the same link, so, for instance, if RB1 is appointed  forwarder for VLAN A, RB1 knowns that only one of its ports acts as appointed forwarder for VLAN A on that link.
+
+  RB1 detects this condition based on receiving TRILL-Hello messages with the same IS-IS pseudonode ID on multiple ports. RB1 might have one set of ports, say, {p1, p2, p3} on one link, and another set of ports {p4, p5} on a second link, and yet other ports, say, p6, p7, p8, that are each on distinct link. Let us call a set of ports on the same link a "port group".
+
+  If RB1 detects that a set of ports, say, {p1, p2, p3}, is a port group on a link, then RB1 must ensure that **it does not cause loops** when it encapsulates and decapsulates traffic from/to that link. If RB1 is appointed forwarder for VLAN A on that Ethernet link, RB1 must encapsulate/decapsulate VLAN A on only one of the ports. However, if RB1 is appointed forwrader for more than one VLAN, RB1 may choose to load split among its ports, using one port for some set of VLANs, and another port for a disjoint set of VLANs.
+
+  If RB1 detects VLAN mapping occuring, then RB1 must not load split as appointed forwarder, and instead must act as appointd VLAN forwarder on that link on only one of its ports in the port group.
+
+  When forwarding TRILL-encapsulated multi-destination frames to/from a link on which RB1 has a port group, RB1 may choose to load split among its ports, provided that it does not duplicate frames, and procided that it keeps frames for the same flow on the same port. If RB1's neighbor on that link, RB2, accepts multi-destination frames on that tree on that link from RB1, RB2 must accept the frame from any of RB2's adjancencies to RB1 on that link.
+
+  If an RBridge has more than one port connected to a link and those ports have the same MAC address, they can be distinguished by the port ID contained in TRILL-Hellos.
+
 #### 4.4.5. VLAN Mapping within a Link
 ### 4.5. Distribution Trees
 #### 4.5.1. Distribution Tree Calculation
