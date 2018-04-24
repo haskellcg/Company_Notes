@@ -13,6 +13,16 @@
   The campus-wide value of Sz is the smallest value of Sz advertised by any RBridge.
 
 #### 4.3.2. Testing Link MTU Size
+  There are two new TRILL IS-IS message types for use between pairs of RBrudge neighbors to test the bidirectional packet size capacity of their connection. Thes messages are:
+  * \-\- MTU-probe
+  * \-\- MTU-ack
+
+  Both the MTU-probe and the MTU-ack are padded to the size being tested.
+
+  Sending of MTU-probes is optional; however, an RBridge RB2 that receives an MTU-probe from RB1 must respond with an MTU-ack padded to the same size as the MTU-probe. The MTU-probe may be multicast to All-RBridges, or unicast to a specific RBridge. The MTU-ack is normally unicast to the source of the MTU-probe wo which it responds but may be multicast to the All-RBridge.
+
+  If RB1 fails to receive an MTU-ack to a probe of size X from RB2 after k tries (where k is a configurable parameter whose default is 3), then RB1 assumes the RB1-RB2 link cannot support isze X. If X is not greater than Sz, then RB1 sets the "failed minimum MTU test" flag for RB2 in RB1's hello. If size X succeeds, and X > Sz, then RB1 advertises the largest tested X for each adjacency in the TRILL Hellos RB1 sends on that link, and RB1 may advertise X as attributes of the link to RB2 in RB1's LSP.
+
 ### 4.4. TRILL-Hello Protocol
 #### 4.4.1. TRILL-Hello Rationale
 #### 4.4.2. TRILL-Hello Contents and Timing
