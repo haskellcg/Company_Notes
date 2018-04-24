@@ -128,6 +128,39 @@
   When non-DRB RB2 detects VLAN mapping, based on receiving a TRILL Hello where the VLAN tag in the body of the Hello differs from the one in the outer header, it sets a flag in all of its TRILL-Hellos for a period of two of its Holding Times since the last time RB2 detected VLAN mapping. When DRB RB1 is informed of VLAN mapping, either because of seeing the "VLAN mapping detected" flag in a neighbors TRILL-Hello on the link, RB1 re-assigns VLAN forwarders to ensure there is only a single forwarder on the link for all VLANs.
 
 ### 4.5. Distribution Trees
+  RBridges use distribution trees to forward mult-destination frames. Distribution trees are bidirectional. Although a single tree is logically sufficient for the entire campus, the computation of additional distribution trees is warranted for the following reasons:
+  * It enables multipathing of multi-destination frames
+  * enables the choice of a tree root closer to or, in limit, identical with the ingress Rbridge
+
+  Such a closer tree root improves the efficiency of the delivery of multi-destination frames that are being delivered to a subnet of the links in the campus and reduces out-of-order delivery when a unicast address transitions between unkown and known. If applications are in use where occasional out-of-order unicast frames due to such transitions are a problem, the Rbridge campus should be engineered to make sure they are of extremely low probability, such as by using the ESADI protocol, configuring addresses to eliminate unknown destination unicast frames, or keeping alive frames.
+
+  An additonal level of flexibility is the ability of an Rbridge to acquire multiple nicknames, and therefore have multiple trees rooted at the same RBridge. Since the tree number is used as a tirbreaker for equal cost path, the different trees, even if rooted at the same RBridge, wil likely utilize different equal cost paths.
+
+  **How an ingress RBridge chooses the distribution tree or trees that it uses for multi-destination frames is beyond the scope of this document**. However, for the reasons state above, in the absence of other factors, a good choice is the tree whose root is least cost from ingress RBridge and that is the default for an ingress RBridge that uses a single tree to distribute multi-destination frames.
+
+  RBridge will precompute all the trees that might be used, and keep state for Reverse Path Forwarding Check filters, also, since the tree number is used as a tiebreaker, it is important for all RBridge to known:
+  * how many trees to compute
+  * which trees to compute
+  * what the tree number for each tree is
+  * which trees each ingress RBridge might choose (For building Reverse Path Forwarding Check filters)
+
+  Each RBridge advertises in its LSP a "tree root" priority for its nickname or for each of its nickname if it has been configured to have more than one. This is a 16-bit unsigned integer that defaults, for an unconfigured RBridge, to 0x8000. Tree roots are ordered with highest numerical priority being highest priority, then with system ID of the RBridge (numerically higher = higher priority) as tiebreaker, and if that is equal, by numerically higher nickname value, as an unsigned integer, having priority.
+
+  Each Rbridge advertises in its LSP the maximum number of distribution trees that it can compute and the number of trees that it wants all RBridges in the campus to compute. The number of trees, k, that are computed for the campus is the number wanted by the Rbridge RB1, which has the nickname with the highest "tree root" priority, but no more than the number of trees supported by the RBridge in the campus that supports the fewest trees. If RB1 does not specify the specific distribution trees are the trees that will be computed by all RBridges, Note that some of these k highest priority trees might be rootted at the same RBridge, if that RBridge has multiple nicknames.
+
+  If an RBridge specifies the number of trees it can compute, or the number of trees it wants computed for the campus, as 0, it is treated as specifying them as 1. Thus, k default to 1.
+
+  In addition, the RBridge RB1 having the highest root priority nickname might explicityly advertise a set of s trees by providing a list of s nicknames. In that case, the first k of those s trees will be computed. Is s is less than k, or if any of the s nicknames associated with the trees RB1 is advertising does not exist within the LSP database, then the RBridge still compute k trees, but the remianning trees they select are the highest priority trees, such that k trees are computed,
+
+  There are two exceptions to the above, which can cause fewer distribution trees to be computed, as follows:
+  * A nickname whose tree root priority is zero is not selected as a tree root based on priority, although it may be selected by being listed by the Rbridge holding the highest priority tree root nickname. The one exception to this is that if all nicknames have priority zero, then the highest priority among them as determined by the tiebreaker is used as a tree root so that there is always guardanteed to be at least one distribution tree.
+  * As a transient condition, two or more identical nicknames can appear in the list of roots for trees to be computed. In such a case, it is useless to compute a tree for the nickname(s) that are about to be losy by the RBridge holding them. So a distribution tree is only computed for the instance where the priority to hold that nickname value is highest, recuding the priority total number of trees computed. (It would also be of little use to go further down the priority ordered list of possible tree root nicknames to miantain the number of trees as the additional tree roots found this way would only be valid for a very brief nickname transition period.)
+
+  The k trees calsulated for a campus are ordered and numbered form 1 to k. In addition to advertising the number k, RB1 might explicitly advertise a set of s trees by providing a list of s nicknames as described above.
+  * If s == k, then the trees are numbered in the order that RB1 advertises them.
+  * If s == 0, then the trees are numbered in the order of decreasing priority. For example, if RB1 advertises only that k=2, then the highest priority tree is number 1 and the 2nd highest priority tree is number 2.
+  * If s < k, then those advertised by RB1 are numbered from in the order advertised. Then the remaider are chosen by priority order from among the remainning possible trees with the numbering continuing. For example, if RB1 advertises k=4, advertises {Tx, Ty} as the nicknames of the root of the trees, and the campus-wide priority ordering of trees in decreasing order is Ty > Ta > Tc > Tb > Tx, the numbering will be follows: Tx is 1 and Ty is 2 since that is the order they are advertised in RB1. Then Ta is 3 and Tc is 4 because they are highest priority trees that have not already been numbered.
+
 #### 4.5.1. Distribution Tree Calculation
 #### 4.5.2. Multi-Destination Frame Checks
 #### 4.5.3. Pruning the Distribution Tree
