@@ -38,7 +38,39 @@
   Although the neighbor list in a TRILL-Hello does not influence the DRB election, it does determine what is announced in LSPs. RB1 only reports links to Rbridges with which it has two way connectivity. If RB1 is the DRB on a link, and for whatever reason (MTU mismatch, or one-way connectivity) RB1 and RB2 to not have two-way connectivity, then RB2 does not report a link to RB1 (or the psedunode), and RB1 (or RB1 on behalf of the pseudonode) does not report a link to RB2.
 
 #### 4.4.2. TRILL-Hello Contents and Timing
+  The TRILL-Hello has a new IS-IS message type. It starts with the same fixed header as an IS-IS LAN Hello, which includes the 7-bit priority for the issuing RBridge to be DRB on that link. TRILL-Hellos are sent with the same timming as IS-IS LAN Hellos.
+
+  TRILL-Hello messages, including their Outer.MacDA and Outer.MacSA, but excluding any other Outer.VLAN or other tags, must not exceed 1470 octets in length and should be padded. The folloing information appear in every TRILL-Hello. References to "TLV" may actually be a "sub-TLV" as specified in separate documents [RFC6165] \[RFC6326\].
+
+  1. The VLAN ID of the Designated VLAN for the link.
+  1. A copy of the Outer.VLAN ID with which the Hello was tagged on sending.
+  1. A 16-bit port ID assigned by the sending RBridge to the port the TRILL-Hello is sent on such that no two ports of that RBridge have the same port ID.
+  1. A nickname of the sending RBridge
+  1. Two flags as follows:
+      1. A flag that, if set, indicates that the sender has detected VLAN mapping on the link, within the past 2 of its Holding Times.
+      1. A flag that, if set, indicates that the sender believes it is appointed forwarder for the VLANand port on which the TRILL Hello was sent.
+
+  The Following information may appear:
+  1. The set of VLANs for which end-station service is enabled on the port.
+  1. Several flags as follows:
+      1. A flag that, if set, indicates that the sender's port was configured as an access port
+      1. A flag that, if set, indicates that the sender's port was configured as a trunk port
+      1. A bypass pseudonode flag, as described below in this section
+  1. If the sender is the DRB, the RBridges (excluding itself) that it appoints as forwarder for link and the VLANs for which it appoints them. As describe below, this TLV is designed so that not all the appointment information need be included in each Hello. Its absence means that appointed forwarders should continues as previously assigned.
+  1. The TRILL neighbor list. This is a new TLV, not the same as the IS-IS Neighbor TLV, in order to accomodate fragmentation and reporting MTU on the link
+
+  The Appointed Forwarders TLV specifies a range of VLANs and, within that range, sepcifies within RBridge, if any, other than the DRB, is appointed forwarder for the VLANs in that range [RFC6326]. Appointing an RBridge as forwarder on a port for a VLAN that is not enable on that port has no effect.
+
+  It is anticipated that many links between RBridges will be point-to-point, in which case using a pseudonode merely adds to the complexity. If the DRB specifie the bypass pseudonode bit in its TRILL-Hellos, the RBridges on the link just report their adjacencies as point-to-point. This has no effect on how LSPs are flooded on a link. It only effects what LSPs are generated.
+
+  For example, if RB1 and RB2 are the only RBridges on the link and RB1 is the DRB, then if RB1 creates a pseudonode that is used, there are 3 LSPs: for, say, RB1.25 (the pseudonode), RB1, and RB2, where RB1.25 reports connectivity to RB1 and RB2, and Rb1 and RB2 each just say they are connected to RB1.25. Whereas if DRB RB1 sets the bypass pseudonode bit in its Hellos, then there will be only 2 LSPs: RB1 and RB2 each reporting connectivity to each other.
+
+  A DRB should set the bypass pseudonode bit for its link unless, for a particular link, it has seen at least two simultaneous adjacencies on the link at somee point since it last rebooted.
+
 ##### 4.4.2.1. TRILL Neighbor List
+  The new TRILL Neighbor TLV includes following information for each neighbor is lists:
+  1. The neighbor
+
 #### 4.4.3. TRILL MTU-Probe and TRILL Hello VLAN Tagging
 #### 4.4.4. Multiple Ports on the Same Link
 #### 4.4.5. VLAN Mapping within a Link
