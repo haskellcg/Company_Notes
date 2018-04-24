@@ -162,6 +162,12 @@
   * If s < k, then those advertised by RB1 are numbered from in the order advertised. Then the remaider are chosen by priority order from among the remainning possible trees with the numbering continuing. For example, if RB1 advertises k=4, advertises {Tx, Ty} as the nicknames of the root of the trees, and the campus-wide priority ordering of trees in decreasing order is Ty > Ta > Tc > Tb > Tx, the numbering will be follows: Tx is 1 and Ty is 2 since that is the order they are advertised in RB1. Then Ta is 3 and Tc is 4 because they are highest priority trees that have not already been numbered.
 
 #### 4.5.1. Distribution Tree Calculation
+  Rbridges do not use spanning tree to calculate distribution trees. Instead, distribution trees are calculated **based on the link state information**, selecting a particular RBridge nickname as the root. Each Rbridge RBn independently calculates a tree rooted at RBi by performing the SPF (Shortest Path First) calculation with RBi as the root without requiring any additional exchange of information.
+
+  It is important, when building a distribution tree, that all Rbridge choose the same link for that tree. Therefore, when there are equal cosr paths for a particular tree, all RBridge need to use the same tiebreakers. It is also desirable to allow splitting of traffic on as many links as possible. For this reason, a simple tiebreaker such as "always choose the parent with lower ID" would not be desirable. Instead, **TRILL uses the tree numbre as a parameter in the tiebreaking algorithm**.
+
+  When building the tree number j, remember all possible equal cost parents for node N.
+
 #### 4.5.2. Multi-Destination Frame Checks
 #### 4.5.3. Pruning the Distribution Tree
 #### 4.5.4. Tree Distribution Optimization
