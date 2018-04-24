@@ -69,7 +69,17 @@
 
 ##### 4.4.2.1. TRILL Neighbor List
   The new TRILL Neighbor TLV includes following information for each neighbor is lists:
-  1. The neighbor
+  1. The neighbor's MAC address.
+  1. MTU size to this neighbor as a 2-octet unsigned integer in units of 4-octets chunks. The value zero indicates that the MTU is untested.
+  1. A flag for "failed minimum MTU test".
+
+  To allow partial reporting of neighbors, the neighbor IDs must be sorted by ID. If a set of neighbors {X1, X2, X3, ..., Xn} is reported in RB1's Hello, then X1 < X2 < X3, ..., Xn. If RBridge RB2's ID is between X1 and Xn, and does not in RB1's Hello, then RB2 knowns that RB1 has not heard RB2's Hello.
+
+  Additonally there are two overall TRILL Neighbor List TLV flags: "the smallest ID I reported in this hello is the smallest ID of any neighbor" and "the largest ID I reported in this hello is the largest ID of any neighbor". If all the neighbors fit in RB1's TRILL-Hello, both flags will be set.
+
+  If RB1 reports {X1, ..., Xn} in its Hello, with the "smallest" flag set, and RB2's ID is smaller than X1, then RB2 knowns that RB1 was not heard RB2's Hello. Similarly, if RB2's ID is larger than Xn and the "largest" flag is set, then RB2 knwons that RB1 has not heard RB2's Hello.
+
+  To Ensurn that any Rbridge RB2 can definitively determine whether RB1 can hear RB2, RB1's neighbor list must eventually cover every possible range of IDs, that is, within a period that depends on RB1's policy and not necessarily within any specific period such as the holding time. In other words, if X1 is the smallest ID reported in one of RB1's neighbor lists, and the "smallest" flag is not set, then X1 must also appears as the largest ID reported in a different TRILL-Hello Neighbor list. Or, fragments may overlap, as long as there is no gap, such that some range, say between Xi and Xi, never appears in any fragment.
 
 #### 4.4.3. TRILL MTU-Probe and TRILL Hello VLAN Tagging
 #### 4.4.4. Multiple Ports on the Same Link
