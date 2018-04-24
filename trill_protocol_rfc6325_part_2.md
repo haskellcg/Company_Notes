@@ -121,6 +121,12 @@
   If an RBridge has more than one port connected to a link and those ports have the same MAC address, they can be distinguished by the port ID contained in TRILL-Hellos.
 
 #### 4.4.5. VLAN Mapping within a Link
+  IEEE [802.1-2005] does not provide for bridges changing the C-tag VLAN ID for a tagged frame they received, that is, mapping VLANs. Nevertheless, some bridges products provide this capability and , in any case, bridge LANs can be configured to display this behavior. For example, a bridge port can be configured to strip VLAN tags on output and send the resulting untagged frames onto a link learning to another bridge's port configured to tag these frames with a different VLAN. Although each port's configuration is legal under [802.1Q-2005], in the aggregate they perform manipulations not permitted on a single customer [802.1Q-2005] bridge. Since RBridge ports have the same VLAN capabilities as customer [802.1Q-2005] bridges, this can occur even in the absense of bridges. (VLAN mapping is referred to in IEEE 802.1 as "VLAN ID translation".)
+
+  RBridge include the Outer.VLAN ID insidde every TRILL-Hello message. When a TRILL-Hello is received, RBridges compare this saved copy with the Outer.VLAN ID information associated with the received frame. If these differ and the VLAN ID inside the Hello is X and the Outer.VLAN is Y, it can be assumed that VLAN ID X is being mapped into VLAN ID Y.
+
+  When non-DRB RB2 detects VLAN mapping, based on receiving a TRILL Hello where the VLAN tag in the body of the Hello differs from the one in the outer header, it sets a flag in all of its TRILL-Hellos for a period of two of its Holding Times since the last time RB2 detected VLAN mapping. When DRB RB1 is informed of VLAN mapping, either because of seeing the "VLAN mapping detected" flag in a neighbors TRILL-Hello on the link, RB1 re-assigns VLAN forwarders to ensure there is only a single forwarder on the link for all VLANs.
+
 ### 4.5. Distribution Trees
 #### 4.5.1. Distribution Tree Calculation
 #### 4.5.2. Multi-Destination Frame Checks
