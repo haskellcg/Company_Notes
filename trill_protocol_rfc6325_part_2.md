@@ -166,7 +166,11 @@
 
   It is important, when building a distribution tree, that all Rbridge choose the same link for that tree. Therefore, when there are equal cosr paths for a particular tree, all RBridge need to use the same tiebreakers. It is also desirable to allow splitting of traffic on as many links as possible. For this reason, a simple tiebreaker such as "always choose the parent with lower ID" would not be desirable. Instead, **TRILL uses the tree numbre as a parameter in the tiebreaking algorithm**.
 
-  When building the tree number j, remember all possible equal cost parents for node N.
+  When building the tree number j, remember all possible equal cost parents for node N. After calsulation the entire "tree" (actually, directed graph), for each node N, if N has "p" parents, then order the parents in ascending order according to the 7-octet IS-IS ID considered as an unsigned integer, and number them starting at zero. For tree j, choose N's parent as choice j mod p.
+  
+  Note that there might be multiple equal cost link between N and potential parent P that have no pseudonodes, because they are either point-to-point links or pseudonode-suppressed links. Such links will be treated as a single link for purpose of tree building, because they all have the sam parent P, whose IS-IS ID is "P.0".
+
+  In other words, the set of potential parents for N, for the tree rooted at R, consists of those that give equally minimal cost paths from N to R and have distinct IS-IS IDs, based on what is reported in LSPs.
 
 #### 4.5.2. Multi-Destination Frame Checks
 #### 4.5.3. Pruning the Distribution Tree
