@@ -209,6 +209,17 @@
   A campus may contain a mixture of RBridges with different levels of IP-derived multicast optimization. An RBridge may receive IP-derived multicast frames that should have pruned earlier in the tree distribution. It silently discards such frames.
 
 #### 4.5.5. Forwarding Using a Distribution Tree
+  With full optimization, forwarding a multi-destinaion data frame is done as follows. References to adjacencies below do not include the adjacency on which a frame was received:
+  * The RBridge RBn receives a multi-destination TRILL Data frame with inner VLAN-x and a TRILL header indicating that the selected tree is the nickname1 tree;
+  * if the source from which the frame was received is not one of the adjacencies in the nickname tree for the specified ingress RBridge, the frame is dropped
+  * else, if the frame is an IGMP or MLD announcement message or an MRD query message, then the encapsulated frame is forwarded onto adjacencies in the nickname1 tree that indicate there are downstream VLAN-x IPv4 or IPv6 multicast routers as appropriate
+  * else, if the frame is for a Layer 2 multicast address derived from an IP multicast group, but its IP address is not the range of IP multicast address that must be treated as broadcast, the frame is forwarded onto adjacencies in the nickname1 tree that indicate there are downstream VLAN-x IP multicast routers of the corresponding type (IPv4 or IPv6), as well as adjacencies that indicate there are downstream VLAN-x receivers for that group address
+  * else (the inner frame is for a Layer 2 multicast address not derived from an IP multicast group or an unknown destination or broadcast or an IP multicast address that is required to be treated as broadcast), the frame is forwarded onto an adjacency if and only if that adjacency is in the nickname ree, and mark as reaching VLAN-x links.
+
+  For each link for which RBn is appointed forwarder, RBn additionally checks to see if it should decapsulate the frame and send it to the link in native form, or process the frame locally.
+
+  TRILL ESADI frames will be delivered only to RBridges that are appointed forwarders for their VLAN. Such frames will be multicats throughout the campus, like other non-IP-derived multicast data frames, on the distribution tree chosen by the RBridge that created the TRILL ESADI frame, and pruned according to the Inner.VLAN ID. Thus, all the RBridge that are appointed forwarders for a link in that VLAN receive them.
+
 ### 4.6. Frame Processing Behavior
 #### 4.6.1. Receipt of a Native Frame
 ##### 4.6.1.1. Native Unicast Case
