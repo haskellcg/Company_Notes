@@ -20,7 +20,7 @@
 
   **With the exceptions discussed in this document, RBridges can incrementally replace IEEE [802.1Q-2005] or [802.1D] customer bridges**.
 
-  While Rbridges can be applied to a variety of link protocols, this specification focuses on IEEE [802.3] links. Use with other link type is expected to be covered in other docuements.
+  While RBridges can be applied to a variety of link protocols, this specification focuses on IEEE [802.3] links. Use with other link type is expected to be covered in other docuements.
 
   The TRILL protocol, as specified herein, is desinged to be a Local Area Network protocol and not designed **with the goal of scaling beyond the size of existing briged LANs**.
 
@@ -31,7 +31,7 @@
   A graph to boost efficiency  
   While still configuration-free.
 
-  A network where Rbridges can  
+  A network where RBridges can  
   Route packets to their target LAN.
 
   The paths they find, to our elation,  
@@ -40,14 +40,14 @@
   With packet hop counts we now see,  
   The network need not be loop-free!
 
-  Rbridges work transparently,  
+  RBridges work transparently,  
   Without a common spanning tree.
 
 ### 1.2. Normative Content and Precedence
   The bulk of the normative metarial in this specification appears in 1 through 4.
 
 ### 1.3. Terminology and Notation in This Document
-  "TRILL/RBridge/Rbridge"
+  "TRILL/RBridge/RBridge"
 
   "link/simple link/port/physical port"
 
@@ -68,7 +68,7 @@
   * Native Frames are those that are not control frames and have an **Ethertype other than "TRILL"or "L2-IS-IS" and have a destination MAC address that is not one of the 16 multicast addresses reserved for TRILL**.
   * TRILL Data frames have the Ethertype "TRILL". In addition, TRILL data frames, if multicast, have the multicast destination MAC address "All-RBridges".
   * TRILL control frames have the Ethertype "L2-IS-IS". In addition, TRILL control frames, if multicast, have the multicast destination MAC addresses of "ALL-IS-IS-RBridges". (Note that **ESADI frames** look on the outside like TRILL data and are so handled but, when decapsulated, have the L2-IS-IS Ethertype.)
-  * TRILL other frames are those with any of the 16 multicast destination addresses reserved for TRILL other than All-RBridges and All-IS-IS-Rbridges. RBridges conformant to this specification must discard TRILL other frames.
+  * TRILL other frames are those with any of the 16 multicast destination addresses reserved for TRILL other than All-RBridges and All-IS-IS-RBridges. RBridges conformant to this specification must discard TRILL other frames.
 
 ### 1.5. Acronyms
   * AllL1ISs - All Level 1 Intermediate Systems
@@ -250,7 +250,7 @@
   The upper interface to the port VLAN and priority processing corresponds to the Extended Internal Sublayer Service (EISS) in [802.1Q-2005]. In RBridges, native and TRILL frames are processed above the EISS interface and are subject to port VLAN and priority processing.
 
 #### 2.6.2. Incremental Deployment
-  Because Rbridge are compatible with IEEE [802.1Q-2005] customer bridges, except as discussed in this document, a bridge LAN can be upgraded by incrementally replcing such bridges with RBridge. Bridges that have not yet been replaced are transparent to RBridge traffic. The physical links directly interconnected by such bridges, together with the bridges themselves, constitute bridged LANs. These bridged LANs apear to RBridges to be multi-access links.
+  Because RBridge are compatible with IEEE [802.1Q-2005] customer bridges, except as discussed in this document, a bridge LAN can be upgraded by incrementally replcing such bridges with RBridge. Bridges that have not yet been replaced are transparent to RBridge traffic. The physical links directly interconnected by such bridges, together with the bridges themselves, constitute bridged LANs. These bridged LANs apear to RBridges to be multi-access links.
 
   If the bridges replaced by RBridges were default configuration bridges, then theri RBridge replacements will not require configuration.
 
@@ -258,7 +258,7 @@
 
   Of course, if the bridges replaced had any port level protocols enabled, such as port-based access control [802.1X] or MAC security [802.1AE], replacement RBridge would **need the same port level protocols enabled and similarly configured**. In addition, the replacement RBridges would have to support the same link type and link level protocols as the replaced bridges.
 
-  An RBridge campus will work best if all IEEE [802.1D] and [802.1Q-2005] bridges are replaced with RBridges, assuming the Rbridges have the same speed and capacity as the bridges. However, there may be intermediate states, where only some bridges have been replaced by RBridges, with inferior performence.
+  An RBridge campus will work best if all IEEE [802.1D] and [802.1Q-2005] bridges are replaced with RBridges, assuming the RBridges have the same speed and capacity as the bridges. However, there may be intermediate states, where only some bridges have been replaced by RBridges, with inferior performence.
 
 
 ## 3. Details of the TRILL Header
@@ -292,7 +292,7 @@
 
 ### 3.4. Multi-Destination (M)
   The Multi-destination bit indicates that the frame is to be delivered to a class of destination end station via a distribution tree and that the egress RBridge nickname field specifies this tree. In particular:
-  * M = 0 (False) - The egress Rbridge nickname contains a nickname of the egress RBridge for a knwon unicast MAC address
+  * M = 0 (False) - The egress RBridge nickname contains a nickname of the egress RBridge for a knwon unicast MAC address
   * M = 1 (True) - The egress RBridge nickname field contains a nickname that specifies a distribution tree. This nickname is selected by the ingress RBridge for a TRILL Data frame or by the source RBridge for a TRILL ESADI frame.
 
 ### 3.5. Op-Length
@@ -367,7 +367,7 @@
   Figure 7 details a TRILL Data frame with an outer VLAN tag traveling on an Ethernet link as shown at the top of the figure, that is, between transit RBridges RB3 and RB4. The native frame originate at end station ESa, was encapsulated by ingress RBridge RB1, and will ultimately be decapsulated by egress RBridge RB2 and delivered to destination end station ESb. The encapsulation shown has the advantage, if TRILL options are absent or the length of such options is a multiple of 64 bits, of aligning the original Ethernet frame at a 64-bit boundary.
 
   When a TRILL Data frame is carried over an Ethernet cloud, it has three pairs of addresses:
-  * Outer Ethernet Header: Outer Destination MAC address (Outer.MacDA) and Outer Source MAC Address (Outer.MacSA), these addresses are used to specify the next hop RBridge and the transmitting Rbridge respectively.
+  * Outer Ethernet Header: Outer Destination MAC address (Outer.MacDA) and Outer Source MAC Address (Outer.MacSA), these addresses are used to specify the next hop RBridge and the transmitting RBridge respectively.
   * TRILL Header: Egress Nickname and Ingress Nickname. These specify nicknames of the egress and ingress RBridges, respectively, unless the frame is multi-destination, in which case the Egress Nickname specifies the distribution tree on which the frame is being sent.
   * Inner Ethernet Header: Inner Destination MAC Address (Inner.MacDA) and Inner Source MAC Address (Inner.MacSA), these addresses are as transmitted by the original end station, specifying, respectively the destination and source of the inner frame.
 
@@ -463,7 +463,7 @@
 #### 4.1.4. Frame Check Sequence (FCS)
   Each Ethernet frame has a single Frame Check Sequence (FCS) that is computed to cover that entire frame, for detecting frame corruption due to bit errors on a link. Thus, when a frame is encapsulated, the original FCS is not included but discarded. Any received frame for which the FCS check fails should be discarded (this may not be possible in the case of cur through forwarding). The FCS normally changes on encapsulation, decapsulation, and every TRILL hop due to changes in the outer destiantion and source addresses, the decrementing of the hop count, etc.
 
-  Although the FCS is normally calculated just before transmission, it is desirable, when pratical, for an FCS to accompany a frame within an RBridge after receipt. That FCS could then be dynamically updated to account for changes to the frame during Rbridge processing and used for transmission or checked against the FCS calculated for frame transmission. This optional, more continuous use of an FCS would be helpful in detecting some internal Rbridge failures such as memory errors.
+  Although the FCS is normally calculated just before transmission, it is desirable, when pratical, for an FCS to accompany a frame within an RBridge after receipt. That FCS could then be dynamically updated to account for changes to the frame during RBridge processing and used for transmission or checked against the FCS calculated for frame transmission. This optional, more continuous use of an FCS would be helpful in detecting some internal RBridge failures such as memory errors.
 
 ### 4.2. Link State Protocol (IS-IS)
   TRILL uses an extension of IS-IS [ISO10589] \[RFC1195\] as its routing protocol. IS-IS has folowing advantages:
@@ -475,7 +475,7 @@
 #### 4.2.1. IS-IS RBridge Identity
   Each RBridge has a unique 48-bit (6-octet) IS-IS System ID. This ID may be derived from any of the RBridge's unique MAC addresses.
   
-  A pseudonode is assigned a 7-octet ID by the DRB that create it, by taking a 6-octet ID owned by the DRB, and appending another octet. The 6-octet ID used to form a pseudonode ID should be the DRB's ID unless the DRB has to create IDs for pseudonodes for more than 255 links. The only constraint for correct operation is that the 7 octet ID be unique within the campus, and that the 7th octet be nonzero. An Rbridge has a 7-octet ID consisting of its 6-octet system ID concatenated with a zero octet.
+  A pseudonode is assigned a 7-octet ID by the DRB that create it, by taking a 6-octet ID owned by the DRB, and appending another octet. The 6-octet ID used to form a pseudonode ID should be the DRB's ID unless the DRB has to create IDs for pseudonodes for more than 255 links. The only constraint for correct operation is that the 7 octet ID be unique within the campus, and that the 7th octet be nonzero. An RBridge has a 7-octet ID consisting of its 6-octet system ID concatenated with a zero octet.
 
   In this document, we use the term "IS-IS ID" to refer to the 7-octet quantity that can be either the ID of an RBridge or a pseudonode.
 
@@ -484,7 +484,7 @@
 
   Layer 3 IS-IS native frames have special multicast destination addresses specified for that purpose, such as AllL1ISs or AllL2ISs. When they are TRILL encapsulated, these multicast addresses appear as the Inner.MacDA and the Outer.MacDA will be the All-RBridges multicast address.
 
-  Within TRILL, there is an IS-IS instance across all RBridges in the campus. This instance uses TRILL IS-IS frames that are distinguished by having a different Ethertype "L2-IS-IS". Additionally, for TRILL IS-IS frames that are multicast, there is a distinct multicast destination address of All-IS-IS-Rbridge. TRILL IS-IS frames do not have a TRILL header.
+  Within TRILL, there is an IS-IS instance across all RBridges in the campus. This instance uses TRILL IS-IS frames that are distinguished by having a different Ethertype "L2-IS-IS". Additionally, for TRILL IS-IS frames that are multicast, there is a distinct multicast destination address of All-IS-IS-RBridge. TRILL IS-IS frames do not have a TRILL header.
 
   ESADI is a separate protocol from the IS-IS instance implemented by all the RBridge. There is a separate ESADI instance for each VLAN, and ESADI frames are encapsulated just like TRILL Data frame. After the TRILL header, the ESADI frame has an inner Ethernet header with the Inner.MacDA of "All-ESADI-RBridges" and the "LS-IS-IS" Ethertype followed by the ESADI frame.
 
