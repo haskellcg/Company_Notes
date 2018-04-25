@@ -200,6 +200,14 @@
   * the set of Layer 2 multicast addresses derived from IP multicast groups for which there are receivers downstream
 
 #### 4.5.4. Tree Distribution Optimization
+  RBridge must determine the VLAN associated with all native frames they ingress and properlt enfore VLAN rules in the emission of native frames at egress RBridge ports according to how those ports are configured and designated as appointed forwarders. RBridges should also prune the distribution tree of multi-destiantion frames according to VLAN. But, since they are not required to do such pruning, they may receive TRILL data or ESADI frames that should have been VLAN pruned earlier in the tree distribution. They silently discard such frames. A campus may contain some RBridge that prune distribution trees on VLAN and some that do not.
+
+  The distribution is more complex for multicast. RBridge should analyze IP-derived native multicast frames, and learn and announce listeners and IP multicast routers for such frames. And they should prune the distribution of IP-derived multicast frames based on such learning and annoucements. But, they are not required to prune based on IP multicast listener and router attachment state. And, unlike VLANs, where VLAN attachment state of ports must be maintained and honored, RBridge are not required to maintain IP multicast listener and router attachment state.
+
+  An RBridge that does not examine native IGMP [RFC3376], MLD [RFC2710], or MRD [RFC4286] frames that it ingresses must advertise that it has IPv4 and IPv6 IP multicast routers attached for all the VLANs for which it is an appointed listeners. This will cause all IP-derived multicast traffic to be sent to this RBridge for those VLANs. It then egresses that traffic onto the links for which it is appointed forwarder where the VLAN of the traffic matches the VLAN for which it is appointed forwarder on that link. (This may cause the supression of certain IGMP membership report messages from end stations, but that is not significant because any multicast traffic that such reports would be request will be sent to such end station under these circumstances.)
+
+  A campus may contain a mixture of RBridges with different levels of IP-derived multicast optimization. An RBridge may receive IP-derived multicast frames that should have pruned earlier in the tree distribution. It silently discards such frames.
+
 #### 4.5.5. Forwarding Using a Distribution Tree
 ### 4.6. Frame Processing Behavior
 #### 4.6.1. Receipt of a Native Frame
