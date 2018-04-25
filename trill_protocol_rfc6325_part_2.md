@@ -221,7 +221,15 @@
   TRILL ESADI frames will be delivered only to RBridges that are appointed forwarders for their VLAN. Such frames will be multicats throughout the campus, like other non-IP-derived multicast data frames, on the distribution tree chosen by the RBridge that created the TRILL ESADI frame, and pruned according to the Inner.VLAN ID. Thus, all the RBridge that are appointed forwarders for a link in that VLAN receive them.
 
 ### 4.6. Frame Processing Behavior
+  This section describes RBridge behavior for all varieties of received frames, including how they are forwarded when appropriate. Native frames, TRILL frames, Layer 2 control frames. Processing may be organized or sequenced in a different way than described here as long as the result is the same.
+
+  Corrupt frames, for example, frames that are not a multiple of 8 bits, are too short or long for the link protocol/hardware in use, or have a bad FCS are dicarded on receipt by an RBridge port as they are discarded on receipt at an IEEE 802.1 bridge port.
+
+  Source address information ({VLAN, Outer.MacSA, port}) is learned by default from any frame with a unicast source address.
+
 #### 4.6.1. Receipt of a Native Frame
+  If the port is configured as disable or if end-station service is disabled on the port by configuring it as a trunk port or configuring it to use P2P Hellos, the frame is discarded.
+
 ##### 4.6.1.1. Native Unicast Case
 ##### 4.6.1.2. Native Multicast and Broadcast Frames
 #### 4.6.2. Receipt of a TRILL Frame
