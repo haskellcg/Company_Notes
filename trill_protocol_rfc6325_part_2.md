@@ -186,6 +186,19 @@
   When a topology change occurs (including apparent changes during start up), an RBridge must adjust its input distribution tree filters no later than it adjust its output forwarding.
 
 #### 4.5.3. Pruning the Distribution Tree
+  Each distribution tree should be pruned per VLAN, eliminating branches that have no potential receivers downstream. Multi-destination TRILL Data frames should only be forwarded on branches that are not pruned.
+
+  Further pruning should be done in two cases:
+  * IGMP [RFC3376], MLD [RFC2710], and MRD [RFC4286] messages, where these are to be delivered only to links with an IP multicast routers
+  * other multicast frames derived from an IP multicast address that should be delivered only to links that have registered listeners, plus links that have IP multicast routers, except for IP multicast addresses that must be broadcast. 
+
+  Each of these cases is scoped per VLAN.
+
+  Let's assume that RBridge RBn knows that adjacencies (a, c, and f) are in the nickname1 distribution tree. RBn marks pruning information for each of the adjacencies in the nickname1-tree. For each adjacency and for each tree, RBn marks:
+  * the set of VLANs reachable downstream
+  * for each one of those VLANs, flags indicating whether there are IPv4 or IPv6 multicast routers downstream, and
+  * the set of Layer 2 multicast addresses derived from IP multicast groups for which there are receivers downstream
+
 #### 4.5.4. Tree Distribution Optimization
 #### 4.5.5. Forwarding Using a Distribution Tree
 ### 4.6. Frame Processing Behavior
