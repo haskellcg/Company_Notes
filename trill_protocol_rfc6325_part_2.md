@@ -315,6 +315,18 @@
   VRP|4.9.4|01-80-C2-00-00-21
 
 ### 4.7. IGMP, MLD, MRD Learning
+  Ingress RBridge should learn, based on native IGMP [RFC3376], MLD [RFC2710], and MRD [RFC4286] frames they received in VLANs for which they are uninhibited appointde forwarder, which IP-derived multicast messages should be forwarded onto which links. Such frames are also, in general, encapsulated as TRILL Data frames and distributed as described below and in section 4.5.
+
+  An IGMP or MLD membership report received in native form from a link indicates a multicast group listener for that group on that link. An IGMP or MLG query or an MRD advertisement received in native form from a link indicates the presence of an IP multicast router on that link.
+
+  IP multicast group membership reports have to be sent throughout the campus and delivered to all IP multicast routers, distinguishing IPv4 and IPv6. All IP-derived multicast traffic must also be sent to all IP multicast routers for the same version of IP.
+
+  IP multicast data should only be sent on links where there is either an IP multicast router for that IP type (IPv4 or IPv6) or an IP multicast group listener for that IP-derived multicast MAC address, unless the IP multicast address is in the range requred to be treated as broadcast.
+
+  RBridges do not need to annouce thenselves as listeners to be the IPv4 All-Snoopers multicast group (the group used for MRD reports), because the IPv4 multicast address for that group is in the range where all frames sent to that IP multicast address must be broadcast. However, RBridge that are performming IPv6-derived multicast optimization must announce themselves as listenr to the IPv6 All-Snoopers multicast group.
+
+  See also "Considerations for Internet Group Management Protocol (IGMP) and Multicast Listener Discovery (MLD) Snooping Switches" [RFC4541].
+
 ### 4.8. End-Station Address Learning
 #### 4.8.1. Learning End-Station Addresses
 #### 4.8.2. Learning Confidence Level Retionale
