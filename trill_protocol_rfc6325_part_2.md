@@ -274,6 +274,9 @@
 ##### 4.6.2.3. TRILL Data Frames
   The M flag is the checked. If it is zero, processing continues as described in section 4.6.2.4, if it is one, processing continues as described in section 4.6.2.5
 
+##### 4.6.2.4. Known Unicast TRILL Data Frames
+  The egress nickname in the TRILL header is examined, and if it is unknown or reserved, the frame is discarded.
+
   If RBn is a transit RBridge, the hop count is decremented by one and the frame is forwarded to the next hop RBridge towards the egress RBridge. (The provision permitting RBridge to decrease the hop count by more than one under some circumstances applies only to multi-desttination frames, not to the known unicast frames considered in this subsection.)  The Inner.VLAN is not examined by a transit RBridge when it forwards a known unicast TRILL Data Frame.
 
   For forwarded frame, the Outer.MacSA is the MAC address of the transmitting port, the Outer.MacDA is the unicast address of the next hop RBridge, and the VLAN is the Designated VLAN on the link onto which the frame is being transmitted.
@@ -288,8 +291,19 @@
 
   If due to manual configuration or learning from Layer 2 registration, the destination MAC and VLAN appear in RBn's local address cache for two or more links for which RBn is an uninhibited appointed forwarder for the frame's VLAN, RBn sends the native frame on all such links.
 
-##### 4.6.2.4. Known Unicast TRILL Data Frames
 ##### 4.6.2.5. Multi-Destination TRILL Data Frames
+  The egress and ingress nicknames in the TRILL header are examined, and if either is unknown or reserved, the frame is discarded.
+
+  The Outer.MacSA is checked and the frame disarded if it is not a tree adjacency for the tree indicated by the egress RBridge nickname on the port where the frame was received. The Reverse Path Forwarding Check is performed on the ingress and egress nicknames and the frame discarded if it fails. If there are multiple TRILL-Hello pseudonode suppressed parallel links to the previous hop RBridge, the frame is discarded if it has been received on the wrong one. If the RBridge has multiple ports connected to the link, the frame is discarded unless it was received one the right one. 
+
+  If the Inner.VLAN ID of the frame is 0x0 or 0xFFF, the frame is discarded.
+
+  If the RBridge is an appointed forwarder for the Inner.VLAN ID of the frame, the Inner.MacSA and Inner.VLAN ID are, by default, learned as associated with the ingress nickname unless that nickname is unknown or reserved otr the Inner.MacSA is not unicast. A copy of the frame is then decapsulated, sent in native form on those links in its VLAN for which the RBridge is appointed forwarder subject to additional pruning and inhibition as described in section 4.2.4.3, and/or locally processed as appropriate.
+
+  The hop count is decreased (possible by more than one), and the frame is forwarded fown the tree specified by the egress RBridge nickname pruned as described in section 4.5
+
+  For the forwarded frame, the Outer.MacSA is set to that of the port on which the frame is being transmitted, the Outer.MacDA is the All-RBridge multicast address, and the VLAN is the Designated VLAN of the link on which the frame is being transmitted.
+
 #### 4.6.3. Receipt of a Layer 2 Control Frame
 ### 4.7. IGMP, MLD, MRD Learning
 ### 4.8. End-Station Address Learning
