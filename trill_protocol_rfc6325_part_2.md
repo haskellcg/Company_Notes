@@ -230,7 +230,17 @@
 #### 4.6.1. Receipt of a Native Frame
   If the port is configured as disable or if end-station service is disabled on the port by configuring it as a trunk port or configuring it to use P2P Hellos, the frame is discarded.
 
+  The ingress RBridge RB1 determines the VLAN ID for a native frame according to the same rules as IEEE [802.1Q-2005] bridges do. Once the VLAN is determined, if RB1 is not the appointed forwarder for that VLAN on the port where the frame was received or is inhibited, the frame is discarded. If it is appointed forwarder for that VLAN and is not inhibited, then the native frame is forwarded according to if it is unicast and according to if it is multicast or broadcast.
+
 ##### 4.6.1.1. Native Unicast Case
+  If the destinattion MAC address of the native frame is a unicast address, the following steps are performed.
+
+  The Layer 2 destination address and VLAN are loopked up in the ingress RBridge's database of MAC addresses and VLNAs to **find the egress RBridge RBm or the local egress port or to discover that the destination is receiving RBridge or is unknown**. one of following four cases will apply:
+  * If the destination is the receiving RBridge, the frame is locally processed.
+  * If the destination is known to be on the same link from which the native frame was received but is not the receiving RBridge, the RBridge silently discards the frame, sine the destination should already have received it.
+  * If the destination is knwon to be on a different local link for which RBm is the appointed forwarder, then RB1 converts the native frame to a TRILL Data frame with an Outer.MacDA of the next hop RBridge towards RBm, a TRILL header with M = 0, an ingress nickname for RB1, and the egress nickname for RBm. If ingress RB1 has multiple nicknames, it should use the same nickname in the ingress nickname field whenever it encapsulates a native frame from any particular source MAC address and VLAN. This simplifies end node learning. If RBm is RB1, processing them proceeds, otherwise, the Outer.MacSA is set to the MAC address of the RB1 port on the path to the next hop RBridge towards RBm and the frame is queued for transmission out of that port.
+  * If a unicast destination MAC is unknon in the frame's VLAN, RB1 handles the frame as described in xxx for a broadcast frame except that the Inner.MacDA is the original native frame's unicast destination address
+
 ##### 4.6.1.2. Native Multicast and Broadcast Frames
 #### 4.6.2. Receipt of a TRILL Frame
 ##### 4.6.2.1. TRILL Control Frames
