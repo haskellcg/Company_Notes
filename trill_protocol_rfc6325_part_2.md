@@ -305,6 +305,15 @@
   For the forwarded frame, the Outer.MacSA is set to that of the port on which the frame is being transmitted, the Outer.MacDA is the All-RBridge multicast address, and the VLAN is the Designated VLAN of the link on which the frame is being transmitted.
 
 #### 4.6.3. Receipt of a Layer 2 Control Frame
+  Low-Level control frames received by an RBridge are handled within the port where they are received as described in section 4.9
+
+  There are two types og high-level control frames, distinguished by their destination address, which are handled as described in the sections referenced below:
+  
+  Name|Section|Destination Address
+  ----|-------|-------------------
+  BPDU|4.9.3|01-80-C2-00-00-00
+  VRP|4.9.4|01-80-C2-00-00-21
+
 ### 4.7. IGMP, MLD, MRD Learning
 ### 4.8. End-Station Address Learning
 #### 4.8.1. Learning End-Station Addresses
