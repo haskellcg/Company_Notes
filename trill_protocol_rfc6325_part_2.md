@@ -242,6 +242,14 @@
   * If a unicast destination MAC is unknon in the frame's VLAN, RB1 handles the frame as described in xxx for a broadcast frame except that the Inner.MacDA is the original native frame's unicast destination address
 
 ##### 4.6.1.2. Native Multicast and Broadcast Frames
+  If the RBridge has multiple ports attached to the same link, all but one received copy of a native multicast or broadcast is discarded to avoid duplication. All such frames that are part of the same flow must be accepted on the same port to avoid re-ordering.
+
+  If the frame is a native IGMP [RFC3376], MLD [RFC2710], or MRD [RFC4286] frame, then RB1 should analyze it, learn any group membership or IP multicast router presence indicated, and announce that information for the appropriate VLAN in its LSP.
+
+  For all multi-destination native frames, RB1 forwards the frame in native form to its links where it is appointed forwarder for the frame's VLAN, subject to further prunning and inhibition. In addition, it converts the native frame to a TRILL Data frame with All-RBridges multi-destination address as Outer.MacDA, a TRILL header with the multi-destination bit M = 1, the ingress nickname for RB1, and the egress nickname for the distribution tree it decide to use. It then forwards the frame on the pruned distribution tree setting the Outer.MacSA of each copy sent to the MAC address of the RB1 port on which it is sent.
+
+  The default is for RB1 to write into the egress nickname field the nickanme for a distribution tree, from the set of distribution trees RB1 was annouced it might use, whose root is least cosr from RB1. RB1 may choose different distribution trees for different frames if RB1 has been configured to path-split multicast. In that case, RB1 must select a tree by specifying a nickname that is a distribution tree root. Also, RB1 must select a nickname that RB1 has announced to be one of those that RB1 might use. The strategy RB1 uses to select distributionn tree in multipathing multi-destination frames is beyond the scope of this document.
+
 #### 4.6.2. Receipt of a TRILL Frame
 ##### 4.6.2.1. TRILL Control Frames
 ##### 4.6.2.2. TRILL ESADI Frames
