@@ -263,7 +263,14 @@
   1. The Inner.MacDA is then tested. If it is the All-ESADI-RBridge multicast address and RBm implements the ESADI protocol, processing procceeds as in section 4.6.2.2 below. If it is other address or RBn does not implement ESADI, processing procceeds as in section 4.6.2.3
 
 ##### 4.6.2.1. TRILL Control Frames
+  The frame is processed by the TRILL IS-IS instance on RBn and is not forwarded
+
 ##### 4.6.2.2. TRILL ESADI Frames
+  If M = 0, the frame is silently discarded
+
+
+  The egress nickname designate the distribution tree. The frame is forwarded as described in section 4.6.2.5. In addition, if the forwarding RBridge is an appointed forwarder for a link in the specified VLAN and implements the TRILL ESADI protcol and ESADI is enabled at the forwarding Rbridge for that VLAN, the inner frame is decapsulated and procided to that local ESADI protocol.
+
 ##### 4.6.2.3. TRILL Data Frames
 ##### 4.6.2.4. Known Unicast TRILL Data Frames
 ##### 4.6.2.5. Multi-Destination TRILL Data Frames
