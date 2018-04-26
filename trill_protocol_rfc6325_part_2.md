@@ -272,6 +272,22 @@
   The egress nickname designate the distribution tree. The frame is forwarded as described in section 4.6.2.5. In addition, if the forwarding RBridge is an appointed forwarder for a link in the specified VLAN and implements the TRILL ESADI protcol and ESADI is enabled at the forwarding Rbridge for that VLAN, the inner frame is decapsulated and procided to that local ESADI protocol.
 
 ##### 4.6.2.3. TRILL Data Frames
+  The M flag is the checked. If it is zero, processing continues as described in section 4.6.2.4, if it is one, processing continues as described in section 4.6.2.5
+
+  If RBn is a transit RBridge, the hop count is decremented by one and the frame is forwarded to the next hop RBridge towards the egress RBridge. (The provision permitting RBridge to decrease the hop count by more than one under some circumstances applies only to multi-desttination frames, not to the known unicast frames considered in this subsection.)  The Inner.VLAN is not examined by a transit RBridge when it forwards a known unicast TRILL Data Frame.
+
+  For forwarded frame, the Outer.MacSA is the MAC address of the transmitting port, the Outer.MacDA is the unicast address of the next hop RBridge, and the VLAN is the Designated VLAN on the link onto which the frame is being transmitted.
+
+  If RBn is not a transmit RBridge, that is, if the egress RBridge indicated is the RBridge performing the processing, the Inner.MacSA and Inner.VLAN ID are, by default, learned as associated with the ingress nickname unless that nickname is unknown or reserved or the Inner.MacSA is not unicast. Then the frame being forwarded is decapsulated to native form, and the following checks are performed:
+  * The Inner.MacDA is checked. If it is not unicast, the frame is discarded
+  * If the Inner.MacDA corresponding to the RBridge doing the processing, the frame is locally delivered.
+  * The Inner.VLAN ID is checked. If it is 0x0 or 0xFFF, the frame is discarded
+  * The Inner.MacDA and Inner.VLAN ID are looked up in RBn's local address cache and the frame is then eithre sent onto the link containning the destination, if the RBridge is appointed forwarder for that link for the frame's VLAN and is not inhibited (or discarded if it is inhibited), or processed as in one of following two paragraphs
+
+  A known unicast TRILL Data Frame can arrive at the egress RBridge only to find that the combination of Inner.MacDA and Inner.VLAN is not actually known by that Rbridge. One way this can happen is that address information may have timeout in the egress RBridge MAC address cache. In this case, the egress RBridge sends the native frame out on all links that are in the frame's VLAN for which the RBridge is appointed forwarder and has not been inhibited, except that it may refrain from sending the frame on links where it knwons there cannot be end station with the destination MAC address, for examplr, the link port is configured as a trunk.
+
+  If due to manual configuration or learning from Layer 2 registration, the destination MAC and VLAN appear in RBn's local address cache for two or more links for which RBn is an uninhibited appointed forwarder for the frame's VLAN, RBn sends the native frame on all such links.
+
 ##### 4.6.2.4. Known Unicast TRILL Data Frames
 ##### 4.6.2.5. Multi-Destination TRILL Data Frames
 #### 4.6.3. Receipt of a Layer 2 Control Frame
