@@ -251,6 +251,17 @@
   The default is for RB1 to write into the egress nickname field the nickanme for a distribution tree, from the set of distribution trees RB1 was annouced it might use, whose root is least cosr from RB1. RB1 may choose different distribution trees for different frames if RB1 has been configured to path-split multicast. In that case, RB1 must select a tree by specifying a nickname that is a distribution tree root. Also, RB1 must select a nickname that RB1 has announced to be one of those that RB1 might use. The strategy RB1 uses to select distributionn tree in multipathing multi-destination frames is beyond the scope of this document.
 
 #### 4.6.2. Receipt of a TRILL Frame
+  A TRILL frame either has the TRILL or L2-IS-IS Ethertype or has a multicast Outer.MacDA allocated to TRILL. The following tests are performed sequentially, and the first that macthes controls the handling of the frame:
+  1. If the Outer.MacDA is All-IS-IS-RBridges and the Ethertype is L2-IS-IS, the frame is handled as in section 4.6.2.1
+  1. If the Outer.MacDA is a multicast address allocated to TRILL other than All-RBridges, the frame is discarded
+  1. If the Outer.MacDA is a unicast address other than the receiving RBridge port MAC address, the frame is discarded. (Such discarded frames are more likely addressed to another RBridge on a multi-access link and that other RBridge will handle them.)
+  1. If the Ethertype is not TRILL, the frame is discarded
+  1. If the Version field in the TRILL header is greater than 0, the frame is discarded
+  1. If the hop count is 0, the frame is discarded
+  1. If the Outer.MacDA is multicast and the M bit is zero or if the Outer.MacDA is unicast and M bit is one, the frame is discarded
+  1. by default, an RBridge must not forward TRILL-encapsulated frames from a neighbor with which it does not have a TRILL IS-IS adjacency. RBridge may be configured per port to accept these frames for forwarding in cases where it is known that a non-peering device (such as an end station) is configured to originate TRILL-encapsulated frames that can be safely forwarded
+  1. The Inner.MacDA is then tested. If it is the All-ESADI-RBridge multicast address and RBm implements the ESADI protocol, processing procceeds as in section 4.6.2.2 below. If it is other address or RBn does not implement ESADI, processing procceeds as in section 4.6.2.3
+
 ##### 4.6.2.1. TRILL Control Frames
 ##### 4.6.2.2. TRILL ESADI Frames
 ##### 4.6.2.3. TRILL Data Frames
