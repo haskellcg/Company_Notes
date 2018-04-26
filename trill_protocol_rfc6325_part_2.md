@@ -328,7 +328,35 @@
   See also "Considerations for Internet Group Management Protocol (IGMP) and Multicast Listener Discovery (MLD) Snooping Switches" [RFC4541].
 
 ### 4.8. End-Station Address Learning
+  RBridges have to learn the MAC addresses and VLANs of their locally attached end stations for link/VLAN pairs for which they are the appointed forwarder. Learning this enables them to do the following:
+  * Forward the native form of incoming known unicast TRILL Data frames onto the correct link
+  * Decide, for an incoming native unicast frame from a link, where the RBridge is the appointed forwarder for the frame's VLAN, whether the frame is
+    * Known to have been discarded for another end station on the same link, so the RBridge need do nothing, or
+    * has to be converted to a TRILL Data frame and forwarded.
+
+  RBridges need to learn the MAC addresses, VLANs, and remote RBridges of remotely attached end station for VLANs for which they and the remote Rbridge are an appointed forwarder, so they can efficiently direct native frames they receive that are unicast to those addresses and VLANs.
+
 #### 4.8.1. Learning End-Station Addresses
+  There are five independent ways an Rbridge can learn end-station addresses as follows:
+  1. From the observation of VLAN-x frames received on ports where it is appointed VLAN-x forwarder, learning the {source MAC, VLAN, port} triplet of received frames
+  1. The {source MAC, VLAN, ingress RBridge nickname} triplet of any native frames that it decapsulates
+  1. By Layer 2 registration protocols learning the {source MAC, VLAN, port} of end stations registring at a local port
+  1. By running the TRILL ESADI protocol for one or more VLANs and thereby receiving remote address information and/or transmitting local address information
+  1. By management configuration
+
+  RBridge must implement capabilities 1 and 2 above. RBridge use these capabilities unless configured, for one or more particular VLANs and/or ports, not to learn from either received frames or from decapsulating native frames to be transmitted or both.
+
+  RBridges may implement capabilities 3 and 4 above. If capability 4 is implemented, the ESADI protocol is run only when the Rbridge is configured to do so on a per-VLAN basis.
+
+  Rbridge should implement capability 5.
+
+  Entries in the table of learned MAC and VLAN addresses and associated information also have a one-octet unsgined confidence level associated with each entry whose ratinale is given below. Such information learned from the observation of data has a confidence of 0x20 unless configued to have different confidence. This confidence level can be configured on a per-RBridge basis separately for information learned from local native frames and that learned from remotely originated encapsulated frames. Such information via the TRILL ESADI protocol is accompanied by a confidence level in the range 0 to 254. Such information configued by management defaults to a confidence level of 254 but may be configured to have another value.
+
+  The table of learned MAC address includes:
+  * {confidence, VLAN, MAC address, local port} for addresses learned from local native frame and local registration protocols
+  * {confidence, VLAN, MAC address, egress RBridge nickname} for addresses leanred from remote encapsulated frames and ESADI link state databases
+  * additional information to implement timeout of learned addresses, statically configured addresses, and the like
+
 #### 4.8.2. Learning Confidence Level Retionale
 #### 4.8.3. Forgetting End-Station Addresses
 #### 4.8.4. Shared VLAN Learning
