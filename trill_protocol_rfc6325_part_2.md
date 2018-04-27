@@ -385,6 +385,14 @@
   When the appointed forwarder lost counter for RBridge RBn for VLAN-x is observed to increase via the TRILL IS-IS link state database but RBn continues to be an appointed forwarder for VLAN-x on at least one of its ports, every other RBridge that is an appointed forwadrer for VLAN-x modifiers the aging of all the addresses it has learned by decapsulating native frames in VLAN-x from ingress RBridge RBn as follows: the time remainning for each entry is adjusted to be no larger than a per-RBridge configuration parameter called "Forward Delay". This parameter is in the range of 4 to 30 seconds with a default value of 15 seconds.
 
 #### 4.8.4. Shared VLAN Learning
+  RBridge can map VLAN IDs into a smaller number of identifiers for purpoese of address learning, as [802.1Q-2005] bridges can. Then when a lookup is done in learning information, this identifier is used for matching in place of the VLAN ID. If the ID of the VLAN on which the address was learned is not retained, then there are the following consequences:
+  * The Rbridge no longer has the information needed to participate in the TRILL ESADI protocol for the VLANs whose ID is not being retained
+  * In cases where section 4.8.3 above requires the discarding of learned address information based on a particular VLAN, when the VLAN ID is not available for entries under a shared VLAN identifier, instead the time remaining for each entry under that shared VLAN identifier is adjusted to no longer than the RBridge's "Forward Delay"
+
+  Although outside the scope of this specification, there are some Layer 2 features in which a set of VLANs has shared learning, where one of the VLANs is the "primary" and the other VLANs in the gorup are "secondaries". An example of this is whre traffic from different communities is separated using VLAN tags, and yet some resource (such as an IP router or DHCP router) is to be shared by all the communities. A method of implementing this feature is to give a VLAN tag, say Z, to a link containning the shared resource, and have the other VLANs, say A, C, and D, be part of the group {primary=Z, secondary=A, C, D}. An Rbridge, aware of this grouping, attahced to one of the secondary VLANs in the grroup also clains to be attached to the primary VLAN. SO an RBridge attached to A would claim to also attached to Z. An RBridge attached to the primary would claim to be attached to all the VLANs in the group.
+
+  This document does not specify to how VLAN groups might be used. Only RBridge that participate in a VLAN group will be configured to known about VLAN group. However, to detect misconfiguration, an Rbridge configured to known about a VLAN group should report the VLAN group in its LSP.
+
 ### 4.9. RBridge Ports
 #### 4.9.1. RBridge Port Configuration
 #### 4.9.2. RBridge Port Structure
