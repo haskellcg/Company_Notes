@@ -357,6 +357,11 @@
   * {confidence, VLAN, MAC address, egress RBridge nickname} for addresses leanred from remote encapsulated frames and ESADI link state databases
   * additional information to implement timeout of learned addresses, statically configured addresses, and the like
 
+  When a new address and related inforamtion learn from observing data frames are to be entered into the local database, there are three possibilities:
+  * If this is a new {address, VLAN} pair, the information is entered accompanished by the confidence level
+  * If there is already an entry for this {address, VLAN} pair with the same accompanying delivery information, the confidence level in the local database is set to the maximum of its existing confidentce level and the confidence level with which it is being learned. In adition, if the information is being learned with the same or a higher confidence level than its existing confidence, timer information is reset
+  * If there is already an entry for this {address, VLAN} pair with different information, the leanred information replaces the older information only if it is being learned with higher or equal confidence than that in that database entry. If it replaces older information, timer information is also reset.
+
 #### 4.8.2. Learning Confidence Level Retionale
 #### 4.8.3. Forgetting End-Station Addresses
 #### 4.8.4. Shared VLAN Learning
