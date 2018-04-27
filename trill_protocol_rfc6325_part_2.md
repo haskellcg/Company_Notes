@@ -417,6 +417,16 @@
   Diable > P2P > Access > trunk
 
 #### 4.9.2. RBridge Port Structure
+  An Rbridge port can be modeled as having a lower-level structure similar to that of an [802.1Q-2005] bridge port as shown in Figure 11. In this figure, the double lines represent the general flow of the frames and informations while single lines represent information flow only. The dashed lines in connection with VRP (GVRP/MVRP) are to show that VRP support is optional. An actual RBridge port implementation may be structured in any way that provides the correct behavior.
+
+  ![Detailed RBridge Port Model]()
+
+  Low-level control frames are handled in the low-level port/linl control logic in the same way as in an [802.1Q-2005] bridge port. This can optionally include a variety of 802.1 or link specific protocols such as PAUSE (Annex 31B of [802.3]), link layer discovery [802.1AB], link aggregation [802.1AX], MAC security [802.1AE], or port-based access control [802.1X]. While handled at a low-level, These frames may effect higher-level processing. For example, a Layer 2 registration protocol may effect the confidence in learned addresses. The upper interface to this lower-level port control logic corresponds to the Internal Sublayer Services (ISS) in 802.1Q-2005.
+
+  High-level control frames (BPDUs and, if supported, VRP frames) are not VLAN tagged. Although they extend through the ISS interface, they are not subject to port VLAN processing. Behavior on receipt of a VLAN tagged BPDU or VLAN tagged VRP frame is unspecified. If a VRP is not implemented, then all VRP frames are discarded. Handling of BPDUs is described in section 4.9.3. Handling of VRP frame is described in section 4.9.4.
+
+  Frames other than Layer 2 control
+
 #### 4.9.3. BPDU Handling
 ##### 4.9.3.1. Receipt of BPDUs
 ##### 4.9.3.2. Root Bridge Changes
