@@ -394,7 +394,28 @@
   This document does not specify to how VLAN groups might be used. Only RBridge that participate in a VLAN group will be configured to known about VLAN group. However, to detect misconfiguration, an Rbridge configured to known about a VLAN group should report the VLAN group in its LSP.
 
 ### 4.9. RBridge Ports
+  Section 4.9.1 below describes the several RBridge port configuration bits, section 4.9.2 gives a logical port structure in terms of frame processing, and section 4.9.3 and 4.9.4 describe tha handling of high-level control frames
+
 #### 4.9.1. RBridge Port Configuration
+  There are four per-port configuration bits as follows:
+  * Disable port bit: When ths bit is set, all frames received or to be transmitted are disabled, with the possible exception of some Layer 2 control frames, that may be generated and transmitted or received and processed within the port. By default, ports are enabled
+
+  * End-station service disable (trunk port) bit: When this bit is set, all native frames received on that port and all native frames that would have been sent on the port are discarded. (Note that, for this document, "native frames" does not include Layer 2 control frames.) By default, ports are not restracted to being trunk ports.
+
+  If a port with end-station service disabled reports, in a TRILL Hello frame it sends out that port, which VLANs it provides end-station support for, it reports that there are none.
+
+  * TRILL Traffic disable (access port) bit: If this bit is set, the goal is to avoid sending TRILL frames, except TRILL-Hello frames, on the port since it is intended only for native end-station traffic. by default, ports are not restrcted to being access ports. This bit is reported in TRILL-Hello, the DRB still appoints VLAN forwarders. However, usually no pseudonode is reported, and none of the inter-RBridge links associated with that link are reported in LSPs.
+
+  If the DRB RB1 does not have this bit set, but neighbor RB2 on the link does have the bit set, then RB1 does not appoint RB2 as appointed forwarder for any VLAN, and none of the RBridge (including the pseudonode) report RB2 as a neighbor in LSPs.
+
+  In some cases even though the DRB has the "access port" flag set, the DRB may choose to create a pseudonode for the access port. In this case, the other RBridge report connectivity to the pseudonode in their LSP, but the DRB sets are "overload" flag in the pseudonode LSP
+
+  * Use P2P Hellos bit: If this bit is set, Hellos send on this port are IS-IS P2P Hellos. By default TRILL-Hellos are used. See Section 4.2.4.1 for more information on P2P links.
+
+  The dominance relationship of these four configuration bits is as follows, where configuration bits to the left dominate those to the right. That is to say, when any pair of bits is asserted, inconsistencies in behavior they mandate are resolved in favor of behavior mendate by the bit to the left of the other bit in this list.
+
+  Diable > P2P > Access > trunk
+
 #### 4.9.2. RBridge Port Structure
 #### 4.9.3. BPDU Handling
 ##### 4.9.3.1. Receipt of BPDUs
