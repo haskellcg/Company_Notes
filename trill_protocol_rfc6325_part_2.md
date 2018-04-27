@@ -372,6 +372,18 @@
   Mannualy configured address information is generally considered static and so defaults to a confidence of 0xFF while no other source of such information can be configured to a confidence any higher than 0xFE. However, for other cases, such as where the mannual configuration is just a starting point that the RBridge campus manager wishes to be dynamically overridable, the confidence of such mannually configured information may be configured to a lower value.
 
 #### 4.8.3. Forgetting End-Station Addresses
+  While RBridges need to learn end-station addresses as described above, it is equally important that they be able to forget such information. Otherwise, frames form end stations that have moved to a different part of the campus could be indefinitely black-holed by RBridge with stale information as to the link to which the end station is attached.
+
+  For end-station address information locally learned from frames received, the timeout from the last time a native frame was received or decapsulated with the information conforms to the recommendations of [802.1D]. It is refered to as the "Ageing Time" and it configurable per RBridge with a range of from 10 seconds to 1,000,000 seconds and a default value of 300 seconds.
+
+  The situation is different for end-station address information acquired via the TRILL ESADI protocol. It is up to be originating RBridge to decide when to remove such information from its ESADI LSP (or up to ESADI protocol timeouts if the originating RBridge becomes inaccessible).
+
+  When an Rbridge ceases to be appointed forwarder for VLAN-x on a port, it forgets all end-station address information learned from the observation of VLAN-x native frames received on that port. It also increments a per-VLAN counter of the number of times it lost appointed forwarder status on one of its ports for that VLAN.
+
+  When, for all of its ports, RBridge RBn is no longer appointed forwarder for VLAN-x, it forgets all end-station address information learned from decapsulating VLAN-x native frames. Also, if RBn is particpating in the TRILL ESADI protocol for VLAN-x, it ceases to so participate after sending a final LSP nulling out the end-station address information for the VLAN that it has been originating. In addition, all other RBridge that are VLAN-x forwarder on at least one of their ports notice that the link state data for RBn has changed to show that it no longer has a link on VLAN-x. In response, they forget all end-station address information they have learned from decapsulating VLAN-x frames that show RBn as the ingress RBridge.
+
+  When the appointed forwarder lost counter for RBridge RBn for VLAN-x is observed to increase via the TRILL IS-IS link state database but RBn continues to be an appointed forwarder for VLAN-x on at least one of its ports, every other RBridge that is an appointed forwadrer for VLAN-x modifiers the aging of all the addresses it has learned by decapsulating native frames in VLAN-x from ingress RBridge RBn as follows: the time remainning for each entry is adjusted to be no larger than a per-RBridge configuration parameter called "Forward Delay". This parameter is in the range of 4 to 30 seconds with a default value of 15 seconds.
+
 #### 4.8.4. Shared VLAN Learning
 ### 4.9. RBridge Ports
 #### 4.9.1. RBridge Port Configuration
