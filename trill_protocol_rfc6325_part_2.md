@@ -363,6 +363,14 @@
   * If there is already an entry for this {address, VLAN} pair with different information, the leanred information replaces the older information only if it is being learned with higher or equal confidence than that in that database entry. If it replaces older information, timer information is also reset.
 
 #### 4.8.2. Learning Confidence Level Retionale
+  The confidence level mechanism allows an RBridge campus manager to cause certain address learning sources to prevail over others. In default configuration, without the optional ESADI prortocol, addresses are only learned observing local native frames and the decapsulation of received TRILL Data frames. Both of these sources default to confidence level 0x20 so, since learning at an equal or high confidence ovrrides previous learning, the learning in such a deafult case mimics defualt 802.1 bridge learning.
+
+  While RBridge campus management policies are beyond the scope of this document, here are some example types of policies that can be implemented with the confidence mechanism and the rationale for each:
+  * Local Received native frames might be considered more reliable than decapsulated frames received from remote parts of the campus. To stop MAC addresses learned from such local frames from being usurped by remotely received forged frames, the confidence in locally learned addresses could be increased or that in addresses learned from remotely sourced decapsulated frames decreased.
+  * MAC address information learned through a cryptographically authenticated Layer 2 registration protocol, such as 802.1X with a cryptographically based EAP method, might be considered more reliable than information learned through the mere observation of data frames. When such authenticated learned address information is transmitted via the ESADI protocol, the use of authentication in the TRILL ESADI LSP frames could make tampering with it in transit very difficult. As a result, it might be reasonable to announce such authenticated information via the ESADI protocol with a hight confidence, so it would override any alternative learning from data observation.
+
+  Mannualy configured address information is generally considered static and so defaults to a confidence of 0xFF while no other source of such information can be configured to a confidence any higher than 0xFE. However, for other cases, such as where the mannual configuration is just a starting point that the RBridge campus manager wishes to be dynamically overridable, the confidence of such mannually configured information may be configured to a lower value.
+
 #### 4.8.3. Forgetting End-Station Addresses
 #### 4.8.4. Shared VLAN Learning
 ### 4.9. RBridge Ports
