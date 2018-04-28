@@ -23,6 +23,17 @@
   * Nickname value, an unsigned 16-bit quantity that defaults to the configured value if configured, elso to the last value held if the RBridge coming up after a reboot and that value is remembered, else to a random value; however, in all cases the reserved values 0x0000 and 0xFFC0 through 0xFFFF are excluded
 
 ### 5.3. Per Port Per RBridge
+  An RBridge has the following per-port configuration parameters:
+  * The same parameters as an [802.1Q-2005] port in terms of C-VLAN IDs. Inaddition, there is an announcing VLANs set that deafults to the enabled VLANs on the port, and ranges from the null set to the set of all legal VLAN IDs.
+  * The same parameters as an [802.1Q-2005] port in terms of frame priority code point mapping
+  * The inhibition time for the port when it observed a change in root bridge of an attached bridged LAN. This is in units of seconds, default to 30, and can be configured to any value from 0 to 30.
+  * The desired Designated VLAN that the Rbridge will advertise in its TRILL Hellos if it is the DRB for the link via that port. This defaults to the lowest VLAN ID enabled on the port and may be configured to any valid VLAN ID that is enabled on the port.
+  * Four per-port configuration bits: disable bit, disable end-station service, access port, and use P2P Hellos.
+  * One bit per port such that, if the bit is set, it disables learning {MAC address, VLAN, port} triples from locally received native frames on the port. Default value is 0 == learning enabled.
+  * The priority of the RBridge to be DRB and its Holding Time via the port with defaults and ranges as specific in IS-IS [RFC1195]
+  * A bit that, when set, enables the receipt of TRILL-encapsulated frames from an Outer.MacSA with which the Rbridge does not have an IS-IS adjacency. Default value is 0 == disabled
+  * Configuration for the optional send-BPDUs solution to the writing cloest topolgy problems as described in Appendix A.3.3. Default Bridge Address is the System ID of the Rbridge with lowest System ID. If RB1 and RB2 are part of a wiring closet topolgy, both need to be configured to know about this, and know the ID that should be used in the spanning tree protocol on the specified port.
+
 ### 5.4. Per VLAN Per RBridge
 
 ## 6. Security Considerations
