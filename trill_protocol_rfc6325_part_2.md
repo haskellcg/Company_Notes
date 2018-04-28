@@ -440,7 +440,21 @@
   Except TRILL-Hellos, MTU-probes, and MTU-acks, all TRILL controls as well as TRILL data and ESADI frames are passed up to higher-level RBridge processing on receipt and passed down for transmission on creation or forwarding. Note that these frames are never blocked due to the appointed forwarder and inhibition logic, which affects only native frames, but there are additional filters on some them such as the Reverse Path Forwardomg Check.
 
 #### 4.9.3. BPDU Handling
+  If RBridge campus topology were static, RBridge would simply be end station from a bridging perspective, terminating but not otherwise interacting with spanning tree. However, there are reasons for RBridges to listen to and sometimes to transmit BPDUs as described below. Even when RBridge listen to and transmit BPDUs, this is a local RBridge port activity. The ports of a particular RBridge never interact so as to make the RBridge as a whole a spanning tree mode.
+
 ##### 4.9.3.1. Receipt of BPDUs
+  RBridge must listen to spanning tree configuration BPDUs received on a port and keep track of the root bridge, if any, on that link. If MSTP is running on the link, ths is the CIST root. This information is reported per VLAN by the Rbridge in its LSP and may be used as described in Section 4.2.4.3. In addition, the receipt of spanning tree configuration BPDUs is used as indication that a link is a bridged LAN, which can affect the RBridge transmission of BPDUs.
+
+  An RBridge must not encapsulate or forward any BPDU frame it receives.
+
+  RBridge discard any topology change BPDUs they receive, but not section 4.9.3.3
+
 ##### 4.9.3.2. Root Bridge Changes
+  A change in the root bridge seen in the soanning tree BPDUs received at an RBridge port may indicate a change in bridged LAN topology, including the possibility of the merger of two bridged LANs or the like, without any physical indication at the port. During topology transients, bridges may go into per-forwarding states that block TRILL-Hello frames. For there reasons, when an RBridge sees a root bridge change on a port for which it is appointed forwarder for one or more VLNAs, it is inhibited for a period of time between zero and 30 seconds. (An inhibited appinted forwarder discards all native frames received from or that it would otherwise have sent to the link.) this time period is configurable per port and defaults to 30 seconds.
+
+  For example, consider two bridged LANs carrying multiple VLANs, each with variouts RBridge appointed forwarders. Should they become merged, due to a cable being plugged in or the like, those RBridges attached to the original bridged LAN with the lower priority root will see a root bridge change while those attached to the other original bridged LAN will not. Thus, all appointed forwarders in the lower priority set will be inhibited for a time period while things are sorted out by BPDUs within the merged bridged VLAN and TRILL-Hello frames between the Rbridge involved.
+
 ##### 4.9.3.3. Transmission of BPDUs
+  
+
 #### 4.9.4. Dynamic VLAN Registration
