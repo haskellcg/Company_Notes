@@ -74,8 +74,45 @@
   The block of 16 multicast MAC addresses from 01-80-C2-00-00-40 to 01-80-C2-00-00-4F is assigned by the IEEE Registration Authority for IETF TRILL protocol use.
 
 ## 8. Normative References
+  * [802.1ak]
+  * [802.1D]
+  * [802.1Q-2005]
+  * [802.3]
+  * [ISO10589]
+  * [RFC1112]
+  * [RFC1195]
+  * [RFC2119]
+  * [RFC2464]
+  * [RFC2710]
+  * [RFC3376]
+  * [RFC3419]
+  * [RFC4286]
+  * [RFC5226]
+  * [RFC5303]
+  * [RFC5305]
+  * [RFC6165]
+  * [RFC6326]
 
 ## 9. Informative References
+  * [802.1AB]
+  * [802.1ad]
+  * [802.1ah]
+  * [802.1aj]
+  * [802.1AE]
+  * [802.1AX]
+  * [802.1X]
+  * [RBridges]
+  * [RFC1661]
+  * [RFC3411]
+  * [RFC4086]
+  * [RFC4541]
+  * [RFC4789]
+  * [RFC5304]
+  * [RFC5310]
+  * [RFC5342]
+  * [RFC5556]
+  * [RFC1999]
+  * [VLAN-MAPPING]
 
 ## Appendix A. Incremental Deployment Considerations
 ### A.1. Link Cost Determination
