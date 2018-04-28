@@ -40,12 +40,38 @@
   * One bit per VLAN that, if set, disables learning {MAC address, VLAN, remote RBridge} triples from frames decapsulated in the VLAN. Defaults to 0 == learning enabled.
 
 ## 6. Security Considerations
+  TODO
+
 ### 6.1. VLAN Security Considerations
+  TODO
+
 ### 6.2. BPDU/Hello Denial-of-Service Considerations
+  TODO
 
 ## 7. Assignment Considerations
+  TODO
+
 ### 7.1. IANA Considerations
+  A new IANA registri has been created for TRILL parameter with two subregistries as below.
+
+  This initial contents of the TRILL Nicknames subregistry are as follows:
+  * 0x0000 Reserved to indicate no nickname specified
+  * 0x0001 - 0xFFBF Dynamic allocated by the RBridges within each Rbridge campus
+  * 0xFFC0 - 0xFFBF Available for allocation by RFC Required (single value) or IETF Review (single or multiple values)
+  * 0xFFFF Permanetly reserved
+
+  The initial contents of the TRILL multicast address subregitry are as follows:
+  * 01-80-C2-00-00-40 Assigned as All-RBridge
+  * 01-80-C2-00-00-41 Assigned as All-IS-IS-RBridge
+  * 01-80-C2-00-00-42 Assigned as All-ESADI-RBridge
+  * 01-80-C2-00-00-43 to 01-80-C2-00-00-4F Available for allocation by IETF Review
+
 ### 7.2. IEEE Registration Authority Considerations
+  The Ethertype 0x22F3 is assigned by the IEEE Registration Authority to the TRILL Protocol
+
+  The Ethertype 0x22F4 is assigned by the IEEE registration Authority for L2-IS-IS.
+
+  The block of 16 multicast MAC addresses from 01-80-C2-00-00-40 to 01-80-C2-00-00-4F is assigned by the IEEE Registration Authority for IETF TRILL protocol use.
 
 ## 8. Normative References
 
