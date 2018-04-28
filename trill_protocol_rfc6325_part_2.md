@@ -425,7 +425,19 @@
 
   High-level control frames (BPDUs and, if supported, VRP frames) are not VLAN tagged. Although they extend through the ISS interface, they are not subject to port VLAN processing. Behavior on receipt of a VLAN tagged BPDU or VLAN tagged VRP frame is unspecified. If a VRP is not implemented, then all VRP frames are discarded. Handling of BPDUs is described in section 4.9.3. Handling of VRP frame is described in section 4.9.4.
 
-  Frames other than Layer 2 control
+  Frames other than Layer 2 control frames, that is, all TRILL and native frames, are subject to port VLAN and priority processing that is same as for an [802.1Q-2005] bridge. The upper interface to the port VLAN and priority processing corresponds to the Extended Internal Sublayer Service (EISS) in 802.1Q-2005.
+
+  In this model, RBridge port processing below the EISS layer is identical to an [802.1Q-2005] bridge except for:
+  * the handling of high-level control frames
+  * that the discard of frames 
+  
+  have exceeded the Maximum Transit Delay is not mandatory but may be done
+
+  As described in more detail elsewhere in this document, incoming native frames are only accepted if the RBridge is an uninhibited appointed forwarder for the frame's VLAN, after which they are normally encapsulated and forwarder; Outgoing native frames are usually obtained by decapsulation and are only output if the RBridge is an unhinbited appointed forwarder for the frame's VLAN.
+
+  TRILL-Hellos, MTU-probes, and MTU-acks are handled per port and, like all TRILL IS-IS frames, are never forwarded. They can affect the appointed forwarder and inhibition logic as well as the RBridge's LSP.
+
+  Except TRILL-Hellos, MTU-probes, and MTU-acks, all TRILL controls as well as TRILL data and ESADI frames are passed up to higher-level RBridge processing on receipt and passed down for transmission on creation or forwarding. Note that these frames are never blocked due to the appointed forwarder and inhibition logic, which affects only native frames, but there are additional filters on some them such as the Reverse Path Forwardomg Check.
 
 #### 4.9.3. BPDU Handling
 ##### 4.9.3.1. Receipt of BPDUs
