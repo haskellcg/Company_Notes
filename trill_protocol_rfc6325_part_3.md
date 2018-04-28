@@ -35,6 +35,9 @@
   * Configuration for the optional send-BPDUs solution to the writing cloest topolgy problems as described in Appendix A.3.3. Default Bridge Address is the System ID of the Rbridge with lowest System ID. If RB1 and RB2 are part of a wiring closet topolgy, both need to be configured to know about this, and know the ID that should be used in the spanning tree protocol on the specified port.
 
 ### 5.4. Per VLAN Per RBridge
+  An RBridge has the following per-VLAN configuration parameters:
+  * Per-VLAN ESADI Protocol participation flag, 7-bit priority, and Holding Time. Default participation flag is 0 == not participating. Default and range of priority and Holding Time as specified in IS-IS [RFC1195]
+  * One bit per VLAN that, if set, disables learning {MAC address, VLAN, remote RBridge} triples from frames decapsulated in the VLAN. Defaults to 0 == learning enabled.
 
 ## 6. Security Considerations
 ### 6.1. VLAN Security Considerations
