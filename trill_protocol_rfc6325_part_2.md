@@ -455,6 +455,16 @@
   For example, consider two bridged LANs carrying multiple VLANs, each with variouts RBridge appointed forwarders. Should they become merged, due to a cable being plugged in or the like, those RBridges attached to the original bridged LAN with the lower priority root will see a root bridge change while those attached to the other original bridged LAN will not. Thus, all appointed forwarders in the lower priority set will be inhibited for a time period while things are sorted out by BPDUs within the merged bridged VLAN and TRILL-Hello frames between the Rbridge involved.
 
 ##### 4.9.3.3. Transmission of BPDUs
-  
+  When an RBridge ceases to be appointed forwarder for one or more VLANs out a particular port, it should, sa long as it continues to receive spanning tree BPDUs on that port, send topolgy change BPDUs until it sees the topolgy change acknownledged in a spanning tree configuration BPDU.
+
+  Rbridge may support a capability for sending spanning tree BPDUs for the purpose of attempting to force a bridged LAN to partition as discussed in Appendix A.3.3
 
 #### 4.9.4. Dynamic VLAN Registration
+  Dynamic VLAN registration provides a means for bridges (and less commonly end station) to request that VLANs be endbaled or disabled on ports leading to the requestor. This is done by VLAN registration protocol (VRP) frames: GVRP or MVRP. RBridge may implement GVRP and/or as escribed below.
+
+  VRP frames are never encapsulated as TRILL frames between RBridge or forwarded in native form by an Rbridge. If an RBridge does not implement a VRP, it discards any VRP frames received and sends none.
+
+  RBridge ports may have dynamically enabled VLANs. If an RBridge supports a VRP, the actual enablement of dynamic VLANs is determined by GVRP/MVRP frames received at the port as it would be for an [802.1Q-2005]/[802.1ak] bridge.
+
+  An Rbridge that supports a VRP sends GVRP/MVRP frames as an [802.1Q-2005]/[802.1ak] bridge would send on each port that is not configured as an RBridge trunk port or P2P port. For this purpose, it sends VRP frames to request traffic in the VLANs for which it is appointed forwarder and in the Designated VLAN, unless the Desinated VLAN is disabled on the port, and to not request traffic in any other VLAN.
+
