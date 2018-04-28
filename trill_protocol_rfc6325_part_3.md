@@ -17,6 +17,11 @@
   Static end-station address information and confidence in such end station information statically configured can also be configured with a default configence of 0xFF anf range of 0x00 to 0xFF. By Default, there is no such static address information. The quantity of such information that can be configured is implementation dependent.
 
 ### 5.2. Per Nickname Per RBridge
+  The following is configration information per nickname at each Rbridge:
+  * Priority to hold the nickname, which defaults to 0x40 if no specific value has been configured or 0xC0 if it is configured.
+  * Nickname priority to be selected as distribution tree root, a 16-bit unsigned integer that defaults to 0x8000
+  * Nickname value, an unsigned 16-bit quantity that defaults to the configured value if configured, elso to the last value held if the RBridge coming up after a reboot and that value is remembered, else to a random value; however, in all cases the reserved values 0x0000 and 0xFFC0 through 0xFFFF are excluded
+
 ### 5.3. Per Port Per RBridge
 ### 5.4. Per VLAN Per RBridge
 
