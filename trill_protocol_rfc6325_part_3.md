@@ -262,7 +262,18 @@
   In 802.1, the process of associating a priority code point with a frame, including mapping a priority provided in the frame to another priority, is refered to as priority "regeberation".
 
 ## Appendix E. Support of IEEE 802.1Q-2005 Amendments
+  This informational appendix briefly comments on Rbridge support for completed and in-process amendments to IEEE [802.1Q-2005]. There is no assurance that existing Rbridge protocol specifications or existing bridges will support not yet specified future [802.1Q-2005] amendments just as there is no assurance that existing bridge protocol specifications or existing Rbridge will support not yet specified future TRILL amendments.
+
+  The information below is frozen as of 25 October 2009. For the latest status, see the IEEE 802.1 working group.
+
 ### E.1. Complete Amendments
+  * 802.1ad-2005 Provider Bridges - Sometime called "Q-in-Q", because VLAN tags used to be called "Q-tags", 802.1ad specifies Provider Rbridges that tunnel customer bridge traffic within service VLAN tags (S-tags). If the customer LAN is an Rbridge campus, that traffic will be bridged by Provider Bridges. Customer bridge features involving Provider bridge awareness, such as the ability to configure a customer bridge port to add an S-tag to a frame before sending it to a Provider bridge, are below the EISS layer and can be supported in RBridge ports without modification to the TRILL protocol.
+  * 802.1ag-2007 Connectivity Fault Management (CFM) - TODO
+  * 802.1ak-2007 Multiple Registration Protocol - TODO
+  * 802.1ah-2008 Provider Backbone Bridges - TODO
+  * 802.1Qaw-2009 Management of Data-Driven and Data-Dependent Connectivity Fault - TODO
+  * 802.1Qay-2009 Provider Backbone Bridge Traffic Engineering - TODO
+
 ### E.2. In-Process Amendments
 
 ## Appendix F. Acknowledgements
