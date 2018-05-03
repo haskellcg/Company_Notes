@@ -208,6 +208,50 @@
   When designing Rbridge configuration user interfaces, consideration should be given to making it convenient to coffigure ports as trunk and access ports.
 
 ## Appendix C. Multipathing
+  RBridges support multipathing of both known unicast and multi-destination traffic. Implementation of multipathing is optional.
+
+                                +---+
+                                |RBy|---------------+
+                                +---+               |
+                               /  |  \              |
+                             /    |    \            |
+                           /      |      \          |
+                        +---+   +---+   +---+       |
+                        |RB1|---|RB2|---|RB3|       |
+                        +---+   +---+   +---+\      |
+                          |       |       |    \    |
+                        +---+   +---+   +---+    \+---+
+                        |RB4|---|RB5|---|RB6|-----|RBz|
+                        +---+   +---+   +---+    /+---+
+                          |       |       |    /
+                        +---+   +---+   +---+/
+                        |RB7|---|RB8|---|RB9|
+                        +---+   +---+   +---+
+
+  Multi-destination traffic can be multipthed by using different distribution tree roots for different frames. For example, assume that in Figure 14 end stations attached to RBy are the source of various multicast streams each of which has multiple listenders attached to various of RB1 through RB9. Assuming equal bandwidth links, a distribution tree rooted at RBy will predominantly use the vertical links among RB1 through RB9 while one rooted at RBz will predominantly use the horizontal. if RBy chooses its nickname as the distribution tree root for half of this traffic and an RBz nickname as the root for the other half, it may be able to substantially increase the aggregate bandwidth by making use of both the vertical and horizontal links among RB1 through RB2.
+
+  Since the distribution trees an RBridge must calculate are the same for all RBridges and transit RBridges must respect the tree root specific by the ingress RBridge, a campus will operate correctly with a mix of RBridges some of which use different roots for different multi-destination frames they ingress and some of which use a single root for all such frames.
+
+                                      +---+       double line = 10 Gbps
+                        -----      ===|RB3|---    single line = 1 Gbps
+                       /     \   //   +---+   \
+                   +---+     +---+            +---+
+                ===|RB1|-----|RB2|            |RB5|===
+                   +---+     +---+            +---+
+                       \     /   \    +---+  //
+                        -----     ----|RB4|===
+                                      +---+
+
+  Known unicast Equal Cost Multipthing (ECMP) can occur at an RBridge if, instead of using a tiebreaker criterion when building SPF paths, information is retained about ports thrrough which euqal cost paths are available. Different unicast frames can then be sent through those different ports and will be forwarded by equal cost paths. For example, in Figure 15, which shows only RBridges and omits any Rbridges present, there are three equal cost path between RB1 and RB2 and two equal cost paths beetween Rb2 and RB5. Thus, for traffic transiting this part of the campus from left to right, RB1 may be able to perform three way ECMP and RB2 may be able to perform two-way ECMP.
+
+  A transit Rbridge receiving a known unicast frame forwards it towards the egress RBridge and is not concerned with whether it believes itself to be on any parrticular path from the ingree Rbridge or a previous transit RBridge. Thus, a campus will operate correctly with a mix of RBridge some of which implement ECMP and some of which do not.
+
+  There are actually three possibilities for the parallel paths between Rb1 and RB2 as follows:
+  1. if two or three paths have pseudonodes, then all three will be distinctly visible in the campus-wide link state and ECMP as described above is applicable.
+  1. If the paths use P2P Hellos or otherwise do not have pseudonodes, these three paths would appear as a single adjacency in the link state. In this case, multipathing across them would be aan entirely local matter for RB1 and RB2. It can be freely done for known unicast frames but not for multi-destination frames as described in section 4.5.2.
+  1. If and only if the three paths between Rb1 and RB2 are single hop equal bandwidth links with no intervening bridges, then it would be permissible to combine them into one logical link through the [802.1AX] "link eggregation" feature. RBridge may implement link aggregation since operaates below TRILL
+
+  When multipathing is used, frames that follow different paths will be subject to different paths will be subject to different delays and may be re-ordered. While some traffic may be oder/delay insensitive, typically most traffic consists of flows of frames where re-ordering within a flow is damaging. How to determine flows or what granularity flows should have is beyong the scope of this document.
 
 ## Appendix D. Determination of VLAN and Priority
 
