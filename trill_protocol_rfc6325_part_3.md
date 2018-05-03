@@ -148,6 +148,32 @@
   Conversely to item 3 above, there may be bridged LANs that use VLANs or use more VLANs than would be necessary, to support the multiple Spanning Tree Protocol or otherwise reduce the congestion that can be caused by single spanning tree. Replacing the IEEE 802.1 bridges in such LANs with Rbridges may enable a reduction in or elimination of VLANs and configuration complexity.
 
 ### A.3. Wiring Closet Topology
+  If 802.1 bridges are present and RBridges are not properly configured, the bridge spanning tree or the DRB may make inappropriate decisions. Below is s specific example of the more general problem that can occur when a bridged LAN is connected to multiple RBridges.
+
+  In cases where there are two or more groups of end nodes, each attached to a bridge (say, B1 and B2), each bridge is attached to an Rbridge (say, Rb1 and RB2, respectively), with an additional link connecting B1 and B2, it may be desirable to have the B1-B2 linm only as a backup in case one of RB1 or RB2 or one of the links B1-RB1 or B2-RB2 fails.
+
+                +-------------------------------+
+                |              |          |     |
+                | Data      +-----+    +-----+  |
+                | Center   -| RB1 |----| RB2 |- |
+                |           +-----+    +-----+  |
+                |              |          |     |
+                +-------------------------------+
+                               |          |
+                               |          |
+                +-------------------------------+
+                |              |          |     |
+                |           +----+     +----+   |
+                | Wiring    | B1 |-----| B2 |   |
+                | Closet    +----+     +----+   |
+                | Bridged                       |
+                | LAN                           |
+                +-------------------------------+
+
+  For example, B1 and B2 may be in a wiring closet and it may be easy provide a short, high-bandwidth, low-cost link between them while RB1 and RB2 are at a distant data center such that the RB1-B1 and RB2-B2 links are slower and more expensive.
+
+  Default behavior might be that one of RB1 or RB2 would become DRB for the bridged LAN including B1 and B2 and appint itself forwarder for the VLANs on that bridged LAN. As a result, Rb1 would forward all traffic to/from the link, so end nodes attached to B2 would be connected to the campus via the path B2-B1-RB1, rather than the desired B2-RB2. This waste the bandwidth of the B2-RB2 path and cuts available bandwidth between the end-stations and the data center in half. The desired behavior would be to make sure of both the RB1-B1 and RB2-B2 links.
+
 #### A.3.1. The RBridge Solution
 #### A.3.2. The VLAN Solution
 #### A.3.3. The Spanning Tree Solution
