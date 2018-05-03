@@ -180,12 +180,32 @@
 #### A.3.2. The VLAN Solution
   If the end station attached to B1 and B2 are already divided among a number of VLANs, Rb1 and RB2 could be configured so that whichever becomes DRB for this link will appointed itself forwarder for some of these VLANs and appoint the other RBridge for the remainning VLANs. Should either of the RBridges fail or become disconnected, the other will have only itself to appoint as forwarder for all the VLANs.
 
-  If the end stations are all on a single VLAN, then it would be necessary to assign them between at least two VLANs to use this solution. This may lead to connectivity problems that might requied further measures to recetify.
+  If the end stations are all on a single VLAN, then it would be necessary to assign them between at least two VLANs to use this solution. This may lead to connectivity problems that might requied further measures to rectify.
 
 #### A.3.3. The Spanning Tree Solution
+  Another solution is to configure the relevant ports on RB1 and RB2 to be part of a "wiring closet group", with a configured per-RBridge port "Bridge Address" Bx (which may be RB1 or RB2's System ID). Both RB1 and RB2 emit spanning tree BPDUs on their configured ports as highest priority root Bx. This cause the spanning tree to logically partition the bridged LAN as desired by blocking B1-B2 link at one end or the other (unless one of the bridges is configured to also have highest priority and has a lower ID, which we consider to be a misconfiguration). With the B1-B2 link blocked, RB1 and RB2 cannot see each other's TRILL-Hellos via tht link and each acts as Designated RBridge and appointed forwarder for its respective partition. Of course, with this partition, no TRILL through traffic can flow through the RB1-B1-B2-RB2 path.
+
+  In the spanning tree configuration BPDU, the Root is "Bx" with highest priority, cost to Root is 0, Designated Bridge ID is "RB1" when RB1 transmits and "RB2" when RB2 transmits, and port ID is a value chosen independently by each of RB1 and RB2 to distinguish each of its own ports. The topology change flag is zero, and the topology change BPDU has been received on the port since the last configuration BPDU was transmitted on the port. (If Rb1 and RB2 were actually bridges on the same shared medium with no bridges between them, the result would be that the one with the larger ID sees "better" BPDUs (because of the tiebreaker on the third field: the ID of the transmitting bridge), and would turn off its port.)
+
+  Should either RB1 or the RB1-B1 link or RB2 or the RB2-B2 link fail, the spanning tree algorithm will stop seeing one of the RBx roots and will unblock the B1-B2 link maintaining connectivity of all the end stations with the data center.
+
+  If the link RB1-B1-B2-RB2 is on the cut set of the campus and RB2 and RB1 have been configured to believe they are part of a wiring closet group, the campus becomes partitioned as the link is blocked.
+
 #### A.3.4. Comparison of Solutions
+  Replacing all 802.1 customr bridges with RBridge is usually the best solution with the least amount of configuration required, possibly none.
+
+  The VLAN solution works well with a relatively small amount of configuration if the end stations are already divided among a number of VLANs. If they are not, it becomes more complex and problematic.
+
+  The spanning tree solution does quit well in this particular case. But it depends on both RB1 and RB2 having implemented the optional feature of being able to configure a port to emit spanning tree BPDUs as described in A.3.3 above. It also makes the bridged LAN whose partition is being forced unavailable for through traffic. Finally, while in this specific example, it neatly breaks the link between the two bridges B1 and B2, if there were a more complex bridged LAN, instead of exactly two bridges, there is no guarantee that it would paritition into roughly equal pieces. In such case, you might end up with a highly unbalanced load on the RB1-B1 link and the RB2-B2 link although this is still better than using only one of these links exclusively.
 
 ## Appendix B. Trunk and Access Port Configuration
+  Many modern bridged LANs are organized into a core and access model, the core bridges have only point-to-point links to other bridges while the access bridges connect to end stations, core bridges, and possibly other access bridges. It seems likely that some Rbridge campuses will be organized in a similar fashion.
+
+  An RBridge port can be configured as a trunk port, that is, a link to another Rbridge or RBridges, by configuring it to disable end-station support. These is no reason for such a port to have more than one VLAN enabled and in its Announcing Set on the port. Of course, the RBridge (or RBridges) to which it is connected must have the same VLAN enabled. There is no reason for this VLAN to be other than the default VLAN 1 unless the link is actually over carrier Ethernet or other facilities that only provides some other specific VLAN or the like, Such Configuration minimizes wasted TRILL-Hellos and eliminates useless decapsulation and transmission of multi-destination traffic in native form onto the link.
+
+  An RBridge access port would be expected to lead to a link with end stations and possibly one or more bridges. Such a link might also have more than one Rbridge connected to it to provide more reliable service to the end stations. It would be a goal to minimize or elimite transit traffic on such a link as it is intended for end-station native traffic. This can be accomplished by turning on the access port configuration bit for the RBridge port or ports connected to the link as further detailed in section 4.9.1.
+
+  When designing Rbridge configuration user interfaces, consideration should be given to making it convenient to coffigure ports as trunk and access ports.
 
 ## Appendix C. Multipathing
 
