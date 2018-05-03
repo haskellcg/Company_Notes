@@ -133,6 +133,19 @@
 ### A.2. Appointed Forwarders and Bridged VLANs
   With partial RBridge deployment, the RBridge may partition a bridged LAN into a relatively small number of relatively small number of relatively large remant briged LANs, or possible not partition it at all so a single bridged LAN remains. Such configuration can result in the following problem.
 
+  The requirement that native frames enter and leave a link via the link's appointed forwarder for the LAN of the frame can cause congestion or suboptimal routing. (Similar problems can occur within a bridged LAN due to the spanning tree algorithm.) The extent to which such a problem will occur is highly dependent on the network topology. For example, if a bridged LAN had a star-like structure with core bridges that connected only to other bridges and peripheral bridges that connected to end stations and are connected to core bridges, the replacement of all of the core bridges by RBridges without replacing the peripheral bridges would generally improve performance without inducing appointed forwarder congestion.
+
+  Solutions to this problem are dicussed below and a particular exmple explored in A.3.
+
+  Inserting RBridge so that all the bridged portions of the LAN stay connected to each other and have multiple RBridge connection is generally the least efficient arrangement.
+
+  There are four techniques that may help if the problem above occurs and that can, to some extent, be used in combination:
+  1. Replace more IEEE 802.1 customer bridges with RBridges so as to minimize the size of the remnant bridged LANs between RBridges. This requires no configuration of the RBridges unless the bridges they replace required configurations
+  1. Re-arrange network topology to minimize the problem. If the bridges and RBridges involved are configured, this may require changes in their configration.
+  1. Configure the RBridges and bridges so that end-station on a remnant bridged LAN are separated into different LANs that have different appointed forwarders. If the end stations were already assigned to different VLANs, this is straightforward. If the end station were on the same VLAN and have to be split into different VLANs, this techniques may lead to connectivity problems between end stations.
+  1. Configure the RBridges such that their ports that are connected to the bridged LAN send spanning tree configuration BPDUs in such a way as to force the partition of the bridged LAN. (Note: A spanning tree is never formed through an RBridge but always terminates at Rbridges ports.) To use this techniques, the RBridges must support this optional feature, and would need to be configured to use it, but the bridges involved would rarely hav to be configured. This technique makes the bridged LAN unavailable for TRILL through traffic because the bridged LAN partitions.
+
+  Conversely to item 3 above, there may be bridged LANs that use VLANs or use more VLANs than would be necessary, to support the multiple Spanning Tree Protocol or otherwise reduce the congestion that can be caused by single spanning tree. Replacing the IEEE 802.1 bridges in such LANs with Rbridges may enable a reduction in or elimination of VLANs and configuration complexity.
 
 ### A.3. Wiring Closet Topology
 #### A.3.1. The RBridge Solution
