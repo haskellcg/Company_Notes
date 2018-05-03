@@ -115,8 +115,25 @@
   * [VLAN-MAPPING]
 
 ## Appendix A. Incremental Deployment Considerations
+  Some aspects of partial RBridge deployment are described below for link cost determination (A.1) and possible congestion due to appointed forwarder bottlenecks (A.2). A particular example of a problem related to the TRILL use of a single appointed forwarder per link per LNA (the "wrieing closet topology") is explored in detail in A.3.
+
 ### A.1. Link Cost Determination
+  With an RBridged campus having no bridges or repeaters on the links between RBridges, the Rbridges can accurately determine the number of physical hops involved in a path and the line speed of each hop, assuming this is reported by thier port logic. With intervening devices, this is no longer possible. For example, as shown in figure 12, the two bridges B1 and B2 can completely hide a slow link so that both RBridge RB1 and RB2 incorrectly believe the link is faster.
+
+            +-----+        +----+        +----+        +-----+
+            |     |   Fast |    | Slow   |    |   Fast |     |
+            | RB1 +--------+ B1 +--------+ B2 +--------+ RB2 |
+            |     |   Link |    | Link   |    |   Link |     |
+            +-----+        +----+        +----+        +-----+
+
+  Even in the case of a single intervening bridge, two RBridge may known they are connected but each sees the links as a different speed from how it is seen by the other.
+
+  However, this problem is not unique to RBridges. Bridges can encounter similar situations due to links hidden by repeaters, and routers can encounter similar situations due to links hidden by bridges, repeaters, or RBridges.
+
 ### A.2. Appointed Forwarders and Bridged VLANs
+  With partial RBridge deployment, the RBridge may partition a bridged LAN into a relatively small number of relatively small number of relatively large remant briged LANs, or possible not partition it at all so a single bridged LAN remains. Such configuration can result in the following problem.
+
+
 ### A.3. Wiring Closet Topology
 #### A.3.1. The RBridge Solution
 #### A.3.2. The VLAN Solution
