@@ -175,7 +175,13 @@
   Default behavior might be that one of RB1 or RB2 would become DRB for the bridged LAN including B1 and B2 and appint itself forwarder for the VLANs on that bridged LAN. As a result, Rb1 would forward all traffic to/from the link, so end nodes attached to B2 would be connected to the campus via the path B2-B1-RB1, rather than the desired B2-RB2. This waste the bandwidth of the B2-RB2 path and cuts available bandwidth between the end-stations and the data center in half. The desired behavior would be to make sure of both the RB1-B1 and RB2-B2 links.
 
 #### A.3.1. The RBridge Solution
+  Of course, if B1 and B2 are replaced with RBridges, the right thing will happen without configuration (other than VlAN support), but this may not be immediately practical if bridges are being incrementally replaced by RBridges.
+
 #### A.3.2. The VLAN Solution
+  If the end station attached to B1 and B2 are already divided among a number of VLANs, Rb1 and RB2 could be configured so that whichever becomes DRB for this link will appointed itself forwarder for some of these VLANs and appoint the other RBridge for the remainning VLANs. Should either of the RBridges fail or become disconnected, the other will have only itself to appoint as forwarder for all the VLANs.
+
+  If the end stations are all on a single VLAN, then it would be necessary to assign them between at least two VLANs to use this solution. This may lead to connectivity problems that might requied further measures to recetify.
+
 #### A.3.3. The Spanning Tree Solution
 #### A.3.4. Comparison of Solutions
 
