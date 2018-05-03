@@ -275,5 +275,15 @@
   * 802.1Qay-2009 Provider Backbone Bridge Traffic Engineering - TODO
 
 ### E.2. In-Process Amendments
+  * 802.1aj Two-port MAC Relay [802.1aj] - TODO
+  * 802.1aq Shortest Path Bridging - TODO
+  * 802.1Qat Stream Reservation Protocol - TODO
+  * 802.1Qau Congestion Notification - TODO
+  * 802.1Qaz Forwarding and Queuing Enhancements for Time-Sensitive Streams - TODO
+  * 802.1Qbb Priority-Based Flow Control - TODO
+  * 802.1bc Remote Customer Service Interfaces - TODO
+  * 802.1Qbe Multiple Backbone Service Instance Indentifier (I-SID) Registration Protocol (MIRP) - TODO
+  * 802.1Qbf Provider Backbone Bridge Traffic Engineering (PBB-TE) Infrastructure Segment Protection - TODO
 
 ## Appendix F. Acknowledgements
+  TODO
