@@ -117,7 +117,67 @@
   The GIPv6-ADDR sub-TLV is carried only within a GADDR TLV
 
 ### 2.1.4. Group Labeled MAC Address Sub-TLV
+  The GMAC-ADDR sub-TLV of the Group Address (GADDR) TLV specified in Section 2.1.1 provides for a VLAN ID. The Group Labeled MAC Address sub-TLV, below, extends this to a fine-grained label.
+
+
+            +-+-+-+-+-+-+-+-+
+            |Type=GLMAC-ADDR|                  (1 byte)
+            +-+-+-+-+-+-+-+-+
+            |   Length      |                  (1 byte)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |  RESV |     Topology-ID       |  (2 bytes)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |        Fine-Grained Label                     | (3 bytes)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |Num Group Recs |                  (1 byte)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   GROUP RECORDS (1)                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   GROUP RECORDS (2)                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   .................                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   GROUP RECORDS (N)                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  where each group record is of the following form with k=6:
+
+            +-+-+-+-+-+-+-+-+
+            | Num of Sources|                  (1 byte)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   Group Address         (k bytes)             |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   Source 1 Address      (k bytes)             |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   Source 2 Address      (k bytes)             |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                    .....                                      |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   Source M Address      (k bytes)             |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  * Type: GADDR sub-TLV type, set to 4 (GLMAC-ADDR)
+  * Length: 6 + m + k\*n = 6 + m + 6\*n, TODO
+  * RESV: TODO
+  * Topology-ID: TODO
+  * Label: This carried the fine-gained label [RFC7172] identifier for all subsequent MAC addresses in this sub-TLV, or the value zero if no label is specified
+  * Num Group Recs: TODO
+  * Group Records: TODO
+
+  The GLMAC-ADDR sub-TLV is carried only within a GADDR TLV.
+
 ### 2.1.5. Group Labeled IPv4 Address Sub-TLV
+  The Group Labeled IPv4 Address (GLIP) Sub-TLV is IS-IS sub-TLV type 5 within the GADDR TLV. It has the same format as the Group Labeled MAC Address sub-TLV described in Section 2.1.4 xecept that k=4, the field are as follows:
+  * Type: sub-TLV type, set to 5 (GLIP-ADDR)
+  * Length: TODO
+  * Topology-ID: TODO
+  * RESV: TODO
+  * Label: TODO
+  * Number Group Recs: TODO
+  * Group Records: TODO
+
+  The GLIP-ADDR sub-TLV is carried only within a GADDR TLV.
+
 ### 2.1.6. Group Labeled IPv6 Address Sub-TLV
 ## 2.2. Multi-Topology-Aware Port Capability Sub-TLVs
 ### 2.2.1. Special VLANs and Flags Sub-TLV
