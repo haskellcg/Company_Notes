@@ -179,9 +179,76 @@
   The GLIP-ADDR sub-TLV is carried only within a GADDR TLV.
 
 ### 2.1.6. Group Labeled IPv6 Address Sub-TLV
+  The Group Labeled IPv6 Address (GLIPv6-ADDR) sub-TLV is IS-IS sub-TLV type 6 within the GADDR TLV. It has the same format as the Group Labeled MAC Address sub-TLV described in Section 2.1.4 except that k=16. The field are as follows:
+  * Type: sub-TLV type, set to 6 (GLIPv6-ADDR)
+  * Length: TODO
+  * Topology-ID: TODO
+  * RESV: TODO
+  * Label: TODO
+  * Num Group Recs: TODO
+  * Group Records: TODO
+
+  The GLIPv6-ADDR sub-TLV is carried only within a GADDR TLV.
+
 ## 2.2. Multi-Topology-Aware Port Capability Sub-TLVs
+  TRILL makes use of the Multi-Topology-Aware Port Capability TLV (MT-Port-Cap-TLV) as specified in [RFC6165]. The following subsection specify the sub-TLVs transported by the MT-Port-Cap-TLV for TRILL.
+
 ### 2.2.1. Special VLANs and Flags Sub-TLV
+  In TRILL, a Special VLANs and Flags (VLAN-FLAGS) sub-TLV is carried in every IHH PDU. It has the following format:
+
+            +--+--+--+--+--+--+--+--+
+            |    Type               |                         (1 byte)
+            +--+--+--+--+--+--+--+--+
+            |    Length             |                         (1 byte)
+            +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+            |    Port ID                                    | (2 bytes)
+            +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+            |    Sender Nickname                            | (2 bytes)
+            +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+            |AF|AC|VM|BY|     Outer.VLAN                    | (2 bytes)
+            +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+            |TR|R |R |R |     Designated-VLAN               | (2 bytes)
+            +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+  * Type: sub-TLV type, set to MT-Port-Cap-TLV VLAN-FLAGS sub-TLV 1
+  * Length: 8
+  * Port ID: An ID for the port on which the enclosing TRILL IIH PDU is being sent as specified in [RFC6325], Section 4.4.2
+  * Sender Nickname: If the sending IS is holding any nickname as discussed in [RFC6325], section 3.7, one must be included here. Otherwise, the field is set to zero. This field is to support intellegent end stations that determine the egress IS (RBridge) for unicast data through a directory service or the link and that need a nickname for their first hop to insert as the ingress nickname to correctly format a TRILL Data frame. It is also referenced in connect with the VLAN appointed Sub-TLV and can be used as the egress on one-hop RBridge Channel messages [RFC7178], for example, those use for BFD over TRILL [RFC7175].
+  * Outer.VLAN: A copy of the 12-bit outer VLAN ID of the TRILL IIH frame containing this sub-TLV, as specified in [RFC6325], Section 4.4.5
+  * Designated-VLAN: The 12-bit ID of the Designated VLAN for the link, as specified in [RFC6325], section 4.2.4.2
+  * AF, AC, VM, BY, and TR: These flag bits have the following meaning when set to one, as specified in the listed section of [RFC6325]:
+
+  Bit|Section|Meaning if bit is one
+  ---|-------|---------------------
+  AF|4.4.2|Originating IS believes it is Appointed Forwarder for the VLAN and port on which the containing IIH PDU was sent
+  AC|4.9.1|Originating port configured as an access port (TRILL traffic disable)
+  VM|4.4.5|VLAN mapping detected on this link
+  BY|4.4.2|Bypass pseudonode
+  TR|4.9.1|Originating port configured as a trunk port
+
+  * R: Reserved Bit. Must be sent as zero and ignored on receipt.
+
 ### 2.2.2. Enabled-VLANs Sub-TLV
+  The optional Enabled-VLANs sub-TLV specifies the VLANs enabled at the port of the originating IS on which the containing Hello was sent, as specified in [RFC6325], Section 4.4.2. It has the following format:
+
+                +-+-+-+-+-+-+-+-+
+                |     Type      |                  (1 byte)
+                +-+-+-+-+-+-+-+-+
+                |   Length      |                  (1 byte)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                | RESV  |  Start VLAN ID        |  (2 bytes)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                | VLAN bit-map....
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  * Type: sub-TLV type, set to MT-Port-Cap-TLV Enabled-VLANs sub-TLV 2
+  * Length: Variable, minimum 3
+  * RESV: 4 reserved bits that must be sent as zero and ignored on receipt
+  * Start VLAN ID: The 12-bit VLAN ID that is represented by the high-order bit of the first byte of the VLAN bit-map.
+  * VLAN bit-map: The highest-order bit indicates the VLAN equal to the start VLAN ID, the next highest bit indicates the VLAN equal to start VLAN ID + 1, continuing to be the end of the VLAN bit-map field.
+
+  If this sub-TLV occurs more than once in a Hello, the set of enabled VLAN is the union of the sets of VLANs indicated by each of the Enabled-VLAN sub-TLVs in the Hello.
+
 ### 2.2.3. Appointed Forwarders Sub-TLV
 ### 2.2.4. Port TRILL Version Sub-TLV
 ### 2.2.5. VLANs Appointed Sub-TLV
