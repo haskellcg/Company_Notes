@@ -1,8 +1,28 @@
 # Transparent Interconnection of Lots of Links (TRILL) Use of IS-IS
 # Abstract
+  TODO
 
 # 1. Introduction
+  The IETF Transparent Interconnection of Lots of Links (TRILL) prrotocol [RFC6325] provides transparent forwarding in multi-hop networks with arbitrary topology and link technologies using a header witth a hop count and link-state routing. TRILL provides optimal pair-wise forwarding without configuration, safe forwarding even during periods of temporary loops, and support for multipathing of both unicast and multicast traffic. Intermediate System (ISs) implementing TRILL are called Routing Bridges (RBridges) or TRILL Switches.
+
+  This document, in conjunction with [RFC6165], specifics the data formats and code points for the IS-IS [RFC1195] extensions to support TRILL. These data formats and code points may also be used by technologies other than TRILL.
+
+  This document obsoletes [RFC6326], which generally corresponded to the base TRILL protocol [RFC6325]. There has been substantial development of TRILL  since the publication of those documents. The main changes from [RFC6326] are summarized below, and a full list is given in section 7.
+  1. Added multicast group announcements by IPv4 and IPv6 addres
+  1. Added facilities for Announcing capapbilities supported
+  1. Added a tree affinity sub-TLV whereby ISs can request distribution tree association
+  1. Added multi-topology support
+  1. Added control-plane support for TRILL Data frame find-gained labels. This support is independent of the data-plane representation
+  1. Fixed the verified erratum [Err2869] in [RFC6326]
 ## 1.1 Convertions Used in This Document
+  * BVL - Bit Vector Length
+  * BVO - Bit Vector Offset
+  * IHH - IS-IS Hello
+  * IS - Intermediate System. Forr this document, all relevant intermediate systems are RBridge [RFC6325]
+  * MAC - Media Access Control
+  * MT - Multi-Topology
+  * NLPID - Network Layer Protocol Identifier
+  * SNPA - Subnetwork Point of Attachment (MAC address)
 
 # 2. TLV and Sub-TLV Extensions to IS-IS for TRILL
 ## 2.1 Group Address TLV
