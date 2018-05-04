@@ -250,7 +250,42 @@
   If this sub-TLV occurs more than once in a Hello, the set of enabled VLAN is the union of the sets of VLANs indicated by each of the Enabled-VLAN sub-TLVs in the Hello.
 
 ### 2.2.3. Appointed Forwarders Sub-TLV
+  The Designated RBridge (DRB) on a link uses the Appointed Forwarder sub-TLV to inform other ISs on the link that they are the designated VLAN-x forwarded for one or more ranges of VLAN IDs as specified in [RFC6439]. It was the following format:
+
+                +-+-+-+-+-+-+-+-+
+                |     Type      |                          (1 byte)
+                +-+-+-+-+-+-+-+-+
+                |   Length      |                          (1 byte)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                |   Appointment Information (1)         |  (6 bytes)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                |   Appointment Information (2)         |  (6 bytes)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                |   .................                   |
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                |   Appointment Information (N)         |  (6 bytes)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  where each appointment is of the form:
+
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                |       Appointee Nickname              |  (2 bytes)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                | RESV  |        Start.VLAN             |  (2 bytes)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                | RESV  |        End.VLAN               |  (2 bytes)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  * Type: sub-TLV type, set to MT-Port-Cap-TLV AppointedFwrdrs sub-TLV 3.
+  * Length: 6\*n bytes, where there are n appointments
+  * Appointee Nickname: The nickname of the IS being appointed a forwarder
+  * RECV: 4 bits that must be sent as zero and ignored on receipt
+  * Start.VLAN, End.VLAN: This VLAN ID range is inclusive. Setting both Start.VLAN and VLAN.end to the same value indicates a range of one VLAN ID. If start.VLAN is not equal to VLAN.end and Start.VLAN is 0x000, the sub-TLV is interpreted as if Start.VLAN was 0x001. If Start.VLAN is not equal to VLAN.end and VLAN.end is 0xFFF, the sub-TLV is interpreted as if VLAN.end was 0xFFE. If VLAN.end is less than Start.VLAN, the sub-TLV is ignored. If both Start.VLAN and VLAN.end are 0x000 or both are 0xFFF, the sub-TLV is ignored. The values 0x000 or 0xFFF are not valid VLAN IDs, and a port cannot be enabled forr them.
+
+  An IS's nickname may occur as Appointed Forwarder for multiple VLAN ranges by occurrences of this sub-TLV within the same or different MT Port Capability TVLs within an IIH PDU.
+
 ### 2.2.4. Port TRILL Version Sub-TLV
+
 ### 2.2.5. VLANs Appointed Sub-TLV
 ## 2.3. Sub-TLVs of the Router Capability and MT-Capability TLVs
 ### 2.3.1. TRILL Version Sub-TLV
