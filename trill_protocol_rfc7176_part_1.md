@@ -25,8 +25,73 @@
   * SNPA - Subnetwork Point of Attachment (MAC address)
 
 # 2. TLV and Sub-TLV Extensions to IS-IS for TRILL
+  This section, in conjunction with [RFC6165], specifies the data formats and code points for the TLVs and Sub-TLVs for IS-IS to support the IETF TRILL protocol. Information as to the number of occurrences allowed, such as for a TLV in a PDU or set of PDUs or for a sub-TLV in a TLV, is summarized in section 5.
+
 ## 2.1 Group Address TLV
+  The Group Address (GADDR) TLV, IS-IS TLV type 142, is cariied in an LSP PDU and carries sub-TLVs that in turn advertise multicast group listeners. The sub-TLVs that advertise Listeners are specified below. The Sub-TLVs under GADDR constitude a new series of sub-TLV types.
+
+  GADDR has the following format:
+
+            +-+-+-+-+-+-+-+-+
+            |Type=GADDR-TLV |                  (1 byte)
+            +-+-+-+-+-+-+-+-+
+            |   Length      |                  (1 byte)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...
+            |      sub-TLVs...
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-...
+
+  * Type: TLV type, set to GADDR-TLV 142
+  * Length: variable depending on the sub-TLVs carried
+  * sub-TLVs: The Group Address TLV value consists of sub-TLVs formatted as described in [RFC5305]
+
 ### 2.1.1. Group MAC Address Sub-TLV
+  The Group MAC Address (GMAC-ADDR) sub-TLV is sub-TLV type number 1 within the GADDR TLV. In TRILL, it is used to advertised multicast listener by MAC address as specified in Section 4.5.5 of [RFC6325]. It has the following format:
+
+            +-+-+-+-+-+-+-+-+
+            |Type=GMAC-ADDR |                  (1 byte)
+            +-+-+-+-+-+-+-+-+
+            |   Length      |                  (1 byte)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |  RESV |     Topology-ID       |  (2 bytes)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |  RESV |     VLAN ID           |  (2 bytes)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |Num Group Recs |                  (1 byte)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   GROUP RECORDS (1)                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   GROUP RECORDS (2)                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   .................                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   GROUP RECORDS (N)                           |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  where each group record is of the following form with k=6:
+
+            +-+-+-+-+-+-+-+-+
+            | Num of Sources|                  (1 byte)
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   Group Address         (k bytes)             |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   Source 1 Address      (k bytes)             |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   Source 2 Address      (k bytes)             |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                    .....                                      |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            |                   Source M Address      (k bytes)             |
+            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  * Type: GADDR sub-TLV type, set to 1 (GMAC-ADDR)
+  * Length: 5 + m + k\*n = 5 + m + 6\*n, where m is the number of group records and n is the sum of the number of group and source addresses
+  * RESV: Reserved. 4-bit fields that must be sent as zero and ignored on receipt
+  * Topology-ID: This field carries a topology ID [RFC5120] or zero if topologies are not in use.
+  * VLAN ID: This carries the 12-bit VLAN identifier for all subsequent MAC addresses in this sub-TLV, or the value zero if no VLAN is specified
+  * Num Group Recs: A 1-byte unsigned integer that is the number of group records in this sub-TLV
+  * Group Records: Each group record carries the number of sources. If this field is zero, it indicates a listener for (\*, G), that is, a listener not restricted by source. It then has a 6-byte (48-bit) multicast MAC address of followed by 6-byte source MAC addresses. If the sources do not fit in a single sub-TLV, the same group address may be repeated with different source addresses in another sub-TLV of another instance of the Group Address TLV.
+
+  The GMAC-ADDR sub-TLV is carried only within a GADDR TLV.
+
 ### 2.1.2. Group IPv4 Address Sub-TLV
 ### 2.1.3. Group IPv6 Address Sub-TLV
 ### 2.1.4. Group Labeled MAC Address Sub-TLV
