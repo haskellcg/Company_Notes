@@ -93,7 +93,29 @@
   The GMAC-ADDR sub-TLV is carried only within a GADDR TLV.
 
 ### 2.1.2. Group IPv4 Address Sub-TLV
+  The Group IPv4 Address (GIP-ADDR) sub-TLV is IS-IS sub-TLV type 2 within the GADDR TLV. It has the same format as the Group MAC Address sub-TLV described in Section 2.1.1 except that k=4. The field are as follows:
+  * Type: sub-TLV type, set to 2 (GIP-ADDR)
+  * Length: 5 + m + k\*n = 5 + m + 4\*n, same as above
+  * Topology-ID: TODO
+  * RESV: TODO
+  * VLAN ID: TODO
+  * Num Group Recs: TODO
+  * Group Records: TODO
+
+  The GIP-ADDR sub-TLV is carried only within a GADDR TLV.
+
 ### 2.1.3. Group IPv6 Address Sub-TLV
+  The Group IPv6 Address (GIPv6-ADDR) sub-TLV is IS-IS sub-TLV type 3 within the GADDR TLV. It has format as the Group MAC Address sub-TLV described in Section 2.1.1 except that k=16. The fields are as follows:
+  * Type: sub-TLV type, set to 3 (GIPv6-ADDR)
+  * Length: TODO
+  * Topology-ID: TODO
+  * RESV: TODO
+  * VLAN ID: TODO
+  * Number Group Recs: TODO
+  * Group Records: TODO
+  
+  The GIPv6-ADDR sub-TLV is carried only within a GADDR TLV
+
 ### 2.1.4. Group Labeled MAC Address Sub-TLV
 ### 2.1.5. Group Labeled IPv4 Address Sub-TLV
 ### 2.1.6. Group Labeled IPv6 Address Sub-TLV
