@@ -285,6 +285,26 @@
   An IS's nickname may occur as Appointed Forwarder for multiple VLAN ranges by occurrences of this sub-TLV within the same or different MT Port Capability TVLs within an IIH PDU.
 
 ### 2.2.4. Port TRILL Version Sub-TLV
+  The Port TRILL Version (PORT-TRILL-VER) sub-TLV indicates the maximum version of the TRILL standard supported and the support of optional hop-by-hop capabilities. By implecation, lower versions are also supported. If this sub-TLV is missing from an IIH, it is assumed that the originating IS only supports the base version (version zero) of the protocol [RFC6325] and supports no optional capacilities indicated by this sub-TLV.
+
+                +-+-+-+-+-+-+-+-+
+                | Type          |              (1 byte)
+                +-+-+-+-+-+-+-+-+
+                | Length        |              (1 byte)
+                +-+-+-+-+-+-+-+-+
+                | Max-version   |              (1 byte)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+
+                | Capabilities and Header Flags Supported |  (4 bytes)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...-+-+
+                0                   1                 3
+                0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7   0 1
+
+  * Type: MT-Port-Cap-TLV sub-TLV type, set to 7 (PORT-TRILL-VER)
+  * Length: 5
+  * Max-Version: A one-byte unsigned integer set to the maximum version supported
+  * Capabilities and Header Flags Supported: A bit vector of 32 bits numbered 0 through 31 in the network order. Bits 3 through 13 indicate that the corresponding TRILL Header hop-by-hop extended flags [RFC7179] are supported. bits 0 through 2 and 14 to 31 are reversd to indicate support of optional capabilites. A one bit indicates that the flag or capability is supported by the sending IS. Bits in this field must be set to zero execpet as permitted for a capability being advertised or if a hop-by-hop extended header flag is supported.
+
+  This sub-TLV, if present, must occur in an MT-Port-Cap-TLV in a TRILL IIH. If there is more than one occurrence, the minimum of the supported version is assumed to be correct and a capability or header flag is assumed to be supported only if indicated by all ocurences. The flags and capabilities for which support can be indicated in this sub-TLV are disjoint from those in the TRILL-VER sub-TLV so they cannet conflict. The flags and capabilties indicate in this sub-TLV relate to hop-by-hop processing that can differ between the ports of an IS (RBridge) and thus must be advertised in IIHs. For example, a capability requiring cryptogtaphic hardware assist might be supported on some ports and not others. However, the TRILL version is the same as that in the PORT-TRILL-VER sub-TLV. An IS, If it is adjacent to the sending IS of TRILL version sub-TLV(s), uses the TRILL version it received in PORT-TRILL-VER sub-TLV(s) in preference to that received in TRILL-VER sub-TLV(s).
 
 ### 2.2.5. VLANs Appointed Sub-TLV
 ## 2.3. Sub-TLVs of the Router Capability and MT-Capability TLVs
