@@ -307,6 +307,26 @@
   This sub-TLV, if present, must occur in an MT-Port-Cap-TLV in a TRILL IIH. If there is more than one occurrence, the minimum of the supported version is assumed to be correct and a capability or header flag is assumed to be supported only if indicated by all ocurences. The flags and capabilities for which support can be indicated in this sub-TLV are disjoint from those in the TRILL-VER sub-TLV so they cannet conflict. The flags and capabilties indicate in this sub-TLV relate to hop-by-hop processing that can differ between the ports of an IS (RBridge) and thus must be advertised in IIHs. For example, a capability requiring cryptogtaphic hardware assist might be supported on some ports and not others. However, the TRILL version is the same as that in the PORT-TRILL-VER sub-TLV. An IS, If it is adjacent to the sending IS of TRILL version sub-TLV(s), uses the TRILL version it received in PORT-TRILL-VER sub-TLV(s) in preference to that received in TRILL-VER sub-TLV(s).
 
 ### 2.2.5. VLANs Appointed Sub-TLV
+  The optional VLANs Appointed sub-TLV specifies, for the port of the originating IS on which the containning Hello was sent, the VLANs for which it is Appointed Forwarder. This sub-TLV has the following format:
+
+                +-+-+-+-+-+-+-+-+
+                |     Type      |                  (1 byte)
+                +-+-+-+-+-+-+-+-+
+                |   Length      |                  (1 byte)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                | RESV  |  Start VLAN ID        |  (2 bytes)
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                | VLAN bit-map....
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  * Type: sub-TLV type, set to MT-Port-Cap-TLV VLANs-Appointed sub-TLV 8.
+  * Length: variable, minimum 3
+  * RESV: 4 reserved bits that must be sent as zero and ignored on receipt
+  * Start VLAN ID: the 12 bit VLAN ID that is repsented by the high-order bit of the first byte of the VLAN bit-map.
+  * VLAN bit-map: The highest-ordet bit indicates the VLAN equal to the start VLAN ID, the next highest bit indicates the VLAN equal to start VLAN ID + 1, continuing to the end of the VLAN bit-map field
+
+  If this sub-TLV occurs more than once in the Hello, the originating IS is declaring that it veleives itself to be Appointed Forwarder on the port on which the enclosing IIH was sent for the union of the sets of VLANs indicates by each of the VLAN-Appointed sub-TLVs in the Hello.
+
 ## 2.3. Sub-TLVs of the Router Capability and MT-Capability TLVs
 ### 2.3.1. TRILL Version Sub-TLV
 ### 2.3.2. Nickname Sub-TLV
