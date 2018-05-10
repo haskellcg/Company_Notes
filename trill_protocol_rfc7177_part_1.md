@@ -61,6 +61,12 @@
   TRILL provides connectivity and least-cost paths with zero configuration. For additional services, it strives to require only minimal configuration; however, services that require configuration when offered by [802.1Q] bridges, such as non-default VLANs or priority, will require configuration. This differs from Layer 3 routing where routers typically need to be configured as to the subnetworks connected to each port, etc, to provide services.
 
 ## 2.4. MRU Robustness
+  TRILL IS-IS needs to be robust against links with reasonably restricted MTUs, including links that accommodate only the classic Ethernet frame size, despite the addition of reasonable headers such as VLAN tags. Such robustness is particularly required for TRILL Hellos to assure correct adjacency and the election of a unique DRB on LAN links.
+
+  TRILL will also be used inside data centers where it is common for all or most of the links and switches to support frames substantially larger than the classic Ethernet maximum size. For example, they may have an MTU adequate to confortably handle Fiber Channel over Ethernet frames, for which T11 recommends a 2500-byte MTU [FCoE], or even 9K byte jumbo frames. It would be beneficial for a TRILL campus with such a large MTU to be able to safely make use of it.
+
+  These needs are met by a mandatory maximum on the size of TRILL Hellos and by the optional use of MTU testing as described below.
+
 ## 2.5. Purpose of the TRILL Hello Protocol
 
 # 3. Adjacency State Machinery
