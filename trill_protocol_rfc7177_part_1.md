@@ -68,6 +68,19 @@
   These needs are met by a mandatory maximum on the size of TRILL Hellos and by the optional use of MTU testing as described below.
 
 ## 2.5. Purpose of the TRILL Hello Protocol
+  There are three purpose for the TRILL Hello Protocol. They are listed below, along with a reference to be the section of this document in which each is discussed:
+  * To determined which RBridge neighbors have acceptable connectivity to be reported as part of the topology
+  * To elect a unique Designated RBridge on broadcast (LAN) links 
+  * To determine the MTU with which it is possible to safelt communicate with each RBridge neighbor
+
+  In Layer 3 IS-IS, all three of these functions are combined. Hellos may be padded to the maximum length so that a router neighbor is not discovered if it is impossible to communicate with it using maximum-sized Layer 3 IS-IS packets. Also, even if Hellos from a neighbor R2 are received by R1, if connectivity to R2 is not 2-way (i.e., R2 does not list R1 in R2's Hello), then R1 doesnot consider R2 as a Desginated Intermediate System (Designated Router) candidate. Because of this logic, it is possible at Layer 3 for multiple Designated Routers to be elected on a LAN, with each representing the LAN as a pseudonode. It appears to the topology as if the LAN is now two or more separate LANs. Although this is surprising, this does not cause problems for Layer 3.
+  
+  In contrast, this behavior is not acceptable for TRILL, since in TRILL it is important that all RBridges on a link known about each other, and on broadcast (LAN) links that they choose a single RBridge to be the DRB to control the native frame ingress and egress. Otherwise, multiple RBridge might ingress/egress the same native frame, forming loops that are not protected by the hop count in the TRILL Header as discussed above.
+
+  The TRILL Hello Protocol is best understood by focusing separately on each of these functions listed above, which we do in section 3, 4, and 5.
+
+  One other issue with TRILL LAN Hellos is to ensure that subnets of the information can appear in any single message, and be processable, in the spirit of IS-IS Link State PDUs (LSPs) and complete Sequence Number PDUs (CSNPs). LAN TRILL Hello packets, even though they are not padded, can become very large. An example where this might be the case is **When some sort of backbone technology interconnects hundreds of TRILL sites over what would appear to TRILL to be a giant Ethernet, Where the RBridge connected to that cloud will perceive that backbone to be a single link with hundreds of neighbors**. Thus, the TRILL LAN Hello uses a different Neighbor TLV [RFC7176] that lists neighbors seen for a range of MAC (SNPA) addresses.
+
 
 # 3. Adjacency State Machinery
 ## 3.1. TRILL Hellos, Ports, and VLANs
