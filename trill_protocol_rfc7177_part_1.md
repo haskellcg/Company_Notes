@@ -83,6 +83,8 @@
 
 
 # 3. Adjacency State Machinery
+  Each RBridge port has associate with it a port state, as discuessed in section 4, and a table of zero or more adjacencies (if the port is configured as point-to-point, zero, or one) as discussed in this section. The states such adjacencies can have, the events that cause adjacency state change, the actions associated with those state changes, a state table, and a state disgram are given below.
+
 ## 3.1. TRILL Hellos, Ports, and VLANs
 ## 3.2. Adjacency Table Entries and States
 ## 3.3. Adjacency and Hello Events
