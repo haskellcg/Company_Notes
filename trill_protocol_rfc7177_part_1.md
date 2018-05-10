@@ -29,8 +29,21 @@
   * SNPA - Subnetwork Point of Attachment [IS-IS]
   * TRILL switch - an alternative name for an RBridge
 
+
 # 2. The TRILL Hello Environment and Purposes
+  [IS-IS] has subnetwork-independent functions and subnetwork-dependent functions. Currently, Layer 3 use of IS-IS supports two types of subnetworks:
+  * point-to-point link subnetworks between routers
+  * general broadcast (LAN) subnetworks
+
+  Because of the differeces between the environment of Layer 3 routers and the environment of TRILL Bridges, instead of the subnetwork-dependent functions used at Layer 3, which are specified in Section 8.2 and 8.4 of [IS-IS], the TRILL protocol uses modified subnetwork-dependent functions for point-to-point subnetworks and broadcast (LAN) subnetworks. The differences between the TRILL and Layer 3 environemnts are described through 2.1 to 2.4.
+
 ## 2.1. RBridge Interconnection by Ethernet
+  TRILL supports the interconnection of RBridges by multi-access LAN links such as Ehernet. Because this includes general bridged LANs [802.1Q], the links between RBridges may contain devices or services that can restrict LAN connectivity, such as [802.1Q] bridges or carrier Ethernet services. In addition, RBridge Ethernet ports, like [802.1Q] ports, can be configured to restrict input/output on a LAN basis.
+
+  For this reason, TRILL Data and TRILL IS-IS packets are sent on Ethernet links in a Designated VLAN that is assumed to provide connectivity between all RBridges on the link. The Designated VLAN is dictated for a LAN link by the elected Designated RBridge on that link (DRB, equivalent to the Designated Intermediate System at Layer 3). On an RBridge Ethernet port configured as point-to-point, TRILL Data and IS-IS packets are sent in that port's Desired Designated VLAN, regardless of the state of any other ports on the link. Connectivity on an Ethernet link configured as point-to-point generally depends on both ends being configued with the same Desired Designated VLAN. Because TRILL Data packets flow between RBridges on an Ethernet link only in the link's Designated VLAN, adjacency for routing calculation is based only on connectivity characteristics in the VLAN.
+
+  (Non-Ethernet links, such as PPP [RFC6361] generally do not have any Outer.VLAN labeling, so the Designated VLAN for such links has no effect)
+
 ## 2.2. Handling Native Frames
 ## 2.3. Zero or Minimal Configuration
 ## 2.4. MRU Robustness
