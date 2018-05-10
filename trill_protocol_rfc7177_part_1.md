@@ -86,6 +86,22 @@
   Each RBridge port has associate with it a port state, as discuessed in section 4, and a table of zero or more adjacencies (if the port is configured as point-to-point, zero, or one) as discussed in this section. The states such adjacencies can have, the events that cause adjacency state change, the actions associated with those state changes, a state table, and a state disgram are given below.
 
 ## 3.1. TRILL Hellos, Ports, and VLANs
+  The determination of adjacencies on links is made using TRILL Hellos (see section 8), an optional MTU test (see section 5), and, optionally, BFD (see section 6) and/or other connectivity tests. If the MAC (SNPA) addresses of more than one RBridge port on a broadcast link are the same, all but one of such ports are put in the suspended state and do not partivipate in the link, execpt to monitor whether they should stay suspended. If the two ports on a point-to-point link have MAC (SNPA) addresses, it does not affect TRILL operation if they are the same. (PPP ports, for example, do not have MAC addresses [RFC6361])
+
+  The following items must be the same for all TRILL Hellos issued by an RBridge on a particular Ethernet portm regardless of the VLAN in which the Hello is sent:
+  * Source MAC address
+  * Priority to be the DRB
+  * Desired Designated VLAN
+  * Port ID, and 
+  * if included, BFD-Enabled TLV [RFC6213] and PORT-TRILL-VER sub-TLV [RFC7176]
+
+  Of course, the priority, Desired Designated VLAN, and possible the inclusion or value of the PORT-TRILL-VER sub-TLV, and/or BFD-Enabled TLV can change on occasion, but then the new value(s) must similarly be used in all TRILL Hellos on the LAN port, regardless of VLAN.
+
+  * On broadcast links:
+    * Because bridges acting as glue on an Ethernet broadcast link might be configured
+  * On Point-to-point-links:
+    *
+
 ## 3.2. Adjacency Table Entries and States
 ## 3.3. Adjacency and Hello Events
 ## 3.4. Adjacency State Diagram and Table
