@@ -45,6 +45,18 @@
   (Non-Ethernet links, such as PPP [RFC6361] generally do not have any Outer.VLAN labeling, so the Designated VLAN for such links has no effect)
 
 ## 2.2. Handling Native Frames
+  This section discusses the handling of "native" frames as defined in Section 1.4 of [RFC6325]. As such, this section is not applicable to point-to-point links between TRILL switches or any link where all the TRILL sswitch ports on the link have been configured as "trunk ports" by setting the end-station service disable bit for the port.
+
+  Layer 3 data packets, such as IP packets, are already "tamed" when they are originated by the end station: they include a hop count and Layer 3 source and destination address fields. Furthermore, for ordinary data packets, there is no requirement to preserve any outer Layer 2 addressing, and if the packets are unicast, they are explicitly addressed to their first-hop router.
+
+  In contrast, TRILL switches must accept, transport, and deliver "untamed" native frames: native frames that lack of hop count field usable by TRILL and have Layer 2 MAC (Media Access Control) addresses that indicate their source and destination. These Layer 2 addresses must be preserved for delivery to the native frame's Layer 2 destination. One resulting difference is that RBridge ports providing native frame service must receive in promiscuous MAC address mode, while Layer 3 router ports typically receive in a selective MAC address mode.
+
+  TRILL handles these requirements by having, on the link where an end station originates a native frame, one RBridge "ingress" such a locally originated native frame by adding a TRILL Header that includes a hop count, thus converting it to a TRILL Data packet. This augmented packet is then routed to one RBridge on the link having the destination end station for the frame (or one Rbridge on each such link if it is a multi-destination frame). Such final Rbridge perform an "egress" function, removing the TRILL Header and delivering the original frame to its destinations. (For the purpose of TRILL, a Layer 3 router is an end-station.)
+
+  **Care must be taken to avoid a loop that would involve egressing a native frame and then re-ingress it** because, while it is in native form, it would not be protected by a hop count and could loop forever. Such a loop could, for multi-destination frames, even involve multiplication of the number of frames each time around and would likely sature all links involved within miliseconds. For TRILL, safety against suvh loop for a link is more important than ransient loss of data connectivity on that link.
+
+  The primary TRILL defense mechanism against such loops, which is mandatory, is to assure that, as far as practically possible, there is only a single RBridge that is in charge of ingressing and egressing native frames from and to a link where TRILL is offering end-station service. This is a Designated RBridge and Appointed forwarder mechanism initially specified in the TRILL base potocol, discussed in section 2.5 below, and further specified in both section 4 below and [RFC6439].
+
 ## 2.3. Zero or Minimal Configuration
 ## 2.4. MRU Robustness
 ## 2.5. Purpose of the TRILL Hello Protocol
