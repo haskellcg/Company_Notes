@@ -22,7 +22,12 @@
   For other aspect of the TRILL base protocol, see [RFC6325] \[RFC6439\], and {ESADI]
 
 ## 1.1. Content and Precedence
+  TODO
+
 ## 1.2. Terminology and Acronyms
+  * BFD - Bidirectional Forwarding Detection [RFC7175]
+  * SNPA - Subnetwork Point of Attachment [IS-IS]
+  * TRILL switch - an alternative name for an RBridge
 
 # 2. The TRILL Hello Environment and Purposes
 ## 2.1. RBridge Interconnection by Ethernet
