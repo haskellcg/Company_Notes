@@ -181,7 +181,45 @@
   A7|N/A|N/A|2-Way|2-Way
   A8|Down|Down|Down|Down
 
-  "N/A" indicates that the event to the left is not applicable in the state at the top of the column. These events affect only a single adjacency. The special A0 event transitions all adjacencies to Down, as explained immediately after the list of adjacency 
+  "N/A" indicates that the event to the left is not applicable in the state at the top of the column. These events affect only a single adjacency. The special A0 event transitions all adjacencies to Down, as explained immediately after the list of adjacency events in Section 3.3.
+
+  The diagram below presents the same information as that in the state table:
+
+
+                         +---------------+
+                         |     Down      |<--------+
+                         +---------------+         |
+                           |     |  ^  |           |
+                      A2,A3|     |A8|  |A1         |
+                           |     +--+  |           |
+                           |           +-----------|---+
+                           V                       |   |
+                         +----------------+ A4,A8  |   |
+                  +----->|      Detect    |------->|   |
+                  |      +----------------+        |   |
+                  |        |  |         ^          |   |
+                  |      A1|  |A2,A3,A5 |          |   |
+                  |        |  +---------+          |   |
+                  |        |                       |   |
+                  |        |          +------------|---+
+                  |        |          |            |
+                  |        V          V            |
+                  |A3,A5 +----------------+ A4,A8  |
+                  |<-----|     2-Way      |------->|
+                  |      +----------------+        |
+                  |       |   ^ |        ^         |
+                  |     A6|   | |A1,A2,A7|         |
+                  |       |   | +--------+         |
+                  |       |   |                    |
+                  |       |   |A7                  |
+                  |       V   |                    |
+                  |A3,A5 +-------------+ A4,A8     |
+                  |<-----|   Report    |---------->|
+                         +-------------+
+                           |         ^
+                           |A1,A2,A6 |
+                           +---------+
+
 
 ## 3.5. Multiple Parallel Links
 ## 3.6. Insufficient Space in Adjacency Table
