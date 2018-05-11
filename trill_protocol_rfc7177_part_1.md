@@ -118,7 +118,71 @@
   * For an adjacency table at an RBridge that supports BFD, a flag indicating whether the last recieved TRILL Hello from the neighbor RBridge contained a BFD-Enabled TLV.
 
 ## 3.3. Adjacency and Hello Events
+  The following events can change the state of an adjacency:
+
+  A0. Receiving a TRILL Hello for a broadcast LAN adjacency whose source MAC address (SNPA) is equal to that of the port on which it is received. This is a special event that cannot occur on a port configured as point-to-point and is handled as described immediately after this list of evens. It does not appear in the state transition table or diagram
+
+  A1. Received a TRILL Hello (other than an A0 event) such that:
+  * If received on an Ethernet port, it was received in the Designated VLAN
+  * If received for a broadcast LAN adjacency, it contains a TRILL neighbor TLV that explicitly lists the receiving port's (SNPA) address
+  * If received for a point-to-point adjacency, it contains a Three-way Handshake TLV with the receiver's System ID and Extended Circuit ID.
+  
+  A2. Event A2 is not possible for a port configured as point-to-point. Recieve a TRILL Hello (other than an A0 event) such that either:
+  * The port is Ethernet and the Hello was not on the Designated VLAN (any TRILL Neighbor TLV in such a Hello is ignored), or
+  * The Hello does not contain a TRILL Neighbor TLV convering an address range that includes the receiver's SNPA address
+
+  A3. Receive a TRILL Hello (other than A0 event) such that:
+  * If received on an ethernet port, it was received in the Designated VLAN
+  * If received for a broadcast LAN adjacency, it contains one or more TRILL Neighbor TLVs covering an address range that includes the receiver's SNPA addres and none of which list the receiver
+  * If received for a point-to-point adjacency, it contains a Three-Way Handshake TLV with either the System ID or Extended Circuit ID or both not equal to that of the receiver
+
+  A4. Either
+  * The Hello holding timer expires on a point-to-point adjacency, or
+  * On a broadcast LAN adjacency
+    * both Hello timers expire simultaneously, or
+    * one Hello timer expires when the other Hello timer is already in the expired state
+
+  A5. For a broadcast LAN adjacency, the Designated VLAN Hello holding timer expires, but the non-Designated VLAN Hello holding timer still has time left until it expires. This event cannot ocur for a point-to-point adjacency
+
+  A6. MTU if enabled, BFD if enabled, and all other enabled connectivity tests successful
+
+  A7. MTU if enabled, BFD if enabled, and all other enabled connectivity tests were successful but one or more now fail
+
+  A8. The RBridge port gose operationally down
+
+  For the special A0 event, the Hello is examined to determine if it has a higher priority than the port on which it is received such that the sending port would be the DRB as described in section 4.2.1. If the Hello is of lower priority than the **receiving port**, it is discarded with no further action. If it is of higher priority than receiving port, then any adjacencies for the receiving port are discarded (transitioned to the Down state0, and the port is suspended as described in section 4.2.
+
+  The receipt of a TRILL Hello that is not an event A0 causes the following actions (except where the Hello would have created a new adjacency table entry but both the adjacency table is full and the Hello is too low priority to displace an existing entry as described in section 3.6). The Desginated VLAN referred to is the Designated VLAN dictated by the DRB determined without taking the received TRILL Hello into account for a broadcast LAN and the local Desired Designated VLAN for a port configured as point-to-point:
+  * If the receipt of a Hello creates a new adjacency table entry, the neighbor RBridge MAC SNPA address, port ID, and System ID are set from the Hello
+  * For a point-to-point adjacency, the Hello holding timer is set from the Holding Time field od the Hello. For a broadcast link adjacency, the appropriate Hello holding timer for that adjacency, depending on whether or not the Hello was received  in the Designated VLAN, is set to the Holding Time field of the Hello and if the receipt of the VLAN Hello is creating a new adjacency table entry, the other timer is set to expired
+  * For a broadcast link adjacency, the priority of the neighbor RBridge to be the DRB is set to the priority field of the LAN Hello.
+  * For a broadcast link adjacency, the VLAN that the neighbor RBridge wants to be the Designated VLAN on the link is set from the Hello
+  * The 5 bytes of PORT-TRILL-VER data are set from that sub-TLV in the Hello or set to zero if that sub-TLV does not occur in the Hello.
+  * For a broadcast link, if the creattion of a new adjacency table entry or the priority update above changes the results of the DRB election on the link, the appropriate RBridge port event (D2 or D3) occurs, after the above actions, as described in section 4.2.
+  * For a broadcast link adjacency, if there is no change in the DRB, but the neighbor Hello is from the DRB and has a changed Designated VLAN from the previous Hello received from the DRB, the result is a change in Designated VLAN for the link as specified in Section 4.2.3.
+
+  An event A4 resulting in the adjacency transitioning to the Down state may also result in an event D3 as described in section 4.2.
+
+  Concerning events A6 and A7, if none of MTU, BFD, or other testing is enabled, A6 is considered to occur immediately upon the adjacency entering the 2-way state, and A7 cannot occur.
+
+  See further TRILL Hello receipt detauls in section 8.
+
 ## 3.4. Adjacency State Diagram and Table
+  The table below shows the transitions between the states defined above, based on the events defined above:
+
+  Event|Down|Detect|2-Way|Report
+  -----|----|------|-----|------
+  A1|2-Way|2-Way|2-Way|Report
+  A2|Detect|Detect|2-Way|Report
+  A3|Detect|Detect|Detect|Detect
+  A4|N/A|Down|Down|Down
+  A5|N/A|Detect|Detect|Detect
+  A6|N/A|N/A|Report|Report
+  A7|N/A|N/A|2-Way|2-Way
+  A8|Down|Down|Down|Down
+
+  "N/A" indicates that the event to the left is not applicable in the state at the top of the column. These events affect only a single adjacency. The special A0 event transitions all adjacencies to Down, as explained immediately after the list of adjacency 
+
 ## 3.5. Multiple Parallel Links
 ## 3.6. Insufficient Space in Adjacency Table
 
