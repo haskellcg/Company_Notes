@@ -103,6 +103,20 @@
     * If the link technology is VLAN secsitive, such as Ethernet, an RBridge sends TRILL Hellos only in the Desired Designated VLAN for which it is configured.
 
 ## 3.2. Adjacency Table Entries and States
+  Every adjacency is in one of four states, whether it is one of the adjacencies on a broadcast link or the one possible adjacency on a point-to-point link. An RBridge participate in LSP synchronization at a port as long as it has one or more adjacencies out of that port that are in the 2-way or Report state:
+  * Down: this is a virtual for convenience in creating state diagrams and tables. it indicates that the adjacency is nonexistent, and there is no entry in the adjacency table for it.
+  * Detect: A neighbor RBridge has been detected through receipt of a TRILL Hello, but either 2-way connectivity has not been confirmed or the detection was one an Ethernet link in a VLAN other than the Designated VLAN.
+  * 2-way: 2-way connectivity to the neighbor has been found and, if the link is Ethernet, it wads found on the Designated VLAN, but some enabled test, such as the link MTU meeting the minimum capus requirement or BFD confirming link connectivity, has not yet succeeded.
+  * Report: There is 2-way connectivity to the neighbor (on the Designated VLAN if an Ethernet link); all enabled tests have succeede, including, if enabled, MTU and/or BFD testing. This state will cause adjacency to be reported in an LSP (with appropriate provision for a pseudonode, if any, as described in section 7).
+
+  For an adjacency in any of the three non-down states (Detect, 2-Way, or Report), there will be an adjacency table entry. That entry will give the state of the adjacency and will also include the information listed below:
+  * The address, if any, of the neighbor, the Port ID, and th System ID in the received Hellos. Together, these three quantities uniquely identify the adjacency on a broadcast link
+  * One or more Hello holding timers. For a point-to-point adjacency there is a single Hello Holding timer. For a broadcast LAN adjacency, there are exactly two Hello holding timers: a Desginated VLAN holding timer and a non-Designted VLAN holding timer. Each timer consists of 16-bit unsigned integer number of seconds.
+  * If the adjacency is on a broadcast link, the 7-bit unsigned priority of the neighbor to be the DRB
+  * The 5 bytes of data from the PORT-TRILL-VER received in the most recent TRILL Hello from the neighbor RBridge
+  * The VLAN that the neighbor RBridge wants tobe the Desginated VLAN on the link, called the Desired Designated VLAN
+  * For an adjacency table at an RBridge that supports BFD, a flag indicating whether the last recieved TRILL Hello from the neighbor RBridge contained a BFD-Enabled TLV.
+
 ## 3.3. Adjacency and Hello Events
 ## 3.4. Adjacency State Diagram and Table
 ## 3.5. Multiple Parallel Links
