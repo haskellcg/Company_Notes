@@ -98,9 +98,9 @@
   Of course, the priority, Desired Designated VLAN, and possible the inclusion or value of the PORT-TRILL-VER sub-TLV, and/or BFD-Enabled TLV can change on occasion, but then the new value(s) must similarly be used in all TRILL Hellos on the LAN port, regardless of VLAN.
 
   * On broadcast links:
-    * Because bridges acting as glue on an Ethernet broadcast link might be configured
+    * Because bridges acting as glue on an Ethernet broadcast link might be configured in such way that some VLANs are partitioned, it is necessary for RBridges to transmit Hellos on Ethernet links with multiple VLAN tags. The conceptually simplest solution may have been to have RBridge transmit up to 4,094 times as many Hellos, one with each legal VLAN ID enabled at each port, but this would obviously have deleterious performance implications. So, the TRILL protocol specifies that if RB1 knowns it is not the DRB, **it transmit its Hellos on only a limited set of VLANs**. Only an RBridge that believes itself to be the DRB on a broadcast Ethernet link "spray" its TRILL Hellos on all of its enabled VLANs at the port. An in both cases, an RBridge can be configured to send Hellos on only s subset of those VLANs. **The details are given in [RFC6325], section 4.4.3**.
   * On Point-to-point-links:
-    *
+    * If the link technology is VLAN secsitive, such as Ethernet, an RBridge sends TRILL Hellos only in the Desired Designated VLAN for which it is configured.
 
 ## 3.2. Adjacency Table Entries and States
 ## 3.3. Adjacency and Hello Events
