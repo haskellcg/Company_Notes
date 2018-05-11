@@ -232,6 +232,11 @@
 
 
 # 4. LAN Ports and DRB State
+  This section specifies the DRB election process in TRILL at a broadcast (LAN) link port. Since there is no such election when a port is configured as point-to-point, this section does not apply in that case.
+
+  The information at an RBridge associated with each of its broadcast LAN ports includes the following:
+  * Enablement bit, which 
+
 ## 4.1. Port Table Entries and DRB Election State
 ## 4.2. DRB Election Events
 ### 4.2.1. DRB Election Details
