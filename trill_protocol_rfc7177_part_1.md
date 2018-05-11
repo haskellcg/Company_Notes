@@ -226,6 +226,10 @@
   Any such links that have pseudonodes are distinguished in the topology; such adjacencies, if they are in the Report state, appear in LSPs as per Section 7. However, there can be multiple parrallel adjacencies without pseudonodes because they are point-to-point adjacencies or LAN adjacencies for which a pseudonode is not being created. Such parallel, non-pseudonode adjacencies in the Report state appear in LSPs as a single adjacency. The cose of such adjacency may be adjusted downwards to account for the parallels paths. Multipathing across such parallel connections can be freely done for unicast TRILL Data traffic on a per-flow basis but is restrcited for multi-destination traffic, as described in Section 4.5.2 (point 3) of [RFC6325] and Appendix C of [RFC6325]
 
 ## 3.6. Insufficient Space in Adjacency Table
+  If the receipt of a TRILL Hello would create a new adjacency table entry (that is, would transition an adjacency out of the Down state), there may be no space for the new entry. For ports that are configured as point-to-point and can thus only have zero or one adjacency not in the Down state, it is recommended that space be reserved for one adjacency so that this condition cannot occur.
+
+  When there is adjacency table space exhaustion, the DRB election priority of the new entry that would be created is compared with the DRB election priority for the existing entries. If the new entry is higher priority than the lowest priority existing entry, which is transitioned to the Down state.
+
 
 # 4. LAN Ports and DRB State
 ## 4.1. Port Table Entries and DRB Election State
