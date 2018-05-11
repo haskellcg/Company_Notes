@@ -220,8 +220,11 @@
                            |A1,A2,A6 |
                            +---------+
 
-
 ## 3.5. Multiple Parallel Links
+  There can be multiple parallel adjacency between neighbor RBridges that are visible to TRILL. (Multiple low-level links that have been bonded together by technologies such as aggregation [802.1AX] appear to TRILL as a single link over which only a single TRILL adjacency can be established.)
+
+  Any such links that have pseudonodes are distinguished in the topology; such adjacencies, if they are in the Report state, appear in LSPs as per Section 7. However, there can be multiple parrallel adjacencies without pseudonodes because they are point-to-point adjacencies or LAN adjacencies for which a pseudonode is not being created. Such parallel, non-pseudonode adjacencies in the Report state appear in LSPs as a single adjacency. The cose of such adjacency may be adjusted downwards to account for the parallels paths. Multipathing across such parallel connections can be freely done for unicast TRILL Data traffic on a per-flow basis but is restrcited for multi-destination traffic, as described in Section 4.5.2 (point 3) of [RFC6325] and Appendix C of [RFC6325]
+
 ## 3.6. Insufficient Space in Adjacency Table
 
 # 4. LAN Ports and DRB State
