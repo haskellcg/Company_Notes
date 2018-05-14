@@ -344,6 +344,20 @@
 
 
 # 5. MTU Matching
+  The purpose of MTU testing is to ensure that the links used in the campus topology can pass TRILL IS-IS packets, particularly LSP PDUs, at the TRILL campus MTU. The LSP PDUs generated at a TRILL switch could, as part of the flooding process, be sent over any adjacency in the campus. To assure correct operation of IS-IS, an LSP PDU must be able to reach every RBridge in the IS-IS reachable campus; this might be impossible if the PDU exceeded the MTU of an adjacency that was part of the campus topology.
+
+  An RBridge, RB1, determines the desired campus link MTU by calculating the minimum of its originatingL1LSPBufferSize and the originatingL1LSPBufferSize of other RBridge in the campus, as advertised in the link-state database, but not less than 1470 bytes. Although originatingL1LSPBufferSize in Layer 3 [IS-IS] is limited to the range 512 to 1492 bytes inclusive, in TRILL it is limited to the range 1470 to 65535 bytes inclusive.
+
+  Although MTU testing is optional, it is mandatory for an RBridge to respond to an MTU-probe PDU with an MTU-ack PDU. The use of multicast or unicast for MTU-probe and MTU-ack is an implementation choice. However, the burden on the link is generally minimized by the following:
+  * multicasting MTU-probes when a respondse from all other RBridges on the link is desired, such as when initializing or reconfirming MTU
+  * unicasting MTU-probes when a response from a single RBridge is desired, such as one that has just been detected on the link
+  * unicasting all MTU-ack packets
+
+  RB1 can test the MTU size to RB2 as described in section 4.3.2 of [RFC6325]. For this purpose, MTU testing is only done in the Designated VLAN. An adjacency that fails the MTU test at the campus MTU will not enter the Report state, or if the adjacency is in that state, it leave that staate, Thus, an adjacency failing the MTU test at the campus minimum MTU will not be reported by the RBridge performing the test. Since inclusion in least-cost route computation requires the adjacency to be reported by both ends, as long as the RBridge at either end of the adjacency notices the MTU failure, it will not be used.
+
+  If RB1 tests MTU size, it reports the largest size for which the MTU test succeeds or a flag indicating that it fails at the campus MTU. This report always appears with the neighbor in RB1's TRILL Neighbor TLV. RB1 may also report this with the adjacency in an Extended Reachability TLV in RB1's LSP. RB1 may choose to test MTU sizes greater than the desired campus MTU as well as the desired campus MTU.
+
+  Most types of TRILL IS-IS packets, such as LSPs, can make use of the campus MTU. The exceptions are TRILL Hellos, which must be kept small for loop safety, and the MTU PDUs, whose size must be adjusted appropriately for the tests being performed.
 
 # 6. BFD-Enabled TLV and BFD Session Bootstrapping
 
