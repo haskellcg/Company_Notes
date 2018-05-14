@@ -281,6 +281,12 @@
   Resorting to the secondary and tertiary tieebreaker should only be necessary in rare circumstances when multiple ports have the same priority and MAC (SNPA) and some of them are not yet suspended. For example, RB1, which has low priority to be the DRB on the link, could receive Hellos from two other ports on the link that have the same MAC address as each other and are higher priority to be the DRB. One of these two ports with the same MAC address will be suspended and cease sending Hellos, and the Hello from it received by RB1 will eventually tim out. But, in the meantime, RB1 can use the tiebreakers to determine which port is the DRB and thus which port's Hello to believe for such purposes as setting the Designated VLAN on the link.
 
 ### 4.2.2. Change in DRB
+  Events D2 and D3 result from a change in the apparent DRB on the link. Unnecessary DRB changes should be avoided, especially on links offering native frame service, as a DRB change will generally cause a transient interruption to native frame service.
+
+  If a change in the DRB on the link changes the Designated VLAN on an Ethernet link, the actions specified in section 4.2.3 are taken.
+
+  If an RBridge changes in either direction between being the DRB and not being the DRB at  port, this will generally change the VLANs on which that RBridge sends Hellos through that port, as specified in section 4.4.3 of [RFC6325]
+
 ### 4.2.3. Change in Designated VLAN
 ## 4.3. Port State Table and Diagram
 
