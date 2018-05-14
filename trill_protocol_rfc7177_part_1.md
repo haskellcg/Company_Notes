@@ -298,6 +298,50 @@
   If the Designated VLAN for a link changes, this will generally change the VLANs on which Hellos are sent by an RBridge port on that link as specified in section 4.4.3 of [RFC6325].
 
 ## 4.3. Port State Table and Diagram
+  The table below shows the transitions between the DRB states defined above, based on the events defined above:
+
+  Eevnt|Down|Suspended|DRB|Not DRB
+  -----|----|---------|---|-------
+  D1|DRB|DRB|N/A|N/A
+  D2|N/A|N/A|Not DRB|Not DRB
+  D3|N/A|N/A|DRB|DRB
+  D4|N/A|Suspended|Suspended|Suspended
+  D5|Down|Down|Down|Down
+
+  Diagram below presents the same information as in the state table:
+
+              +-------------+
+              |  Down       |<--------------+
+              +-+---+-------+     ^         |
+                |   |   ^         |         |
+              D1|   |D5 |         |         |
+                |   +---+         |D5       |
+                |                 |         |
+                |        +--------+----+    |
+                |        |  Suspended  |<---|---+
+                |        +-+-----+-----+    |   |
+                |        D1|  ^  |   ^      |   |
+                |          |  |  |D4 |      |   |
+                |          |  |  +---+      |   |
+                |          |  |             |   |
+                |          |  |D4           |   |
+                V          V  |             |   |
+              +---------------+-+ D5        |   |
+              |          DRB    |---------->|   |
+              +--------+--+-----+           |   |
+                  ^    |  |  ^              |   |
+                  |  D2|  |D3|              |   |
+                  |    |  +--+              |   |
+                  |    |         D4         |   |
+                  |D3  |  +-----------------|---+
+                  |    V  |                 |
+             +----+-------+-+ D5            |
+             |   Not DRB    |-------------->|
+             +----+---------+
+                  |    ^
+                  |D2  |
+                  +----+
+
 
 # 5. MTU Matching
 
