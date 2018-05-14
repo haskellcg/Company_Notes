@@ -288,6 +288,15 @@
   If an RBridge changes in either direction between being the DRB and not being the DRB at  port, this will generally change the VLANs on which that RBridge sends Hellos through that port, as specified in section 4.4.3 of [RFC6325]
 
 ### 4.2.3. Change in Designated VLAN
+  Unnecessary change in the Designated VLAN on an Ethernet link should be avoided because a change in the Designated VLAN can cause a transient interruption to adjacency and thus to TRILL Data forwarding on the link. When practical, all RBridge ports on a link should be configured with the same Desired Designated VLAN so that if the winner of the DRB election changes for any reason, the Designated VLAN will remain the same.
+
+  If an RBridge detects a change in Designated VLAN on Ethernet link, then, for all adjacency table entries for a port to that link, the RBridge takes all the following steps, in the order given.
+
+  * The non-Designated VLAN Hello holding timer is set to maximum of its time to expiration and the current time to expiration of the Designated VLAN Hello holding timer.
+  * The Designated VLAN Hello holding timer is then set to expired (if necessary), and an event A5 occurs for the adjacency
+
+  If the Designated VLAN for a link changes, this will generally change the VLANs on which Hellos are sent by an RBridge port on that link as specified in section 4.4.3 of [RFC6325].
+
 ## 4.3. Port State Table and Diagram
 
 # 5. MTU Matching
