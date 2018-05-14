@@ -248,6 +248,14 @@
   * A table of zero or more adjacencies
 
 ## 4.1. Port Table Entries and DRB Election State
+  The TRILL equivalent of the DIS (Deesignated Intermeidate System) on a broadcast link is the DRB or Designated RBridge. The DRB election state mechinery is described below.
+
+  Each RBridge port that is not configured as point-to-point is in one of the following four DRB states:
+  * Down: The port is operationally down. It might be administrativeely disabled or down at the link layer. In this state there will be no adjacencies for the port, and no TRILL Hellos or other TRILL IS-IS PDUs or TRILL Data packets are accepted or transmitted.
+  * Suspended: Operation of the port is suspended because there is a highre priority port on the link with the same MAC (SNPA) address. This is the same as the Down state, with the exception that TRILL Hellos are accepted for the sole purpose of determining whether to change the value of the Suspension Timer for the port as described below.
+  * DRB: The port is the DRB and can receive and transmit TRILL Data packets.
+  * Not DRB: The port is deferring to another port on the link, which it believes is the DRB, but can still receive and transmit TRILL Data packets
+
 ## 4.2. DRB Election Events
 ### 4.2.1. DRB Election Details
 ### 4.2.2. Change in DRB
