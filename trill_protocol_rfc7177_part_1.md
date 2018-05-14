@@ -235,7 +235,17 @@
   This section specifies the DRB election process in TRILL at a broadcast (LAN) link port. Since there is no such election when a port is configured as point-to-point, this section does not apply in that case.
 
   The information at an RBridge associated with each of its broadcast LAN ports includes the following:
-  * Enablement bit, which 
+  * Enablement bit, which defaults to enabled
+  * The 5 bytes of PORT-TRILL-VER sub-TLV data used in TRILL Hellos sent on the port
+  * SNPA address (commonly a 48-bit MAC address) of the port
+  * Port ID, used in TRILL Hellos sent on the port
+  * The Holding Time, used in TRILL Hellos sent on the port
+  * The priority to be the DRB, used in TRILL LAN Hellos sent on the port
+  * BFD Support. If the port supports BFD, a BFD Enabled flag that controls whether or not a BFD-Enabled TLV is included in TRILL Hellos sent on the port
+  * The DRB state of the port, determiend as specific below
+  * A 16-bit unsigned Suspension Timer, measured in seconds
+  * The Desired Designated VLAN. The VLAN this RBridges want to be the Designated VLAN for the link out of this port, used in TRILL Hellos sent on the port if the link is Ethernet
+  * A table of zero or more adjacencies
 
 ## 4.1. Port Table Entries and DRB Election State
 ## 4.2. DRB Election Events
