@@ -257,6 +257,22 @@
   * Not DRB: The port is deferring to another port on the link, which it believes is the DRB, but can still receive and transmit TRILL Data packets
 
 ## 4.2. DRB Election Events
+  The following events can change the DRB state of a port. Note that this is only applicable to broadcast links. There is no DRB state or election at a port configured to be point-to-point.
+
+  D1. The port becomes enabled or the Suspension Timer expires while the port is in the Suspended state.
+
+  D2. The adjacency table for the port changes, and there are now entries for one or more other RBridges ports on the link that appear to be higher priority to be the DRB than the local port.
+
+  D3. The port is not Down or Suspended, and the adjacency table for the port changes, so thre are now no entries for other RBridge ports on that link that appear to be higher priority to be the DRB than the local port
+
+  D4. A TRILL LAN Hello is received that has the same MAC address (SNPA) as the receiving port and higher priority to be the DRB as described for event A0
+
+  D5. The port becomee operationally down
+
+  Event D1 is considered to occur on RBridge boot if the port is administratively and link-layer enabled
+
+  Event D4 causes the port to enter the Suspended state and all adjacencies for the port to be discarded (transtioned to the down state). If the port was in some state other than Suspended, the Suspension Timer is set to the Holding Time in the Hello that causes event D4. If it was in the Suspended state, the Suspension Timer is set to the maximum of its current value and the Holding Timer in the Hello that causes event D4.
+
 ### 4.2.1. DRB Election Details
 ### 4.2.2. Change in DRB
 ### 4.2.3. Change in Designated VLAN
