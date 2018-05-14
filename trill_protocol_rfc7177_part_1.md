@@ -274,6 +274,12 @@
   Event D4 causes the port to enter the Suspended state and all adjacencies for the port to be discarded (transtioned to the down state). If the port was in some state other than Suspended, the Suspension Timer is set to the Holding Time in the Hello that causes event D4. If it was in the Suspended state, the Suspension Timer is set to the maximum of its current value and the Holding Timer in the Hello that causes event D4.
 
 ### 4.2.1. DRB Election Details
+  Events D2 and D3 constitute losing and winning the DRB election at the port, respectively.
+
+  The candidates for election are the local RBridge and all RBridges with which there is an adjacency on the port in an adjacency state other than the Down state. The winner is the RBridge with highest priority to be the DRB, as determined from the 7-bit priority field in that RBridge's Hellos received and the local port's priority to be the DRB field, with MAC (SNPA) address as a tiebreaker, Port ID as a second tiebreaker, and System ID as a tertiary tiebreaker. These fields are compared as unsigned integers, with the larger magnitude being considered higher priority.
+
+  Resorting to the secondary and tertiary tieebreaker should only be necessary in rare circumstances when multiple ports have the same priority and MAC (SNPA) and some of them are not yet suspended. For example, RB1, which has low priority to be the DRB on the link, could receive Hellos from two other ports on the link that have the same MAC address as each other and are higher priority to be the DRB. One of these two ports with the same MAC address will be suspended and cease sending Hellos, and the Hello from it received by RB1 will eventually tim out. But, in the meantime, RB1 can use the tiebreakers to determine which port is the DRB and thus which port's Hello to believe for such purposes as setting the Designated VLAN on the link.
+
 ### 4.2.2. Change in DRB
 ### 4.2.3. Change in Designated VLAN
 ## 4.3. Port State Table and Diagram
