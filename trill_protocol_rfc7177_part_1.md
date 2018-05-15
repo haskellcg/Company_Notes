@@ -460,6 +460,16 @@
   To ensure that any RBridge RB2 can definitively determine whether RB1 can hear RB2, RB1's neighbor list must eventuaally cover every possible range of IDs, that is, within a period that depends on RB1's policy and not necessarily within any specific period such as its Holding Time. In other words, if X1 is the smallest ID reported in one of RB1's neighbor lists, and the "smallest" flag is not set, then X1 must appear in a different neighbor list as well, as the largest ID reported in that fragment. Or lists may overlap, as long as there is no gap, such that some range, say, between Xi and Xj, would never appear in any list.
 
 ## 8.3. Receiving TRILL Hellos
+  Assuming that a packet is labeled as TRILL IS-IS -- for exmaple, on Etherneet it has the L2-IS-IS Ethertype and the All-IS-IS-RBridges destination multicast address or is so marked by the approriate code point on other link types such as PPP [RFC6361] or a pseudowire [RFC7173] -- it will be examined to see if it appears to be an IS-IS PDU. If so, and it appears to be a TRILL Hello PDU, the following tests are performed:
+  * The type of Hello PDU (LAN or P2P) is compared with the port configuration. If a LAN Hello is received on a port configured to be point-to-point, it is discarded
+  * If the circuit Type Field is not 1, the PDU is discarded
+  * If the PDU does not contain an Area Address TLV or it contains an Area Address TLV that is not the single Area Address Zero, it is discarded
+  * If the Hello includes a Protocols Supported TLV that does not list the TRILL NLPID (0xC0), it is discarded. It is acceptable if there is no Protocols Supported TLV present
+  * If the Hello Does not contain an MT Port Capabilities TLV containing a VLAN-FLAGs sub-TLV [RFC7176], it is discarded
+  * If the maximumAreaAddresses field of the PDU is not 1, it is discarded
+  * If IS-IS authentication is in use on the link and either the PDU has no Authentication TLV or validation of the PDU's Authentication TLV fails, it is discarded
+
+  If non of the rules in the list above cause the packet to be discarded and the packet is parseable, it is assumed to be a well-formed TRILL Hello received on the link. It is treated as an Event A0, A1, A2, or A3, based on the criteria listed in section 3.3
 
 # 9. Multiple Ports on the same Broadcast link
 
