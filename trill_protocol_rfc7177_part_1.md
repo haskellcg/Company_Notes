@@ -415,6 +415,14 @@
   A DRB should set the bypass pseudonode bit in its Hellos if it has not seen at least two simultaneous adjacencies in the Report state since it last rebooted or was reset by network management.
 
 # 8. More TRILL Hello Details
+  This section provides further details on the receipt, transmission, and content of TRILL Hellos. Unless otherwise stated, it applies to both LAN and point-to-point Hellos.
+
+  TRILL Hellos, like all TRILL IS-IS packets, are primarily distinguished from Layer 3 IS-IS packets on Ethernet by being sent to the All-IS-IS-RBridge multicast address (01-80-C2-00-00-41). TRILL IS-IS packets on Ethernet also have the L2-IS-IS Ethertype (0x22F4) and are Ethertype encoded.
+
+  Although futher extensions to TRILL may include the use of Level 2 IS-IS, [RFC6325] specifies TRILL using a single Level 1 Area using the fixed Area Address zero.
+
+  IS-IS Layer 3 routers are frequently connected to other Layer 3 routers that are part of a different router domaain. In that case, the externalDomain flag is normally set for the port through which such a connection is made. The setting of this flag to "true: cuases no IS-IS PDUs to be sent out of the port and any IS-IS PDUs received to be discarded, including Hellos. RBridges operate in different environment where all neighbor RBridges merge into a single campus. For loop safety, RBridges do not implement the externalDomain flag or implement it with the fixed value "false". They send and can receive TRILL Hellos on every port that is not disabled.
+
 ## 8.1. Contents of TRILL Hellos
 ## 8.2. Transmitting TRILL Hellos
 ### 8.2.1. TRILL Neighbor TLVs
