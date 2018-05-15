@@ -360,6 +360,45 @@
   Most types of TRILL IS-IS packets, such as LSPs, can make use of the campus MTU. The exceptions are TRILL Hellos, which must be kept small for loop safety, and the MTU PDUs, whose size must be adjusted appropriately for the tests being performed.
 
 # 6. BFD-Enabled TLV and BFD Session Bootstrapping
+  When the adjacency between RBridges reaches the 2-way state, TRILL Hellos will already have been exhanged. If an RBridge supports BFD [RFC7175], it will have learned whether the other RBridge has BFD enabled by whether or not a BFD-Enabled TLV has included in its Hellos. In addition, TRILL Hellos include a nickname of the seending RBridge so that information will be available to the receiving RBridge.
+
+  The BFD-Enabled TLVs in TRILL Hellos will look like the following:
+
+                 +-+-+-+-+-+-+-+-+
+                 | Type=148      |                   (1 byte)
+                 +-+-+-+-+-+-+-+-+
+                 | Length=3*n    |                   (1 byte)
+                 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                 | RESV  |        MT ID=0        |   (2 bytes)
+                 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                 | NLPID=0xC0    |                   (1 byte)
+                 +-+-+-+-+-+-+-+-+-+-+-...
+                 | possible additional               (3*(n-1) bytes)
+                 | topology/NLPID pairs
+                 +-+-+-+-+-+-+-...
+
+  * Type = 148, for BFD Enabled [RFC6213]
+  * Length will be 3 times the number of topology and protocol pairs in the TLV
+  * MT ID is a topology DI [RFC5120] that will be zero unless multi-topology is being supported [MT]
+  * NLPID is a network Layer Protocol ID [RFC6328] and will be 0xC0 for TRILL, but additional topology and protocol pairs could conceivably be listed.
+
+  An RBridge port initiates a one-hop BFD session with another RBridge if the following conditions aree met:
+  * it has BFD enabled
+  * it has an adjacency to another RBridge in the 2-Way or Report state
+  * the Hellos it receives indicate that the other RBridge also has BFD enabled
+
+  Either:
+  * BFD was enabled on both RBridge ports when the adjacency changed to the 2-Way or Report staate
+  * The adjacency was already in the 2-Way or Report and BFD was enabled on one RBridge port when BFD has been enabled on the other
+  * BFD was simultaneously enabled on both RBridge ports
+
+  In such a BFD session, BFD is encapsulated as specified in [RFC7175]. The egress nickname to be used will have been learned from received Hellos. On a point-to-point link, the Any-Rbridge nickname [RFC7180] can also be used as egress, since support of that nickname is required by support of RBridge Channel [RFC7178] and support of RBridge Channel is required for Support of BFD over TRILL.
+
+  The rare case of transient nickname conflict (due to the network operator configuring a conflict, new connectivity to a previously isolated RBridge, or the like) can cause transient failure of an ongoing BFD session. This can be avoided in the one-hop point-to-point case by using the Any-RBridge egress nickname. In cases where Any-RBridge cannot be used as the egress nickname and a transient nickname conflict is detected for the intended destination of a BFD session, initiation of the session should be delayed until the conflict is resolved.
+
+  If a one-hop BFD session is initiated when the adjacency is in the 2-way state, the adjacency must not to the report state until BFD and any other enabled connectivity tests (including MTU, if enabled) have succeeded, as specified in section 3.
+
+  If a one-hop BFD session is established when the adjacency is in the report stat, due to enablement at the RBridges, then, to minimize unnecessary topology changes, the adjacency must remain in the report state unless and until the BFD session (or some other enabled connectivity test) fails.
 
 # 7. Pseudonodes
 
