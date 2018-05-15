@@ -472,17 +472,29 @@
   If non of the rules in the list above cause the packet to be discarded and the packet is parseable, it is assumed to be a well-formed TRILL Hello received on the link. It is treated as an Event A0, A1, A2, or A3, based on the criteria listed in section 3.3
 
 # 9. Multiple Ports on the same Broadcast link
+  It is possible for an RBridge RB1 to have multiple ports on the same broadcast (LAN) link that are nbot in the Suspended state. It is important for RB1 to recognize which of its ports are on the same link. RB1 can detect this condition based on receiving TRILL Hello messages with the same LAN ID on multiple ports.
+
+  The DRB election is port-based, and only the Hellos from the elected port can perform certain functions such as dictating the Designated VLAN or whether a pseudonode will be used; however, the election also designates the RBridge with that port as the DRB for the link. An RBridge amy choose to load split some tasks among its ports on the link if it has more than one.
 
 # 10. IANA Considerations
+  This document serves as a reference for "Fail" (Fail MTU test) value 0, in the "TRILL Neighbor TLV NEIGHBOR RECORD Flags" registry. IANA has updated that references to point to this RFC.
 
 # 11. Security Considerations
+  This memo provides improved documentation of some aspects of the TRILL base protocol standard, particularly five aspects of the TRILL adjacency establishment and Hello pprotocol as listed in section 1. It does not change the security considerations of thee TRILL base protocol as detailed in section 6 of [RFC6325]
+
+  See [RFC7175] or security consideration for BFD, whose use in connection with TRILL adjacency is discussed in this document, particularlt section 6.
 
 # Appendix A. Changes from RFC 6327
+  TODO
 
 # Appendix B. Changes from RFC 6325
+  TODO
 
 # Normative References
+  TODO
 
 # Informative References
+  TODO
 
 # Acknonwledgements
+  TODO
