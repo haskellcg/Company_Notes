@@ -424,6 +424,21 @@
   IS-IS Layer 3 routers are frequently connected to other Layer 3 routers that are part of a different router domaain. In that case, the externalDomain flag is normally set for the port through which such a connection is made. The setting of this flag to "true: cuases no IS-IS PDUs to be sent out of the port and any IS-IS PDUs received to be discarded, including Hellos. RBridges operate in different environment where all neighbor RBridges merge into a single campus. For loop safety, RBridges do not implement the externalDomain flag or implement it with the fixed value "false". They send and can receive TRILL Hellos on every port that is not disabled.
 
 ## 8.1. Contents of TRILL Hellos
+  The table below lists mandatory (M) and optional (O) content TLVs for TRILL Hellos that are particularly relevent to this document, distinguishing between TRILL LAN Hellos and TRILL P2P Hellos. A "-" indicates that an occurrence would be ignored. There are additional TLVs and sub-TLVs that an occur in TRILL Hellos.
+
+  LAN|P2P|Number|Content Item
+  ---|---|------|-------------
+  M|M|1|Area Addresses TLV with Area Address zero only
+  M|M|1|MT Port Capabilitites TLV containing a VLAN-FLAGs sub-TLV
+  O|O|0-n|Other MT Port Capabilities TLVs
+  M|-|0-n|TRILL Neighbor TLV
+  -|M|1|Three-Way Handshake TLV
+  O|O|0-n|Protocols Supported TLV -- Must like the TRILL NLPID (0xC0)
+  O|O|0-1|BFD-Enabled TLV
+  -|-|0-n|Padding TLV -- should not be included
+
+  A TRILL Hello may also contain any TLV permitted in a Layer 3 IS-IS Hello. As with all IS-IS PDUs, TLVs that are unsupported/unknown in TRILL Hellos are ignored.
+
 ## 8.2. Transmitting TRILL Hellos
 ### 8.2.1. TRILL Neighbor TLVs
 ## 8.3. Receiving TRILL Hellos
