@@ -401,6 +401,18 @@
   If a one-hop BFD session is established when the adjacency is in the report stat, due to enablement at the RBridges, then, to minimize unnecessary topology changes, the adjacency must remain in the report state unless and until the BFD session (or some other enabled connectivity test) fails.
 
 # 7. Pseudonodes
+  This section only applies to broadcast links, as there is no DRB and there cannot be pseudonode [IS-IS] for a link configured as point-to-point. The Designated RBridge (DRB), determined as described above, controls whether a pseudonode will be used on a link.
+
+  If the DRB sets the bypass pseudonode bit in its TRILL LAN Hellos, the RBridges on the link (including the DRB) just directly report all their adjacencies on the LAN that are in the Report state. If the DRB does not set the bypass pseudonode bit in its TRILL Hellos, then
+  * the DRB reports in its LSP its adjacency to the pseudonode
+  * the DRB sends LSPs on behalf of the psedunode in which it reports adjacency to all other RBridges on the link where it sees that adjacency in the Report state
+  * all other RBridges on the link report their adjacency to the pseudonode if they see their adjacency to the DRB as being in the Report state and do not report any other adjacency on the link.
+
+  Setting the bypass pseudonode bit has no effect on how LSPs are flooded on a link. It only affects what LSPs are generated.
+
+  it is anticipated that many links between RBridge will actually be point-to-point even in cases where the link technology supports operation as a multi-access broadcast link, in which case using a pseudonode merely adds to the complexity. For example, if RB1 and RB2 are the only RBridges on the link, and RB1 is the DRB, then if RB1 creates a pseudonode -- for example, RB1.25 -- that is used, where are then 3 LSPs: RB1.25, RB1 and Rb2, where RB1.25 reports connectivity to RB1 and RB2, and RB1 and RB2 each just stay they are connected to RB1.25. However, if DRB RB1 sets the bypass pseudonode bit in its hellos, then there will be only 2 LSP: RB1 and RB2, each reporting connectivity to each other.
+
+  A DRB should set the bypass pseudonode bit in its Hellos if it has not seen at least two simultaneous adjacencies in the Report state since it last rebooted or was reset by network management.
 
 # 8. More TRILL Hello Details
 ## 8.1. Contents of TRILL Hellos
