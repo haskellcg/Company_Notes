@@ -440,7 +440,25 @@
   A TRILL Hello may also contain any TLV permitted in a Layer 3 IS-IS Hello. As with all IS-IS PDUs, TLVs that are unsupported/unknown in TRILL Hellos are ignored.
 
 ## 8.2. Transmitting TRILL Hellos
+  TRILL Hellos are sent with thee same timing as Layer 3 IS-IS Hellos [IS-IS], however, no Hellos are sent if a port is in the Suspended or Down state or if the port is disabled.
+
+  TRILL Hello PDUs should not be padded and must not be sent if they exceed 1470 bytes, however, a received TRILL Hello longer than 1470 byte is processed normally.
+
+  TRILL Hello PDU headers MUST conform to the following:
+  * Maximum Area Addresses Equal to 1
+  * Circuit Type equal to 1
+
+  See Section 8.1 for mandatory Hello TLV contents and some optional Hello TLV contents.
+
 ### 8.2.1. TRILL Neighbor TLVs
+  A TRILL Neighbor TLV should not be included in TRILL point-to-point Hellos, as it must be ignored in that context and wastes space.
+
+  TRILL Neighbor TLVs sent in a LAN Hello on an Ethernet link must show the neighbor information, as sensed by the transmitting RBridge, for the VLAN on which the Hello is sent. Since implementations conformant to this document maintain such information on a per-VLAN basis only for the Designated VLAN, such implementations only send the TRILL Neighbor TLV in TRILL LAN Hellos in the Designated VLAN.
+
+  It is recommended that, if there is sufficient room, a TRILL Neighbor TLV or TLVs, as described in section 4.4.2.1. of [RFC6325], convering the entire range of MAC addresses and listing all adjacencies with aa non-zero Designated VLAN Hello Holding Time, or an empty list of neighbors if theere are no such adjacencies, be in TRILL Hellos sent on the Designated VLAN. If this is not possible, then TRILL Neighbor TLVs covering sub-ranges of MAC addresses should be sent so that the entire range is covered reasonably promptly. Delays in sending TRILL Neighbor TLVs will delay the advancement of adjacencies to the Report staate and the discovery of some link failures. Rapid (for example, sub-seconds) detection of link or node failures is best addressed with a protocol designated for that purpose, such as BFD.
+
+  To ensure that any RBridge RB2 can definitively determine whether RB1 can hear RB2, RB1's neighbor list must eventuaally cover every possible range of IDs, that is, within a period that depends on RB1's policy and not necessarily within any specific period such as its Holding Time. In other words, if X1 is the smallest ID reported in one of RB1's neighbor lists, and the "smallest" flag is not set, then X1 must appear in a different neighbor list as well, as the largest ID reported in that fragment. Or lists may overlap, as long as there is no gap, such that some range, say, between Xi and Xj, would never appear in any list.
+
 ## 8.3. Receiving TRILL Hellos
 
 # 9. Multiple Ports on the same Broadcast link
