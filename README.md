@@ -9,3 +9,4 @@ some notes about company study
   * [Confluence](http://10.0.0.88:8090/#all-updates)
   * [RFC-DataTracker](https://datatracker.ietf.org/)
   * [Spirent Help Documents](https://support-kb.spirent.com/infocenter/index?page=content&id=TRN10404&actp=LIST)
+  * [华为路由器文档以及eNSP等下载](http://support.huawei.com/enterprise/zh/index.html)
