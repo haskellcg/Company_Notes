@@ -38,3 +38,24 @@
   As for Sz, RBridge continue to propagate their originatingL1LSPBufferSize across the campus through the advertisement of LSPs as defined in section 4.3.2 of [RFC6352]. The smallest value of Sz advertised by any RBridge, but not less than 1470, will be deemed as Sz. Each RBridge formats their "campus-wide" PDUs -- for example, **LSPs** -- no greater than what they determine as Sz.
   
 # 3. Testing Link MTU Size  
+  Event A6:
+  * Event: The link MTU size has been tested
+  * Condition: The link can support Sz
+  
+  RTT: Round-Trip Time (RTT), the default value of 5 milliseconds should be assumed
+
+  * Step 0: RB1 sends an MTU-probe padded to the size of link-wide Lz
+    * If RB1 successfully receives the MTU-ack from RB2 ...
+    * Try 1470 bytes, x = (Lz + 1470) / 2
+    
+  * Step 1: RB1 tries to send an MTU-probe padded to the size x
+  
+  MTU testing is only done in the Designated VLAN [RFC7177]. Since the execution of the above algorithm can be resource consuming, it is reommended that the Designated RBridge (DRB) take the responsibility to do the testing.
+  
+  **Multicast MTU-probes** are used instead of unicast when multiple RBridge are desired to respond with an MTU-ack on the link.
+
+
+
+
+
+
