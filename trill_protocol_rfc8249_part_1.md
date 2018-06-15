@@ -62,7 +62,20 @@
   * lowerBound < Sz < upperBound. RBridges probe the link with MTU-probe messages padded to Sz. If an MTU-ack is received within k tries, this link can support Sz. Otherwise, this link cannot support Sz. Through this test, the lower bound and upper bound of the link MTU size can be updated accordingly.
   
 # 4. Refreshing Sz  
+  * Joining
+    * When a new RBridge joins the campus and its originatingL1LSPBufferSize is smaller than the current Sz, reporting its originatingL1LSPBufferSize in its LSPs will cause other RBridges to decrease their Sz. Then, any LSP greater than the reduced Sz MUST be split, and/or the LSP contents in the campus MUST be otherwise redistributed so that no LSP is greater than the new Sz.
+    * If the joining RBridge’s originatingL1LSPBufferSize is greater than or equal to the current Sz, reporting its originatingL1LSPBufferSize will not change Sz.
+    
+  * Leaving
+    * From the specification of the Joining process, we know that if an RBridge’s originatingL1LSPBufferSize is smaller than Sz, this RBridge will not join this campus.
+    * When an RBridge leaves the campus and its originatingL1LSPBufferSize equals Sz, its LSPs are purged from the remainder of the campus after reaching MaxAge [IS-IS]. Sz MAY be recalculated and MAY increase. In other words, while in most cases RB1 ignores link-state information for IS-IS unreachable RBridge RB2 [RFC7780], originatingL1LSPBufferSize is meaningful. Its value, even from IS-IS unreachable RBridges, is used in determining Sz. This updates [RFC7780]
+    * When an RBridge leaves the campus and its originatingL1LSPBufferSize is greater than Sz, Sz will not be updated, since Sz is determined by another RBridge with a smaller originatingL1LSPBufferSize.
+    
+  **Frequent LSP "resizing" is harmful to the stability of the TRILL campus, so, to avoid this, upward resizing should be dampened. When an upward resizing event is noticed by an RBridge, it is recommended that a timer be set at that RBridge via a configurable parameter -- LSPresizeTime -- whose default value is 300 seconds.** Before this time expires, all subsequent upward resizing will be dampened (ignored). Of course, in a well-configured campus will all RBridges configured to have the same originatingL1LSPBufferSize, no resizing will be necessary. It does not matter if different RBridge have different dampening timers or if some RBridges resize upward more quickly than others.
   
+  If the refreshed Sz is smaller than the lower bound or greater than the upper bound of the tested link MTU size, the issue of resource consumption from testing the link MTU size can be avoid according to rule (a) or (b) as specified in Section 3. Otherwise, RBridges test the link MTU size according to the rule (c).
+  
+# 5. Relationship betweem Port MTU, Lz, and Sz  
 
 
 
