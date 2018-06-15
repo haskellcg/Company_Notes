@@ -53,6 +53,16 @@
   MTU testing is only done in the Designated VLAN [RFC7177]. Since the execution of the above algorithm can be resource consuming, it is reommended that the Designated RBridge (DRB) take the responsibility to do the testing.
   
   **Multicast MTU-probes** are used instead of unicast when multiple RBridge are desired to respond with an MTU-ack on the link.
+  
+  RBridges have figured out the upper bound and lower bound of the link MTU size from the execution of the above algorithm. If Sz is smaller than the lower bound or greater than the upper bound, RBridges can directly judge whether the link supports Sz without MTU-probing.
+  * If lowerBound >= Sz, this link can support Sz.
+  * Else if upperBound <= Sz, this link cannot support Sz.
+  
+  Otherwise, RBridges SHOULD test whether the link can support Sz as in item (c) below. If they do not, the only safe assumption will be that the link cannot support Sz. This assumption, without testing, might rule out the use of a link that can, in fact, handle packets up to Sz. In the worst case, this might result in unnecessary network partition.
+  * lowerBound < Sz < upperBound. RBridges probe the link with MTU-probe messages padded to Sz. If an MTU-ack is received within k tries, this link can support Sz. Otherwise, this link cannot support Sz. Through this test, the lower bound and upper bound of the link MTU size can be updated accordingly.
+  
+# 4. Refreshing Sz  
+  
 
 
 
