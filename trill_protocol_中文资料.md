@@ -8,3 +8,5 @@
   * [华为TRILL技术白皮书](https://wenku.baidu.com/view/c8f2419b7cd184254a35357f.html)
   * [TRILL相关RFC文档，35条](https://www.rfc-editor.org/search/rfc_search_detail.php?page=All&title=TRILL&pubstatus[]=Any&pub_date_type=any&sortkey=Number&sorting=ASC)
   * Spirent Help Document
+  * [ISIS报文类型](https://blog.csdn.net/qq_38265137/article/details/80438222)
+  * [ISIS TLV Codepoints](https://www.iana.org/assignments/isis-tlv-codepoints/isis-tlv-codepoints.xhtml)
