@@ -18,3 +18,4 @@
   * RFC 4971: IS-IS Extensions for Advertising Router Info
   * RFC 6165: Extensions to IS-IS for Layer-2 Systems
   * RFC 7176: TRILL Use of IS-IS
+  * RFC 8139: Transparent Interconnection of Lots of Links (TRILL): Appointed Forwarders
