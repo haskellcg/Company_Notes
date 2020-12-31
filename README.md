@@ -1,5 +1,4 @@
 # Reading_IP_Protocol_RFC
-some notes about company study
 
 # Links
   * [virtual server](https://10.0.0.8/)
